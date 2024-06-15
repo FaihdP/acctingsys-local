@@ -1,16 +1,19 @@
 import { LambdaClient, InvokeCommand, LambdaClientConfig, InvokeCommandInput } from "@aws-sdk/client-lambda";
-
-const AWS_ACCESS_KEY_ID = 'AWS_ACCESS_KEY_ID'
-const AWS_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY'
-const AWS_LAMBDA_REGION = 'AWS_LAMBDA_REGION'
+import { getCredentials } from "./credentials";
 
 export async function get(functionName: string, payLoad?: any) {
   try {
+    const { 
+      aws_access_key_id, 
+      aws_secret_access_key, 
+      aws_lambda_region 
+    } = await getCredentials()
+    
     const lambdaClient = new LambdaClient({
-      region: AWS_LAMBDA_REGION,
+      region: aws_lambda_region,
       credentials: {
-        accessKeyId: AWS_ACCESS_KEY_ID,
-        secretAccessKey: AWS_SECRET_ACCESS_KEY
+        accessKeyId: aws_access_key_id,
+        secretAccessKey: aws_secret_access_key
       }
     } as LambdaClientConfig)
   

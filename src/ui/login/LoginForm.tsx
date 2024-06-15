@@ -45,7 +45,10 @@ export default function LoginForm() {
       const loginStatus = await validateForm()
       setStatusLogin(loginStatus)
       
-      if (loginStatus === LOGIN_STATUS.OK) router.push("/dashboard")
+      if (loginStatus === LOGIN_STATUS.OK) {
+        setStatusLogin(loginStatus)
+        router.push("/dashboard")
+      }
     } catch (err) {}
   }
 

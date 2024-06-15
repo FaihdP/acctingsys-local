@@ -7,8 +7,12 @@ export default function Dashboard() {
   const [state, setState] = useState<any>()
 
   const handleClick = async () => {
-    const result = await get('test2')
-    setState(result)
+    try {
+      const result = await get('test2')
+      setState(result)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return <>
