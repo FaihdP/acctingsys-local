@@ -9,9 +9,10 @@ export enum Bank {
 
 export default interface Payment {
   invoiceId?: string
-  personId: string
+  personId?: string
   date: string
   value: number
   type: PaymentType
-  bank: Bank
+  bank?: Bank
+  migrated: boolean
 }

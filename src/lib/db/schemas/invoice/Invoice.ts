@@ -8,12 +8,13 @@ export enum InvoiceType {
 
 export interface Invoice {
   date: string
-  amount: number
+  value?: number
   type: InvoiceType
-  userId?: string
+  userId: string
   personId?: string
   isPaid?: boolean
   user: Person
   person?: Person
   productOverview?: Product[],
+  migrated: boolean
 }
