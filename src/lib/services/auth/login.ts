@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { FormData } from "@lib/interfaces/loginFormData";
 import find from "@lib/db/find";
-import User from "@lib/db/schemas/user/User";
+import User from "@schemas/user/User";
 
 export async function validateCredentials(formData: FormData): Promise<boolean> {
   const user: User = (
