@@ -28,7 +28,6 @@ export default async function Home() {
           </footer>
         </section>
         <section className="h-screen xl:h-0">
-          
         </section>
       </main>
     </>

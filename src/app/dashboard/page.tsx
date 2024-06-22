@@ -1,6 +1,7 @@
 'use client'
 
 import { get } from "@lib/api/lambda"
+import { generateSalt } from "@lib/util/salt"
 import { useState } from "react"
 
 export default function Dashboard() {
@@ -16,7 +17,7 @@ export default function Dashboard() {
   }
 
   return <>
-    <button onClick={handleClick}>Get info</button><hr />
+    <button onClick={generateSalt}>Get salt</button><hr />
     { state }
   </>
 }
