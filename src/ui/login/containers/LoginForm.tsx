@@ -2,13 +2,13 @@
 
 import { ChangeEvent, FormEvent, useState } from "react"
 import { useRouter } from "next/navigation";
-import InputForm from "@ui/login/components/Input";
 import { FormData } from "@lib/interfaces/loginFormData";
-import { validateCredentials } from "@lib/auth/login";
-import COLORS from "@ui/colors";
+import { validateCredentials } from "@lib/services/auth/login";
+import InputForm from "@ui/login/components/Input";
+import COLORS from "@ui/core/util/colors";
+import Button from "@ui/login/components/Button";
 import acountCircleIcon from "@public/login/account_circle.svg"
 import passwordIcon from "@public/login/password.svg"
-import Button from "./components/Button";
 
 enum LOGIN_STATUS {
   VOID_CREDENTIALS = "VOID_CREDENTIALS",

@@ -1,6 +1,16 @@
+import { createHash } from "crypto";
 import { FormData } from "@lib/interfaces/loginFormData";
+import find from "@lib/db/find";
+import User from "@lib/db/schemas/user/User";
 
 export async function validateCredentials(formData: FormData): Promise<boolean> {
-  //await new Promise(r => setTimeout(r, 5000))
-  return true
+  const user: User = (
+    await find<User>(
+      "users", 
+      { username: formData.userName }
+    )
+  )[0]
+
+  const hash = createHash("sha256").update(user.salt + formData.password).digest("hex")
+  return user.password === hash
 }

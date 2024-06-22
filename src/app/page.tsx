@@ -1,5 +1,5 @@
-import Logo from "@ui/logo/Logo";
-import LoginForm from "@ui/login/LoginForm";
+import Logo from "@ui/core/components/Logo";
+import LoginForm from "@ui/login/containers/LoginForm";
 
 export default async function Home() {
   return (

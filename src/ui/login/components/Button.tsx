@@ -1,4 +1,4 @@
-import COLORS from '@ui/colors'
+import COLORS from '@ui/core/util/colors'
 import Image from 'next/image'
 import React from 'react'
 import loginIcon from "@public/login/login.svg"
