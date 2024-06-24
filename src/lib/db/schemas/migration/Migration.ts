@@ -1,3 +1,5 @@
+import MongoDocument from "@schemas/common/MongoDocument"
+
 export enum MigrationStatus {
   PROCESSING,
   PENDING,
@@ -11,3 +13,5 @@ export default interface Migration {
   payments: number
   expenses: number
 }
+
+export interface MigrationDocument extends Migration, MongoDocument {}

@@ -1,5 +1,6 @@
 import Person from "@schemas/embedded/Person"
 import Product from "@schemas/embedded/Product"
+import MongoDocument from "@schemas/common/MongoDocument"
 
 export enum InvoiceType {
   SALE,
@@ -18,3 +19,5 @@ export interface Invoice {
   productOverview?: Product[],
   migrated: boolean
 }
+
+export interface InvoiceDocument extends Invoice, MongoDocument {}

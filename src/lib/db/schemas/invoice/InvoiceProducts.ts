@@ -1,12 +1,12 @@
-interface Product {
-  name: string
-  value: number
-}
+import ProductValue from "@schemas/embedded/ProductValue"
+import MongoDocument from "@schemas/common/MongoDocument"
 
 export interface InvoiceProducts {
   invoiceId: string
   amount?: number
   value: number
   productId?: string
-  product: Product
+  product: ProductValue
 }
+
+export interface InvoiceProductsDocument extends InvoiceProducts, MongoDocument {}

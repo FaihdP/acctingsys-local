@@ -1,3 +1,5 @@
+import MongoDocument from "@schemas/common/MongoDocument"
+
 export enum UserType {
   // TODO: modify user types
   ADMIN,
@@ -13,3 +15,5 @@ export default interface User {
   password: string
   type: UserType
 }
+
+export interface UserDocument extends User, MongoDocument {}

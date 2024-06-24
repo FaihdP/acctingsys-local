@@ -1,3 +1,5 @@
+import MongoDocument from "@schemas/common/MongoDocument"
+
 export enum PaymentType {
   CASH,
   CREDIT
@@ -16,3 +18,5 @@ export default interface Payment {
   bank?: Bank
   migrated: boolean
 }
+
+export interface PaymentDocument extends Payment, MongoDocument {}

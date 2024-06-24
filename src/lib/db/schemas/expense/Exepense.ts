@@ -1,6 +1,7 @@
 import Person from "@schemas/embedded/Person"
+import MongoDocument from "@schemas/common/MongoDocument"
 
-export default interface Payment {
+export default interface Expense {
   date: string
   value: number
   title: string
@@ -9,3 +10,5 @@ export default interface Payment {
   migrated: boolean
   user: Person
 }
+
+export interface ExpenseDocument extends Expense, MongoDocument {}
