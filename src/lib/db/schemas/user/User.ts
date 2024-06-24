@@ -5,7 +5,7 @@ export enum UserType {
 }
 
 export default interface User {
-  id: string
+  identification: string
   username: string
   name: string
   lastname: string
