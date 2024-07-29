@@ -6,6 +6,11 @@ export enum UserType {
   USER
 }
 
+export enum UserStatus {
+  ACTIVE,
+  INACTIVE
+}
+
 export default interface User {
   identification: string
   username: string
@@ -14,6 +19,7 @@ export default interface User {
   salt: string
   password: string
   type: UserType
+  state: UserStatus
 }
 
 export interface UserDocument extends User, MongoDocument {}

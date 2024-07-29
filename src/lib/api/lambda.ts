@@ -3,7 +3,7 @@ import {
   InvokeCommandInput 
 } from "@aws-sdk/client-lambda";
 import { getLambdaClient } from "./config";
-import handleError from "@lib/util/error/error";
+import handleError from "@lib/util/error/handleError";
 
 export async function get(functionName: string, payLoad?: any): Promise<object | null> {
   try {

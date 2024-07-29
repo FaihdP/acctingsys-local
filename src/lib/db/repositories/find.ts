@@ -14,7 +14,7 @@ export interface Page {
  */
 export default async function find<T>(
   collection: string, 
-  filter = {}, 
+  filter: Partial<T>, 
   page: Page = { 
     number: 1, 
     size: 10 

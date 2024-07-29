@@ -2,33 +2,39 @@
 
 import { ChangeEvent, FormEvent, useState } from "react"
 import { useRouter } from "next/navigation";
-import { FormData } from "@lib/interfaces/loginFormData";
+import { LoginFormData } from "@ui/core/interfaces/LoginFormData";
 import { validateCredentials } from "@lib/services/auth/login";
-import InputForm from "@ui/login/components/Input";
+import Input from "@ui/core/components/Input";
 import COLORS from "@ui/core/util/colors";
 import Button from "@ui/login/components/Button";
 import acountCircleIcon from "@public/login/account_circle.svg"
 import passwordIcon from "@public/login/password.svg"
+import ErrorMessage from "../components/ErrorMessage";
 
 enum LOGIN_STATUS {
-  VOID_CREDENTIALS = "VOID_CREDENTIALS",
-  BAD_CREDENTIALS = "BAD_CREDENTIALS",
-  LOADING = "LOADING",
-  OK = "OK",
+  VOID_CREDENTIALS,
+  BAD_CREDENTIALS,
+  LOADING,
+  OK,
+  ERROR
 }
 
 export default function LoginForm() {
   const router = useRouter()
 
-  const [formData, setFormData] = useState<FormData>({ userName: "", password: "" })
+  const [formData, setFormData] = useState<LoginFormData>({ userName: "", password: "" })
   const [statusLogin, setStatusLogin] = useState<LOGIN_STATUS | null>(null)
 
   const validateForm = async (): Promise<LOGIN_STATUS> => {
     if (!formData.userName || !formData.password) 
       return LOGIN_STATUS.VOID_CREDENTIALS
     
-    if (!(await validateCredentials(formData))) 
-      return LOGIN_STATUS.BAD_CREDENTIALS
+    try {
+      if (!(await validateCredentials(formData))) 
+        return LOGIN_STATUS.BAD_CREDENTIALS
+    } catch (err) {
+      return LOGIN_STATUS.ERROR
+    }
     
     return LOGIN_STATUS.OK
   }
@@ -44,12 +50,15 @@ export default function LoginForm() {
     try {
       const loginStatus = await validateForm()
       setStatusLogin(loginStatus)
-      
-      if (loginStatus === LOGIN_STATUS.OK) {
-        setStatusLogin(loginStatus)
-        router.push("/dashboard")
-      }
-    } catch (err) {}
+      if (loginStatus === LOGIN_STATUS.OK) router.push("/dashboard")
+    } catch (err) {
+      console.error((err as Error).message)
+    }
+  }
+
+  const handleClickRegister = (e: FormEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    router.push("/register")
   }
 
   return (
@@ -69,15 +78,15 @@ export default function LoginForm() {
       "
       style={{ backgroundColor: COLORS.DARK_BLUE }}
     >
-      { statusLogin === LOGIN_STATUS.VOID_CREDENTIALS &&
-          <span className="text-red-400 absolute mb-64 font-bold max-w-md">
-            Es necesario llenar todos los campos del formulario 🙂 
-          </span> } 
+      { statusLogin === LOGIN_STATUS.VOID_CREDENTIALS && 
+          <ErrorMessage message="Es necesario llenar todos los campos del formulario 🙂" /> } 
           
       { statusLogin === LOGIN_STATUS.BAD_CREDENTIALS &&
-          <span className="text-red-400 absolute mb-64 font-bold max-w-md">
-            Usuario o contraseña incorrectas 😑
-          </span> } 
+          <ErrorMessage message="Usuario o contraseña incorrectas 😑" /> }
+          
+
+      { statusLogin === LOGIN_STATUS.ERROR &&
+          <ErrorMessage message="Tenemos un problema con nuestro servicio ⚠️" /> }
 
       <form 
         onSubmit={hanldeSubmit} 
@@ -89,7 +98,7 @@ export default function LoginForm() {
           mt-[70px]
         "
       >
-        <InputForm 
+        <Input
           type="text" 
           name="userName"
           onChange={handleInputChange} 
@@ -98,7 +107,7 @@ export default function LoginForm() {
           placeholder="Nombre de usuario"
           value={formData.userName}
         />
-        <InputForm 
+        <Input
           type="password" 
           name="password"
           onChange={handleInputChange} 
@@ -108,7 +117,13 @@ export default function LoginForm() {
           value={formData.password}
         />
         <Button loading={statusLogin === LOGIN_STATUS.LOADING} />
-        <a href="#" className="text-white underline text-[18px] font-light">Registrarse</a>
+        <a 
+          href="#" 
+          className="text-white underline text-[18px] font-light"
+          onClick={handleClickRegister}
+        >
+          Registrarse
+        </a>
       </form>
     </section>
   )

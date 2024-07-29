@@ -1,5 +1,5 @@
 import { LambdaClient, LambdaClientConfig } from "@aws-sdk/client-lambda";
-import handleError from "@lib/util/error/error";
+import handleError from "@lib/util/error/handleError";
 import { invoke } from "@tauri-apps/api/tauri";
 
 interface Credentials { 

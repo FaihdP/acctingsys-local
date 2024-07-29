@@ -1,14 +1,14 @@
 import React, { ChangeEvent } from "react";
 import Image from "next/image";
 
-interface inputFormProps {
+interface inputProps {
   type: string;
   name: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   placeholder?: string;
   value: string;
-  image: {
+  image?: {
     src: string;
     alt: string;
     width: number;
@@ -16,7 +16,7 @@ interface inputFormProps {
   };
 }
 
-export default function InputForm({
+export default function Input({
   type,
   name,
   onChange,
@@ -24,12 +24,13 @@ export default function InputForm({
   placeholder,
   value,
   image,
-}: inputFormProps) {
+}: inputProps) {
   return (
     <div>
       <label>
         <div className="relative">
           <input
+            maxLength={50}
             type={type}
             name={name}
             onChange={onChange}
@@ -38,30 +39,26 @@ export default function InputForm({
             autoComplete="off"
             className={`
               py-3 
-              px-4 
-              ps-12
+              ${ image ? "ps-12": "ps-3"}
               block 
               border
-              focus: 
-              shadow-sm 
               rounded-lg 
-              text-sm 
-              focus:z-10 
-              focus:border-blue-500 
-              focus:ring-blue-500
+              text-sm
               w-[290px]
               h-[40px]
             ` + className
             }
           />
-          <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-3">
-            <Image
-              src={image.src}
-              alt={image.alt}
-              width={image.width}
-              height={image.height}
-            />
-          </div>
+          { image &&
+              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-3">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                />
+              </div>
+          }
         </div>
       </label>
     </div>
