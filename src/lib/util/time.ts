@@ -17,12 +17,6 @@ function getDateObjectFromString(datetime: string): Date {
   const [date, time] = datetime.split(" ")
   const [day, month, year] = date.split('/')
   const [hours, minutes, seconds] = time.split(':')
-  console.log(day)
-  console.log(month)
-  console.log(year)
-  console.log(hours)
-  console.log(minutes)
-  console.log(seconds)
 
   return new Date(
     parseInt(year), 
@@ -36,7 +30,6 @@ function getDateObjectFromString(datetime: string): Date {
 
 export function formatDate(datetime: string): string {
   const date = getDateObjectFromString(datetime)
-  console.log(date)
   let hours = date.getHours()
   const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
   hours = hours % 12;

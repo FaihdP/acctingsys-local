@@ -22,48 +22,40 @@ export interface Column {
   width?: number
   minWidth?: number
   type: ColumType
-  // Only for ColumType.SELECT
-  relationship?: Map<string, { background: string, fontColor: string }>
+  relationship?: Map<string, { background: string, fontColor: string }> | ((filter: string) => Promise<any>)
+  fields?: string[]
 }
 
-export interface MappedObject {
-  isSelected: boolean
-  isEditable: boolean
-  isNewRow?: boolean
-  [key: string]: any
+export interface TableConfigHeaderProps {
+  picker: boolean
+  options?: {
+    onEdit: boolean
+    others?: Option[]
+  }
+  columns: Column[]
 }
 
-export interface Row {
-  key: string, 
-  value: MappedObject
+export interface TableConfigProps {
+  /**
+   * Modify the table data 
+   */
+  modifiers: {
+    onAddRow?: () => Promise<any>,
+    onDeleteRow?: () => Promise<any>,
+  },
+  /**
+   * Modify the database data 
+   */
+  actions: {
+    onAdd: (data: any) => Promise<any>,
+    onDelete?: (id: string) => Promise<any>,
+    onEdit?: (id: string, data: any) => Promise<any>
+  }
+  header: TableConfigHeaderProps,
 }
 
 export default interface TableProps {
-  getData: () => Promise<any>,
+  getData: (...args: any[]) => Promise<any>,
   filters?: {},
-  config: {
-    /**
-     * Modify the table data 
-     */
-    modifiers: {
-      onAddRow?: () => Promise<any>,
-      onDeleteRow?: () => Promise<any>,
-    },
-    /**
-     * Modify the database data 
-     */
-    actions: {
-      onAdd?: () => Promise<any>,
-      onDelete?: () => Promise<any>,
-      onEdit?: () => Promise<any>
-    }
-    header: {
-      picker: boolean
-      options?: {
-        onEdit: boolean
-        others?: Option[]
-      }
-      columns: Column[]
-    },
-  }
+  config: TableConfigProps
 }

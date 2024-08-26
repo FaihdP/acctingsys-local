@@ -45,10 +45,10 @@ export default function LoginForm() {
 
   const hanldeSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setStatusLogin(LOGIN_STATUS.LOADING)
     
     try {
       const loginStatus = await validateForm()
+      setStatusLogin(LOGIN_STATUS.LOADING)
       setStatusLogin(loginStatus)
       if (loginStatus === LOGIN_STATUS.OK) router.push("/dashboard")
     } catch (err) {
@@ -83,7 +83,6 @@ export default function LoginForm() {
           
       { statusLogin === LOGIN_STATUS.BAD_CREDENTIALS &&
           <ErrorMessage message="Usuario o contraseña incorrectas 😑" /> }
-          
 
       { statusLogin === LOGIN_STATUS.ERROR &&
           <ErrorMessage message="Tenemos un problema con nuestro servicio ⚠️" /> }

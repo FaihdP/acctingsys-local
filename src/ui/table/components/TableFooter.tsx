@@ -9,7 +9,7 @@ export default function TableFooter(
     onDelete 
   }: { 
     onAdd: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void),
-    onDelete?: () => Promise<any>
+    onDelete?: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void)
   }) {
   return (
     <div 
@@ -17,11 +17,11 @@ export default function TableFooter(
         flex 
         justify-between
         items-center
-        mt-auto
         w-full
         h-[35px]
         px-[16px]
         shadow-[0_-1px_3px_-1px_rgba(0,0,0,0.5)] 
+        mt-auto
       " 
       style={{ fontSize: "16px" }}
     >
@@ -45,6 +45,7 @@ export default function TableFooter(
       { onDelete && 
           <a 
             href="#"
+            onClick={onDelete}
             className="flex items-center"
           >
             <div className="inline-block me-[5px]">

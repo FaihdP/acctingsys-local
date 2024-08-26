@@ -7,8 +7,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       absolute 
       flex 
       flex-col
-      h-full
-      w-full 
+      w-screen
       bg-[#E8EAED] 
     ">
       <nav 
@@ -21,18 +20,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </nav>
 
-      <main className="flex flex-1 flex-col">
-        <section className="
+      <main className="flex flex-col h-screen">
+        <div className="
           flex-1
           m-[22px]  
           p-[25px]
           bg-white
           text-[#7A7A7A]
           rounded
+          h-screen
           shadow-[0_0_30px_0px_rgba(0,0,0,0.2)]
         ">
           { children }
-        </section>
+        </div>
       </main>
     </div>
   )

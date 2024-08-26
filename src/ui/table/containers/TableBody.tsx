@@ -1,30 +1,45 @@
 'use client'
 
 import Image from "next/image"
-import TableProps, { MappedObject, Row } from "@ui/table/interfaces/Table";
+import TableProps, { TableConfigHeaderProps } from "@ui/table/interfaces/Table";
 import tableEditIcon from "@public/dashboard/table_edit.svg"
 import tableAcceptIcon from "@public/dashboard/table_accept.svg"
 import tableCancelIcon from "@public/dashboard/table_cancel.svg"
-import Cell from "../components/Cell";
+import TableCell from "../components/TableCell";
+import { MappedObject, Row } from "@ui/table/interfaces/Row";
 
-export default function TableBody(
-  { 
-    header, 
-    actions,
-    data, 
-    onEditRow,
-    onCancelEditRow,
-    onSelectRow
-  }: { 
-    header: TableProps["config"]["header"], 
-    actions: TableProps["config"]["actions"],
-    data: Map<string, MappedObject>,
-    onEditRow: (rowIndex: string) => void,
-    onCancelEditRow: (rowIndex: string, newRow?: boolean) => void
-    onSelectRow: (rowIndex: string) => void
-  }
-) {
+interface TableBodyProps { 
+  header: TableConfigHeaderProps, 
+  actions: TableProps["config"]["actions"],
+  data: Map<string, MappedObject>,
+  onEditRow: (rowIndex: string) => void,
+  onCancelEditRow: (rowIndex: string, newRow?: boolean) => void
+  onSelectRow: (rowIndex: string) => void
+}
+
+export default function TableBody({ 
+  header, 
+  actions,
+  data, 
+  onEditRow,
+  onCancelEditRow,
+  onSelectRow
+}: TableBodyProps) {
   const sizeIconOptionsTable = 18
+
+  const handleSaveRow = async (row: Row) => {               
+    if (row.value.isNewRow) {
+      // TODO: Add this action result in a notification
+      await actions.onAdd([row.value]) 
+      row.value.isNewRow = false
+    } else {
+      if (actions.onEdit) { 
+        await actions.onEdit(row.value["_id"], row.value)
+      }
+    }
+    onEditRow(row.key)
+  }
+  
   return (
     <tbody>
       { data.size > 0 
@@ -44,32 +59,34 @@ export default function TableBody(
                 "
               > 
                 { 
-                  (header.picker && !row.value.isNewRow) &&
-                    <td className="text-center">
-                      <label className="table-picker">
-                        <input 
-                          type="checkbox"
-                          onChange={() => onSelectRow(row.key)} 
-                          checked={row.value.isSelected}
-                        />
-                        <span className="shadow-[0_0_3px_0px_rgba(0,0,0,5)]"></span>
-                      </label>
-                    </td> 
+                  (header.picker && !row.value.isNewRow) 
+                    ? <td className="text-center">
+                        <label className="table-picker">
+                          <input 
+                            type="checkbox"
+                            onChange={() => onSelectRow(row.key)} 
+                            checked={row.value.isSelected}
+                          />
+                          <span className="shadow-[0_0_3px_0px_rgba(0,0,0,5)]"></span>
+                        </label>
+                      </td> 
+                    : <td></td>
                 }
                 { 
                   header.columns.map(
                     (column, indexColumn: number) => {
                       return (
-                        <Cell 
+                        <TableCell 
                           key={row.key + "_column_" + indexColumn}
-                          rowValue={row.value}
+                          row={row.value}
+                          value={row.value[column.tag] || ""}
                           column={column}
-                          className="
+                          className={`
                             flex 
                             flex-col 
                             justify-center
                             ps-1
-                          "
+                          `}
                         />
                       )
                     }
@@ -90,7 +107,7 @@ export default function TableBody(
                           <>
                             <a 
                               href="#" 
-                              onClick={() => {}}
+                              onClick={() => handleSaveRow(row)}
                               className="inline-block"
                             >
                               <Image

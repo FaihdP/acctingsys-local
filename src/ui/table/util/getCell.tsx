@@ -1,59 +1,126 @@
 import formatCurrency from "@lib/util/currency"
 import { ColumType } from "@ui/table/interfaces/Table"
+import { MouseEvent } from "react"
 
 interface GetCellProps {
   columnType: ColumType
   content: any
-  relationship?: Map<string, { background: string, fontColor: string }>
+  relationship?: any
+  columnFields?: string[]
 }
 
-export default function getCell({ columnType, content, relationship }: GetCellProps) {
+export default function getCell({ columnType, content, relationship, columnFields }: GetCellProps) {
   let Element
+
+  function TableData(
+    { 
+      children, 
+      classname,
+      onClick
+    }: { 
+      children: React.ReactNode, 
+      classname?: string,
+      onClick?: (e: MouseEvent<HTMLTableCellElement>) => void
+    }
+  ) { 
+    return <td onClick={onClick} className={classname}>{ children }</td>
+  }
+
   switch (columnType) {
     case ColumType.TEXT: {
-      Element = content
+      Element = 
+        <TableData>
+          {content}
+        </TableData>
+
       break
     }
     case ColumType.CURRENCY: {
-      Element = formatCurrency(content)
+      Element = 
+        <TableData classname="text-right"> 
+          <span className="me-4">{ formatCurrency(content) }</span>
+        </TableData>
+
       break
     }
     case ColumType.NUMBER: {
-      Element = content
+      Element = 
+        <TableData>
+          {content}
+        </TableData>
+
       break
     }
     case ColumType.LIST: {
       let text = ""
-      if (Array.isArray(content)) text = content.join(", ") + "..."
-      Element = text
+      if (Array.isArray(content) && content.length > 0) text = content.join(", ") + "..."
+      Element = 
+        <TableData>
+          {text}
+        </TableData>
+
       break
     }
     case ColumType.DATE: {
-      Element = content
-      break
+      Element = 
+        <TableData>
+          {content}
+        </TableData>
+
+      break 
     }
     case ColumType.OBJECT: {
       let text = ""
-      if (content !== null && typeof content === "object") 
-        text = Object.values(content).join(" ")
-      Element = text
+      if (content !== null && typeof content === "object" && columnFields) {
+        text = columnFields.map((columnField) => content[columnField]).join(" ")
+      }
+      
+      Element = 
+        <TableData>
+          {text}
+        </TableData>
+
       break
     }
     case ColumType.SELECT: {
-      if (!relationship) break
+      if (!relationship && !(relationship instanceof Map)) break
       const colors = relationship.get(content)
-      if (!colors) break
+      if (!colors) {
+        return (
+          <TableData>
+            <div className="
+              flex
+              items-center
+              min-h-[28px]
+              w-full 
+              h-full
+            ">
+              <span className="
+                rounded-lg 
+                px-[6px] 
+                py-[2px] 
+                bg-slate-200" 
+              >
+                { content }
+              </span>
+            </div>
+          </TableData>
+        )
+      }
 
       Element = 
-        <span
-          className="rounded-lg px-[6px] py-[2px]" 
-          style={{ 
-            background: colors.background, 
-            color: colors.fontColor 
-          }}
-        >
-          { content }
-        </span>
+        <TableData>
+          <span
+            className="rounded-lg px-[6px] py-[2px]" 
+            style={{ 
+              background: colors.background, 
+              color: colors.fontColor 
+            }}
+          >
+            { content }
+          </span>
+        </TableData>
+
       break
     }
     default:

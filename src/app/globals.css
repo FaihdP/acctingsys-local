@@ -7,12 +7,14 @@ thead th {
 }
 
 /* Delete the default windows webpack library borders when a element is focused */
-table 
-
 input:focus,
 textarea:focus,
 select:focus {
   outline: 2px solid #07F9A2;
+}
+
+table input:focus {
+  outline: 0;
 }
 
 table [contenteditable]:focus {
@@ -46,4 +48,29 @@ table [contenteditable]:focus {
 
 .table-picker input[type="checkbox"]:checked + span {
   background-color: #7A7A7A;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+::-webkit-scrollbar:vertical {
+  width: 5px;
+}
+
+::-webkit-scrollbar-button:increment,::-webkit-scrollbar-button {
+  display: none;
+} 
+
+::-webkit-scrollbar:horizontal {
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #7979796c;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 10px;  
+  background-color: #ffffff;
 }

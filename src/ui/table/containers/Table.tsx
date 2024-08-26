@@ -5,17 +5,9 @@ import TableHeader from "../components/TableHeader"
 import TableBody from "./TableBody"
 import TableBodySkeleton from "../components/TableBodySkeleton"
 import TableFooter from "../components/TableFooter"
-import TableProps, { Column, MappedObject } from "@ui/table/interfaces/Table"
-
-const mapData = (data: any): Map<string, MappedObject> => {
-  const map = new Map()
-  data.forEach((row: any, index: number) => {
-    row.isSelected = false
-    row.isEditable = false
-    map.set("row_" + index, row)
-  })
-  return map
-}
+import TableProps, { Column } from "@ui/table/interfaces/Table"
+import { MappedObject } from "@ui/table/interfaces/Row"
+import mapData from "../util/mapData"
 
 const getColumnsNumber = (columns: Column[], picker: boolean, options: any) => { 
   let columnsNumber: number = columns.length
@@ -29,88 +21,101 @@ export default function Table({
   config,
 }: TableProps) {
   const { header, modifiers, actions } = config
-  const [state, setState] = useState<Map<string, MappedObject> | null>(null)
-  const oldRow = useRef<MappedObject | null>(null)
+  const [data, setData] = useState<Map<string, MappedObject> | null>(null)
+  const dataBackup = useRef<Map<string, MappedObject>>(new Map())
   
-
   // It will only be re-renderize if the dependencies (getData) change.
   // TODO: add filters dependency
   const fetchData = useCallback(async () => {
     const result = await getData()
-    setState(mapData(result))
+    setData(mapData(result))
   }, [getData])
 
   useEffect(() => { fetchData() }, [fetchData])
 
   const handleAddRowDefault = (e: MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
-    if (!state) return
-    setState(
-      (new Map(state)).set(
-        "row_" + (state.size), 
+    if (!data) return
+    setData(
+      (new Map(data)).set(
+        "row_" + (data.size), 
         { isEditable: true, isSelected: false, isNewRow: true }
       )
     )
   }
 
-  const hanldeEditRow = (rowIndex: string) => {
-    const newMap = new Map(state)
+  const handleEditRow = (rowIndex: string) => {
+    const newMap = new Map(data)
     const row = newMap.get(rowIndex)
-    
     if (!row) return
-
-    oldRow.current = { ...row }
-    //console.log(oldRow.current)
+    dataBackup.current.set(rowIndex, { ...row })
     row.isEditable = !row.isEditable
-    
-    setState(newMap)
+    setData(newMap)
   }
 
   const handleCancelEditRow = (rowIndex: string, newRow?: boolean) => {
-    const newMap = new Map(state)
-    const row = newMap.get(rowIndex)
-    if (newRow) {
-      newMap.delete(rowIndex)
-    } else {
-      if (row) row.isEditable = false
-      if (oldRow.current) {
-        newMap.set(rowIndex, oldRow.current)
-      }
-    }
-    
-    setState(newMap)
+    setData((prevData) => {
+      const newMap = new Map(prevData)
+      if (newRow) {
+        newMap.delete(rowIndex)
+      } else {
+        const row = newMap.get(rowIndex)
+        if (row) row.isEditable = false
+        if (dataBackup.current) {
+          const rowBackup = dataBackup.current.get(rowIndex)
+          if (rowBackup) {
+            newMap.set(rowIndex, rowBackup)
+          }
+        }
+      } 
+      return newMap
+    })
   }
 
   const handleSelectRow = (rowIndex: string) => {
-    const newMap = new Map(state)
+    const newMap = new Map(data)
     const row = newMap.get(rowIndex)
     if (!row) return
     row.isSelected = !row.isSelected
-    setState(newMap)
+    setData(newMap)
   }
 
   const handleSelectAllRows = (allRowsSelected: boolean) => {
-    const newMap = new Map(state)
+    const newMap = new Map(data)
     newMap.forEach((value) => {
       if (value.isSelected === allRowsSelected) return
       value.isSelected = !value.isSelected
     })
-    setState(newMap)
+    setData(newMap)
+  }
+
+  const handleDeleteRowDefault = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault()
+    const newMap = new Map(data)
+    if (!data) return
+    data.forEach((row, key) => {
+      if (row.isSelected) {
+        newMap.delete(key)
+        if (actions.onDelete) actions.onDelete(key)
+      }
+    })
+    setData(newMap)
   }
 
   return (
-    <>
-      <div 
-        className="
-          flex
-          flex-col
-          h-full
-          shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
-          rounded-lg
-          bg-[#F4F4F4]
-          overflow-x-auto
-        "
-      >
+    <div 
+      className="
+        flex
+        flex-col
+        justify-between
+        shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
+        rounded-lg
+        bg-[#F4F4F4]
+        overflow-auto
+        h-full
+      "
+    >
+      <div className="flex-grow overflow-y-auto">
         <table 
           className="w-full" 
           style={{ fontSize: "12px" }}
@@ -122,23 +127,22 @@ export default function Table({
             onSelectAllRows={handleSelectAllRows}
           />
 
-          { state
+          { data
               ? <TableBody 
                   header={header} 
                   actions={actions}
-                  data={state}
-                  onEditRow={hanldeEditRow}
+                  data={data}
+                  onEditRow={handleEditRow}
                   onCancelEditRow={handleCancelEditRow}
                   onSelectRow={handleSelectRow}
                 /> 
               : <TableBodySkeleton/> }
-
         </table>
-        <TableFooter 
-          onAdd={modifiers.onAddRow || handleAddRowDefault} 
-          onDelete={modifiers.onDeleteRow} 
-        />
       </div>
-    </>
+      <TableFooter 
+        onAdd={modifiers.onAddRow || handleAddRowDefault} 
+        onDelete={modifiers.onDeleteRow || handleDeleteRowDefault} 
+      />
+    </div>
   )
 }

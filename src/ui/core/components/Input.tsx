@@ -8,6 +8,7 @@ interface inputProps {
   className?: string;
   placeholder?: string;
   value: string;
+  styles: any;
   image?: {
     src: string;
     alt: string;
@@ -23,6 +24,7 @@ export default function Input({
   className,
   placeholder,
   value,
+  styles,
   image,
 }: inputProps) {
   return (
@@ -36,6 +38,7 @@ export default function Input({
             onChange={onChange}
             placeholder={placeholder}
             value={value}
+            style={styles}
             autoComplete="off"
             className={`
               py-3 

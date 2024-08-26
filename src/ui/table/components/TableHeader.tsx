@@ -1,4 +1,4 @@
-import TableProps, { Column, Option } from "@ui/table/interfaces/Table";
+import { Column, Option } from "@ui/table/interfaces/Table";
 import { useState } from "react";
 
 export default function TableHeader(
@@ -30,7 +30,7 @@ export default function TableHeader(
       <tr className="h-[35px]">
         { 
           picker && 
-            <th className="text-center min-w-[20px]">
+            <th className="text-center min-w-[30px]">
               <label className="table-picker">
                 <input 
                   type="checkbox" 
@@ -45,16 +45,16 @@ export default function TableHeader(
         }
         { 
           columns.map(
-            (column: Column, index: number) => 
-              <th 
-                key={index}
-                className={`
-                  ${column.width ? `w-[${column.width}px]` : ""} 
-                  ${column.minWidth ? `w-[${column.minWidth}px]` : ""}
-                `} 
-              >
-                {column.label}
-              </th>
+            (column: Column, index: number) => {
+              let style: any = {}
+              if (column.width) style.width = column.width + "px"
+              if (column.minWidth) style.minWidth = column.minWidth + "px"
+              return (
+                <th key={index} style={style}>
+                  {column.label}
+                </th>
+              )
+            }
           ) 
         }
         { 
