@@ -132,6 +132,7 @@ export default function TableSelectPopup({
         className="fixed w-50 bg-white rounded-lg mt-[2px] z-10"
       >
         <div className="border-b px-[5px] pt-[5px] border-gray-100">
+          {/* TODO: Solve bug with select popup, when the user does click in the input, the popup is closed */}
           <Input 
             name="search_client" 
             type="text" 

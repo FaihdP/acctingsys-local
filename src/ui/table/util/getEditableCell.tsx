@@ -222,7 +222,6 @@ export default function getEditableCell({
       break
     }
     case ColumType.SELECT: {
-      // TODO: Solve bug when is a new row
       if (!relationship || !(relationship instanceof Map)) return <td></td>
       const colors = relationship.get(content)
       Element = 

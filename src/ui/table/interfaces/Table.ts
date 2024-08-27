@@ -56,6 +56,6 @@ export interface TableConfigProps {
 
 export default interface TableProps {
   getData: (...args: any[]) => Promise<any>,
-  filters?: {},
+  filters?: any,
   config: TableConfigProps
 }

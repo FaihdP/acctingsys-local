@@ -19,8 +19,8 @@ export default function RootLayout({
         className={`
           ${inter.className}
           h-screen 
+          overflow-x-hidden
         `}
-        style={{ backgroundColor: COLORS.LIGTH_GREEN }}
       >
         {children}
       </body>

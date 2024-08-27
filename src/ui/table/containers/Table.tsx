@@ -9,7 +9,7 @@ import TableProps, { Column } from "@ui/table/interfaces/Table"
 import { MappedObject } from "@ui/table/interfaces/Row"
 import mapData from "../util/mapData"
 
-const getColumnsNumber = (columns: Column[], picker: boolean, options: any) => { 
+const getColumnsNumber = (columns: Column[], picker: boolean, options: any): number => { 
   let columnsNumber: number = columns.length
   if (picker) columnsNumber++
   if (Object.keys(options).length > 0) columnsNumber++
@@ -19,6 +19,7 @@ const getColumnsNumber = (columns: Column[], picker: boolean, options: any) => {
 export default function Table({
   getData,
   config,
+  filters
 }: TableProps) {
   const { header, modifiers, actions } = config
   const [data, setData] = useState<Map<string, MappedObject> | null>(null)
@@ -27,9 +28,9 @@ export default function Table({
   // It will only be re-renderize if the dependencies (getData) change.
   // TODO: add filters dependency
   const fetchData = useCallback(async () => {
-    const result = await getData()
+    const result = await getData(filters)
     setData(mapData(result))
-  }, [getData])
+  }, [getData, filters])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -107,15 +108,14 @@ export default function Table({
       className="
         flex
         flex-col
-        justify-between
+        h-[90%]
         shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
         rounded-lg
         bg-[#F4F4F4]
         overflow-auto
-        h-full
       "
     >
-      <div className="flex-grow overflow-y-auto">
+      <div className="overflow-y-auto">
         <table 
           className="w-full" 
           style={{ fontSize: "12px" }}
@@ -126,17 +126,31 @@ export default function Table({
             options={header.options}
             onSelectAllRows={handleSelectAllRows}
           />
+          { !data && <TableBodySkeleton/> }
+          { 
+            (data && data.size > 0) &&
+              <TableBody 
+                header={header} 
+                actions={actions}
+                data={data}
+                onEditRow={handleEditRow}
+                onCancelEditRow={handleCancelEditRow}
+                onSelectRow={handleSelectRow}
+              /> 
+          }
+          {
+            (data && data.size === 0) &&
+              <tr>
+                <td 
+                  colSpan={getColumnsNumber(header.columns, true, header.options)}
+                  className="text-center text-base h-[300px]"
+                >
+                  No hay datos para mostrar
+                </td>
+              </tr>
+          }
 
-          { data
-              ? <TableBody 
-                  header={header} 
-                  actions={actions}
-                  data={data}
-                  onEditRow={handleEditRow}
-                  onCancelEditRow={handleCancelEditRow}
-                  onSelectRow={handleSelectRow}
-                /> 
-              : <TableBodySkeleton/> }
+
         </table>
       </div>
       <TableFooter 

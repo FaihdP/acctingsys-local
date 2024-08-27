@@ -8,7 +8,7 @@ interface inputProps {
   className?: string;
   placeholder?: string;
   value: string;
-  styles: any;
+  styles?: any;
   image?: {
     src: string;
     alt: string;

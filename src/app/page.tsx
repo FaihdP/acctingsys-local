@@ -1,10 +1,11 @@
 import Logo from "@ui/core/components/Logo";
+import COLORS from "@ui/core/util/colors";
 import LoginForm from "@ui/login/containers/LoginForm";
 
 export default async function Home() {
   return (
     <>
-      <main>
+      <main className="h-screen w-screen" style={{ background: COLORS.LIGTH_GREEN }}>
         <section 
           className={`
             flex

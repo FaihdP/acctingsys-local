@@ -4,10 +4,10 @@ import COLORS from "@ui/core/util/colors";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="
-      absolute 
       flex 
       flex-col
       w-screen
+      h-screen
       bg-[#E8EAED] 
     ">
       <nav 
@@ -20,15 +20,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </nav>
 
-      <main className="flex flex-col h-screen">
+      <main className="flex flex-col h-full">
         <div className="
-          flex-1
+          h-full
           m-[22px]  
           p-[25px]
           bg-white
           text-[#7A7A7A]
           rounded
-          h-screen
           shadow-[0_0_30px_0px_rgba(0,0,0,0.2)]
         ">
           { children }
