@@ -7,7 +7,7 @@ interface inputProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   placeholder?: string;
-  value: string;
+  value: any;
   styles?: any;
   image?: {
     src: string;
@@ -31,6 +31,16 @@ export default function Input({
     <div>
       <label>
         <div className="relative">
+          { image &&
+              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-3">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  width={image.width}
+                  height={image.height}
+                />
+              </div>
+          }
           <input
             maxLength={50}
             type={type}
@@ -52,16 +62,6 @@ export default function Input({
             ` + className
             }
           />
-          { image &&
-              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-3">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={image.width}
-                  height={image.height}
-                />
-              </div>
-          }
         </div>
       </label>
     </div>

@@ -83,8 +83,14 @@ export default function getCell({ columnType, content, relationship, columnField
       break
     }
     case ColumType.SELECT: {
-      if (!relationship && !(relationship instanceof Map)) break
-      const colors = relationship.get(content)
+      if (!relationship && !Array.isArray(relationship)) break
+      
+      const colors = 
+        relationship.filter(
+          (tag: { key: string, colors: any }) => 
+            tag.key === content
+        )[0]?.colors
+
       if (!colors) {
         return (
           <TableData>
@@ -93,7 +99,6 @@ export default function getCell({ columnType, content, relationship, columnField
               items-center
               min-h-[28px]
               w-full 
-              h-full
             ">
               <span className="
                 rounded-lg 

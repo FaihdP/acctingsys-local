@@ -1,6 +1,6 @@
 import Input from "@ui/core/components/Input";
 import { ColumType } from "@ui/table/interfaces/Table";
-import { EventHandler, MouseEvent } from "react";
+import { ChangeEvent, EventHandler, MouseEvent } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import TableSelectPopup from "../components/TableSelectPopup";
 
@@ -10,8 +10,24 @@ interface GetEditableCellProps {
   content: any
   relationship?: any
   selected: boolean
+  filter: string
   onChange: (data: any) => void
   onSelected: () => void
+  onChangeFilter: (e: ChangeEvent<HTMLInputElement>) => void
+}
+
+function TableData(
+  { 
+    children, 
+    classname,
+    onClick
+  }: { 
+    children: React.ReactNode, 
+    classname?: string,
+    onClick?: (e: MouseEvent<HTMLTableCellElement>) => void
+  }
+) { 
+  return <td onClick={onClick} className={classname}>{ children }</td>
 }
 
 export default function getEditableCell({ 
@@ -20,8 +36,10 @@ export default function getEditableCell({
   content, 
   relationship,
   selected,
+  filter,
   onChange, 
-  onSelected
+  onSelected,
+  onChangeFilter
 }: GetEditableCellProps) {
   let Element
   const classname = `
@@ -30,20 +48,6 @@ export default function getEditableCell({
     min-h-[28px] 
     ps-1
   `  
-
-  function TableData(
-    { 
-      children, 
-      classname,
-      onClick
-    }: { 
-      children: React.ReactNode, 
-      classname?: string,
-      onClick?: (e: MouseEvent<HTMLTableCellElement>) => void
-    }
-  ) { 
-    return <td onClick={onClick} className={classname}>{ children }</td>
-  }
 
   switch (columnType) {
     case ColumType.TEXT: {
@@ -150,9 +154,11 @@ export default function getEditableCell({
               <TableSelectPopup 
                 relationship={relationship} 
                 columnType={columnType}
+                filter={filter}
                 onSelected={onSelected} 
                 onChange={onChange}
                 onChangeList={handleChangeList}
+                onChangeFilter={onChangeFilter}
               />
           }
 
@@ -208,11 +214,13 @@ export default function getEditableCell({
           { 
             selected && 
               <TableSelectPopup 
-                onSelected={onSelected} 
                 relationship={relationship} 
                 columnType={columnType}
-                onChange={onChange}
                 columnFields={columnFields || []}
+                filter={filter}
+                onSelected={onSelected} 
+                onChange={onChange}
+                onChangeFilter={onChangeFilter}
               />
           }
               
@@ -222,21 +230,36 @@ export default function getEditableCell({
       break
     }
     case ColumType.SELECT: {
-      if (!relationship || !(relationship instanceof Map)) return <td></td>
-      const colors = relationship.get(content)
+      if (!relationship || !Array.isArray(relationship)) return <td></td>
+      const colors = 
+        relationship.filter(
+          (tag: { key: string, colors: any }) => 
+            tag.key === content
+        )[0]?.colors
+
       Element = 
-        <TableData onClick={() => onSelected()}>
+        <TableData onClick={() => onSelected()} classname="xd">
           <div>
-            {colors && 
-              <span
-                className="rounded-lg px-[6px] py-[2px]" 
-                style={{ 
-                  background: colors.background, 
-                  color: colors.fontColor 
-                }}
-              >
-                { content }
-              </span>}  
+            {
+              colors &&
+                <span
+                  className="rounded-lg px-[6px] py-[2px]" 
+                  style={{ 
+                    background: colors.background, 
+                    color: colors.fontColor 
+                  }}
+                >
+                  { content }
+                </span>
+            }
+            {
+              (!colors && content) &&
+                <span
+                  className="rounded-lg px-[6px] py-[2px] bg-slate-200" 
+                >
+                  { content }
+                </span>
+            }
           </div>
 
           {
@@ -247,12 +270,14 @@ export default function getEditableCell({
                   onClick={() => onSelected()}
                 />
                   { 
-                    (relationship && relationship instanceof Map) &&
+                    (relationship && Array.isArray(relationship)) &&
                       <TableSelectPopup 
-                        onSelected={onSelected} 
                         relationship={relationship} 
                         columnType={columnType}
+                        filter={filter}
+                        onSelected={onSelected} 
                         onChange={onChange}
+                        onChangeFilter={onChangeFilter}
                       />
                   }
               </>

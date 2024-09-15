@@ -5,6 +5,11 @@ export interface Page {
   size: number
 }
 
+export interface FindResults<T> {
+  pages_number: number,
+  data: T
+}
+
 /**
  * @param collection mongodb collection name
  * @param filter search parameters
@@ -20,7 +25,7 @@ export default async function find<T>(
     size: 10 
   },
   sort = {}
-): Promise<T[]>  {
+): Promise<FindResults<T[]>>  {
   try {
     return await invoke('find', { collection, filter, page, sort });
   } catch (err) {

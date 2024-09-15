@@ -1,13 +1,13 @@
 'use client'
 
 import { MouseEvent, useCallback, useEffect, useRef, useState } from "react"
+import { MappedObject } from "@ui/table/interfaces/Row"
+import TableProps, { Column } from "@ui/table/interfaces/Table"
+import mapData from "../util/mapData"
 import TableHeader from "../components/TableHeader"
-import TableBody from "./TableBody"
+import TableBody from "../components/TableBody"
 import TableBodySkeleton from "../components/TableBodySkeleton"
 import TableFooter from "../components/TableFooter"
-import TableProps, { Column } from "@ui/table/interfaces/Table"
-import { MappedObject } from "@ui/table/interfaces/Row"
-import mapData from "../util/mapData"
 
 const getColumnsNumber = (columns: Column[], picker: boolean, options: any): number => { 
   let columnsNumber: number = columns.length
@@ -24,13 +24,14 @@ export default function Table({
   const { header, modifiers, actions } = config
   const [data, setData] = useState<Map<string, MappedObject> | null>(null)
   const dataBackup = useRef<Map<string, MappedObject>>(new Map())
+  const [pageSelected, setPageSelected] = useState<number>(1)
+  const pagesNumber = useRef<number>(1)
   
-  // It will only be re-renderize if the dependencies (getData) change.
-  // TODO: add filters dependency
   const fetchData = useCallback(async () => {
-    const result = await getData(filters)
-    setData(mapData(result))
-  }, [getData, filters])
+    const result = await getData(filters, pageSelected)
+    // pagesNumber.current = result.pages_number
+    setData(mapData(result.data))
+  }, [getData, filters, pageSelected])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -103,6 +104,11 @@ export default function Table({
     setData(newMap)
   }
 
+  const handlePageSelectedChange = (newPageSelected: number) => {
+    if (newPageSelected < 1 || newPageSelected > pagesNumber.current) return
+    setPageSelected(newPageSelected)
+  }
+
   return (
     <div 
       className="
@@ -126,7 +132,7 @@ export default function Table({
             options={header.options}
             onSelectAllRows={handleSelectAllRows}
           />
-          { !data && <TableBodySkeleton/> }
+          { !data && <TableBodySkeleton columnsNumber={getColumnsNumber(header.columns, header.picker, header.options)}/> }
           { 
             (data && data.size > 0) &&
               <TableBody 
@@ -140,14 +146,16 @@ export default function Table({
           }
           {
             (data && data.size === 0) &&
-              <tr>
-                <td 
-                  colSpan={getColumnsNumber(header.columns, true, header.options)}
-                  className="text-center text-base h-[300px]"
-                >
-                  No hay datos para mostrar
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td 
+                    colSpan={getColumnsNumber(header.columns, true, header.options)}
+                    className="text-center text-base h-[300px]"
+                  >
+                    No hay datos para mostrar
+                  </td>
+                </tr>
+              </tbody>
           }
 
 
@@ -156,6 +164,9 @@ export default function Table({
       <TableFooter 
         onAdd={modifiers.onAddRow || handleAddRowDefault} 
         onDelete={modifiers.onDeleteRow || handleDeleteRowDefault} 
+        pageSelected={pageSelected}
+        pagesNumber={pagesNumber.current}
+        onPageSelectedChange={handlePageSelectedChange}
       />
     </div>
   )

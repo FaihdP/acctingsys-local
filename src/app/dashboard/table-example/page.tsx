@@ -1,12 +1,12 @@
 'use client'
 
 import getInvoices from "@lib/services/invoice/getInvoices"
-import TableProps, { ColumType, TableConfigProps } from "@ui/table/interfaces/Table"
+import { ColumType, TableConfigProps } from "@ui/table/interfaces/Table"
 import Table from "@ui/table/containers/Table"
 import COLORS from "@ui/core/util/colors"
 import saveInvoices from "@lib/services/invoice/saveInvoices"
 import getUsers from "@lib/services/user/getUsers"
-import getProductOverview from "@lib/services/invoice/getProductOverview"
+import getProductOverview from "@lib/services/invoice/getProductInvoicesByInvoiceId"
 import Input from "@ui/core/components/Input"
 import SearchIcon from "@public/dashboard/search.svg"
 
@@ -25,10 +25,11 @@ export default function TableExample() {
       },
       columns: [
         { 
+          type: ColumType.DATE,
           label: "Fecha y hora",
           tag: "date",
-          type: ColumType.DATE,
           minWidth: 160,
+          autocomplete: false,
         },
         { 
           label: "Valor",
@@ -45,9 +46,9 @@ export default function TableExample() {
           fields: ['name', 'lastname']
         },
         { 
+          type: ColumType.SELECT,
           label: "Estado",
           tag: "status",
-          type: ColumType.SELECT,
           relationship: new Map([
             ["Pagada", { background: COLORS.GREEN, fontColor: "#0D6948" }],
             ["En deuda", { background: "#FB8383", fontColor: "#922323" }],

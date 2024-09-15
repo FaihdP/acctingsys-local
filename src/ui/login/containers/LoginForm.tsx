@@ -47,8 +47,8 @@ export default function LoginForm() {
     e.preventDefault()
     
     try {
-      const loginStatus = await validateForm()
       setStatusLogin(LOGIN_STATUS.LOADING)
+      const loginStatus = await validateForm()
       setStatusLogin(loginStatus)
       if (loginStatus === LOGIN_STATUS.OK) router.push("/dashboard")
     } catch (err) {

@@ -1,118 +1,136 @@
 import Input from "@ui/core/components/Input";
 import { ColumType } from "../interfaces/Table";
 import Spin from "@ui/core/components/Spin";
+import { ChangeEvent } from "react";
 
 interface TableSelectPopupProps {
-  onSelected: () => void
-  onChange: (data: any) => void
-  onChangeList?: (item: string | number, action: 'add' | 'delete') => void
   relationship: Map<string, any> | any[]
   columnType: ColumType
   columnFields?: string[]
+  filter: string
+  onSelected: () => void
+  onChange: (data: any) => void
+  onChangeList?: (item: string | number, action: 'add' | 'delete') => void
+  onChangeFilter: (e: ChangeEvent<HTMLInputElement>) => void
 }
+
+const renderOptionContent = (value: any, columnFields: any[], columnType: ColumType) => {
+  if (columnType === ColumType.OBJECT && columnFields) {
+    return columnFields.map((field) => value[field]).join(" ");
+  }
+  if (columnType === ColumType.SELECT) {
+    return value.key
+  }
+  
+  return value
+}
+
+const Content = ({ 
+  styles, 
+  onClick, 
+  content, 
+  isColumnTypeList 
+}: { 
+  styles?: any, 
+  onClick?: any,
+  content: any,
+  isColumnTypeList: boolean 
+}) => {
+  return (
+    <span
+      onClick={onClick ? onClick : () => {}}
+      className={`
+        bg-slate-200 
+        rounded-lg 
+        px-[6px] 
+        py-[1px] 
+        inline-block 
+        cursor-pointer
+        ${isColumnTypeList ? "mt-[5px] me-[2px]" : "ms-1"}
+      `}
+      style={styles}
+    >
+      { content }
+    </span>
+  )
+}
+
+const renderOptions = (
+  options: Map<string, any> | any[], 
+  columnType: ColumType, 
+  columnFields: string[], 
+  isColumnTypeList: boolean, 
+  onChange: (data: any) => void,
+  onChangeList?: (item: string | number, action: 'add' | 'delete') => void
+) => {
+  if (!options || !Array.isArray(options)) {
+    return (
+      <span className="flex justify-center items-center">
+        <Spin size={14} className="!me-2" /> Cargando ...
+      </span>
+    );
+  }
+
+  if (options.length === 0) {
+    return (
+      <div className="text-center mt-1">
+        <span className="text-[#c0c5cc] text-[11px]">
+          No hay opciones disponibles
+        </span>
+      </div>
+    )
+  }
+
+  return options.map((value, index) => {
+    const handleChange = () => {
+      if (columnType === ColumType.SELECT) return onChange(value.key) 
+      if (isColumnTypeList && onChangeList) return onChangeList(value, "add")
+      return onChange(value)
+    }
+
+    if (!isColumnTypeList) {
+      return (
+        <div 
+          key={index} 
+          className="hover:bg-[rgba(0,0,0,0.05)] flex items-center h-[26px] ps-1 cursor-pointer"
+          onClick={() => handleChange()}
+        >
+          <Content 
+            styles={
+              columnType === ColumType.SELECT 
+                ? { background: value.colors.background, color: value.colors.color }
+                : { background: '', color: '' }
+            }
+            content={renderOptionContent(value, columnFields || [], columnType)}
+            isColumnTypeList={isColumnTypeList}
+          />
+        </div>
+      )
+    } else {
+      return ( 
+        <Content 
+          key={index} 
+          onClick={handleChange} 
+          content={renderOptionContent(value, columnFields || [], columnType)} 
+          isColumnTypeList={isColumnTypeList}
+        />
+      )
+    }
+  });
+};
 
 export default function TableSelectPopup({ 
   onSelected, 
   onChange,
   onChangeList,
+  onChangeFilter,
+  filter,
   relationship,
   columnType,
   columnFields
 }: TableSelectPopupProps) {
   const isColumnTypeList = columnType === ColumType.LIST;
-
-  const getOptions = () => {
-    switch (columnType) {
-      case ColumType.SELECT: {
-        return Array.from(relationship, ([key, value]) => { return { key, colors: value } }) 
-      }
-      default: {
-        return relationship
-      }
-    }
-  }
-
-  const options = getOptions()
-
-  const renderOptionContent = (value: any) => {
-    if (columnType === ColumType.OBJECT && columnFields) {
-      return columnFields.map((field) => value[field]).join(" ");
-    }
-    if (columnType === ColumType.SELECT) {
-      return value.key
-    }
-    
-    return value;
-  };
-
-  const renderOptions = () => {
-    if (!options || !Array.isArray(options)) {
-      return (
-        <span className="flex justify-center items-center">
-          <Spin size={14} className="!me-2" /> Cargando ...
-        </span>
-      );
-    }
-
-    if (options.length === 0) {
-      return (
-        <div className="text-center mt-1">
-          <span className="text-[#c0c5cc] text-[11px]">
-            No hay opciones disponibles
-          </span>
-        </div>
-      )
-    }
-
-    return options.map((value, index) => {
-      const handleChange = () => {
-        if (columnType === ColumType.SELECT) return onChange(value.key) 
-        if (isColumnTypeList && onChangeList) return onChangeList(value, "add")
-        return onChange(value)
-      }
-
-      const Content = ({ styles, onClick }: { styles?: any, onClick?: any }) => {
-        return (
-          <span
-            key={index}
-            onClick={onClick ? onClick : () => {}}
-            className={`
-              bg-slate-200 
-              rounded-lg 
-              px-[6px] 
-              py-[1px] 
-              inline-block 
-              cursor-pointer
-              ${isColumnTypeList ? "mt-[5px] me-[2px]" : "ms-1"}
-            `}
-            style={styles}
-          >
-            {renderOptionContent(value)}
-          </span>
-        )
-      }
-
-      if (!isColumnTypeList) {
-        return (
-          <div 
-            key={index} 
-            className="hover:bg-[rgba(0,0,0,0.05)] flex items-center h-[26px] ps-1 cursor-pointer"
-            onClick={() => handleChange()}
-          >
-            <Content 
-              styles={
-                columnType === ColumType.SELECT 
-                  ? { background: value.colors.background, color: value.colors.color }
-                  : { background: '', color: '' }
-              }
-            />
-          </div>
-        )
-      } else {
-        return <Content key={index} onClick={handleChange} />
-      }
-    });
-  };
+  const options = relationship
 
   return (
     <>
@@ -133,12 +151,13 @@ export default function TableSelectPopup({
       >
         <div className="border-b px-[5px] pt-[5px] border-gray-100">
           {/* TODO: Solve bug with select popup, when the user does click in the input, the popup is closed */}
-          <Input 
-            name="search_client" 
+          <input 
+            value={filter}
+            onChange={onChangeFilter}
             type="text" 
-            value=""
+            autoComplete="false"
+            name="search_client" 
             placeholder="Busca una opción..."
-            onChange={() => {}} 
             className="w-full !h-[15px] !text-[12px] !ps-2 border-none border-0"
           />
         </div>
@@ -152,7 +171,7 @@ export default function TableSelectPopup({
             pb-1
           `}
         >
-          {renderOptions()}
+          {renderOptions(options, columnType, columnFields || [], isColumnTypeList, onChange, onChangeList)}
         </div>
       </div> 
     </>

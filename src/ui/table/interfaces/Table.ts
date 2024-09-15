@@ -1,4 +1,5 @@
 import { ChangeEvent } from "react"
+import ColumTypes from "./ColumTypes"
 
 export enum ColumType {
   TEXT,
@@ -22,8 +23,6 @@ export interface Column {
   width?: number
   minWidth?: number
   type: ColumType
-  relationship?: Map<string, { background: string, fontColor: string }> | ((filter: string) => Promise<any>)
-  fields?: string[]
 }
 
 export interface TableConfigHeaderProps {
@@ -32,19 +31,19 @@ export interface TableConfigHeaderProps {
     onEdit: boolean
     others?: Option[]
   }
-  columns: Column[]
+  columns: ColumTypes[]
 }
 
 export interface TableConfigProps {
   /**
-   * Modify the table data 
+   * #### Modify the table data 
    */
   modifiers: {
     onAddRow?: () => Promise<any>,
     onDeleteRow?: () => Promise<any>,
   },
   /**
-   * Modify the database data 
+   * #### Modify the database data 
    */
   actions: {
     onAdd: (data: any) => Promise<any>,

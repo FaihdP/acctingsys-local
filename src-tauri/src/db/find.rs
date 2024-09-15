@@ -1,15 +1,23 @@
+use bson::{bson, Bson};
+use serde::{Deserialize, Serialize};
+
 use futures::TryStreamExt;
 use mongodb::{
-  bson, 
-  bson::Document, 
-  options::FindOptions,
+  bson::{self, Document}, 
+  options::{CountOptions, FindOptions},
   Client
 };
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize)]
 pub struct Page {
   size: u8,
   number: u32
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct FindResults {
+  pages_number: u32,
+  data: Vec<Document>
 }
 
 #[tauri::command]
@@ -19,11 +27,11 @@ pub async fn find(
   filter: bson::Document,
   page: Page,
   sort: bson::Document 
-) -> Result<Vec<Document>, String> {
+) -> Result<FindResults, String> {
   let db = client.default_database().unwrap();
-  let target_collection = db.collection::<Document>(&collection);
-  
-  let opt = FindOptions::builder()
+  let target_collection: mongodb::Collection<Document> = db.collection::<Document>(&collection);
+  let count_options = CountOptions::builder().build();
+  let find_options = FindOptions::builder()
     // Pagination
     .skip(u64::from((page.number - 1) * u32::from(page.size)))
     .limit(i64::from(page.number * u32::from(page.size)))
@@ -31,8 +39,17 @@ pub async fn find(
     .sort(sort)
     .build();
 
+  let pages_number = (target_collection
+    .count_documents(filter.clone(), count_options)
+    .await
+    .unwrap() as f32 / page.size as f32).ceil() as u32;
+
+  // if collection.eq("invoices") {
+  //   println!("Numero de paginas: {}", pages_number);
+  // }
+
   let mut cursor = target_collection
-    .find(filter, opt)
+    .find(filter.clone(), find_options)
     .await
     .unwrap();
 
@@ -41,5 +58,10 @@ pub async fn find(
     results.push(result);
   }
 
-  Ok(results)
+  let find_results: Bson = bson!({
+    "pages_number": pages_number,
+    "data": results
+  });
+
+  Ok(bson::from_bson(find_results).unwrap())
 }

@@ -5,14 +5,14 @@ import { UserDocument } from "@schemas/user/User";
 import handleError from "@lib/util/error/handleError";
 
 export async function validateCredentials(formData: LoginFormData): Promise<boolean> {
-  let user
+  let user: UserDocument
   try {
     [user] = (
       await find<UserDocument>(
         "users", 
         { username: formData.userName }
       )
-    )
+    ).data
   } catch (err) {
     throw handleError(err)
   }
