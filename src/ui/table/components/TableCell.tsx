@@ -11,6 +11,7 @@ interface CellProps {
   value: any
   column: ColumTypes
   className?: string
+  errorMessage?: string
 }
 
 export default function TableCell({ 
@@ -18,15 +19,19 @@ export default function TableCell({
   value,
   column,
   className,
+  errorMessage
 }: CellProps) {
   const [selected, setSelected] = useState<boolean>(false)
   const [relationship, setRelationship] = useState([])
   const [content, setContent] = useState(value)
   const [filter, setFilter] = useState<string>("")
+  const [error, setError] = useState<string | undefined>(errorMessage)
 
   useEffect(() => { 
     setContent(value) 
-  }, [value, row.isEditable])
+    row[column.tag] = value
+    setError(errorMessage)
+  }, [value, row.isEditable, errorMessage, row, column])
 
   useEffect(() => {
     if (
@@ -76,7 +81,8 @@ export default function TableCell({
             filter: filter,
             onChange: handleChange,
             onSelected: handleSelected,
-            onChangeFilter: handleChangeFilter
+            onChangeFilter: handleChangeFilter,
+            error
           }) 
         : getCell({ 
             content,

@@ -29,7 +29,7 @@ export default function Table({
   
   const fetchData = useCallback(async () => {
     const result = await getData(filters, pageSelected)
-    // pagesNumber.current = result.pages_number
+    //pagesNumber.current = result.pages_number
     setData(mapData(result.data))
   }, [getData, filters, pageSelected])
 
@@ -98,7 +98,7 @@ export default function Table({
     data.forEach((row, key) => {
       if (row.isSelected) {
         newMap.delete(key)
-        if (actions.onDelete) actions.onDelete(key)
+        if (actions.onDelete) actions.onDelete(row["_id"]["$oid"])
       }
     })
     setData(newMap)
@@ -157,13 +157,11 @@ export default function Table({
                 </tr>
               </tbody>
           }
-
-
         </table>
       </div>
       <TableFooter 
-        onAdd={modifiers.onAddRow || handleAddRowDefault} 
-        onDelete={modifiers.onDeleteRow || handleDeleteRowDefault} 
+        onAddRow={modifiers.onAddRow || handleAddRowDefault} 
+        onDeleteRow={modifiers.onDeleteRow || handleDeleteRowDefault} 
         pageSelected={pageSelected}
         pagesNumber={pagesNumber.current}
         onPageSelectedChange={handlePageSelectedChange}

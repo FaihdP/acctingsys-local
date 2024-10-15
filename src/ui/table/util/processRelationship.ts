@@ -6,7 +6,7 @@ export default async function processRelationship(
   filter: string, 
   columnFileds?: string[]
 ) {
-  if (!column.relationship) return
+  if (!column.relationship) return []
   if (column.relationship instanceof Function) {
     /**
      * // TODO: Improve this so that the filter searches loaded array first,
@@ -25,9 +25,10 @@ export default async function processRelationship(
         filterObject.$or.push(field)
       })
   
-      return await column.relationship(filterObject)
+      return (await column.relationship(filterObject)).data
     } else {
-      //return search((await column.relationship()), filter)
+      //return await column.relationship()
+      return []
     }
   }
 

@@ -9,6 +9,8 @@ import getUsers from "@lib/services/user/getUsers"
 import getProductOverview from "@lib/services/invoice/getProductInvoicesByInvoiceId"
 import Input from "@ui/core/components/Input"
 import SearchIcon from "@public/dashboard/search.svg"
+import deleteInvoices from "@lib/services/invoice/deleteInvoices"
+import { formatDate, getDateTime } from "@lib/util/time"
 
 export default function TableExample() {
   const tableConfig: TableConfigProps = {
@@ -16,7 +18,7 @@ export default function TableExample() {
     actions: { 
       onEdit: async () => {}, 
       onAdd: saveInvoices, 
-      onDelete: async () => {} 
+      onDelete: deleteInvoices
     },
     header: {
       picker: true, 
@@ -30,20 +32,23 @@ export default function TableExample() {
           tag: "date",
           minWidth: 160,
           autocomplete: false,
+          required: true,
+          defaultValue: formatDate(getDateTime())
         },
         { 
           label: "Valor",
           tag: "value",
           type: ColumType.CURRENCY,
           //minWidth: 80,
-          width: 100
+          width: 100,
+          required: true
         },
         { 
           label: "Cliente",
           tag: "person",
           type: ColumType.OBJECT,
-          relationship: async () => {return []},
-          fields: ['name', 'lastname']
+          relationship: async () => {return { data: [] }},
+          fields: ['name', 'lastname'],
         },
         { 
           type: ColumType.SELECT,
@@ -54,14 +59,17 @@ export default function TableExample() {
             ["En deuda", { background: "#FB8383", fontColor: "#922323" }],
             ["Creada", { background: "#8490FF", fontColor: "#1A29AE" }],
           ]),
-          minWidth: 80
+          minWidth: 80,
+          required: true,
+          defaultValue: "Creada"
         },
         { 
           label: "Usuario",
           tag: "user",
           type: ColumType.OBJECT,
           relationship: getUsers,
-          fields: ["name", "lastname"]
+          fields: ["name", "lastname"],
+          defaultValue: { name: "Faihd", lastname: "Pineda" }
         },
         { 
           label: "Productos",

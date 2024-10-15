@@ -8,20 +8,22 @@ import doubleArrowRightIcon from "@public/dashboard/table_double_arrow_right.svg
 import doubleArrowLeftIcon from "@public/dashboard/table_double_arrow_left.svg"
 import getPagesNumberArray from "../util/getPagesNumberArray";
 
+interface TableFooterProps {
+  onAddRow: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void),
+  onDeleteRow?: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void),
+  pageSelected: number,
+  onPageSelectedChange: (pageNumber: number) => void,
+  pagesNumber: number
+}
+
 export default function TableFooter(
   { 
-    onAdd, 
-    onDelete,
+    onAddRow,
+    onDeleteRow,
     pageSelected,
     onPageSelectedChange,
     pagesNumber,
-  }: { 
-    onAdd: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void),
-    onDelete?: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void),
-    pageSelected: number,
-    onPageSelectedChange: (pageNumber: number) => void,
-    pagesNumber: number
-  }) {
+  }: TableFooterProps) {
   return (
     <div 
       className="
@@ -36,10 +38,10 @@ export default function TableFooter(
       " 
       style={{ fontSize: "16px" }}
     >
-      { onAdd && 
+      { onAddRow && 
           <a 
             href="#" 
-            onClick={onAdd}
+            onClick={onAddRow}
             className="flex items-center"
           > 
             <div className="inline-block me-[5px]">
@@ -54,61 +56,86 @@ export default function TableFooter(
           </a> }
 
       <div className="text-[14px] flex flex-row">
-        <a onClick={() => onPageSelectedChange(1)} className="cursor-pointer">
-          <Image
-            src={doubleArrowLeftIcon.src}
-            alt={"double_arrow_right_icon"}
-            width={24}
-            height={24}
-          />
-        </a>
-        <a onClick={() => onPageSelectedChange(pageSelected - 1)} className="cursor-pointer"> 
-          <Image
-            src={arrowLeftIcon.src}
-            alt={"arrow_left_icon"}
-            className="me-[10px]"
-            width={24}
-            height={24}
-          />
-        </a>
+        {
+          pageSelected !== 1 
+            ? <>
+              <a onClick={() => onPageSelectedChange(1)} className="cursor-pointer">
+                <Image
+                  src={doubleArrowLeftIcon.src}
+                  alt={"double_arrow_right_icon"}
+                  width={24}
+                  height={24}
+                />
+              </a>
+              <a onClick={() => onPageSelectedChange(pageSelected - 1)} className="cursor-pointer"> 
+                <Image
+                  src={arrowLeftIcon.src}
+                  alt={"arrow_left_icon"}
+                  className="me-[10px]"
+                  width={24}
+                  height={24}
+                />
+              </a>
+            </>
+            : <div className="w-[48px] me-[10px]"></div>
+        }
         <div className="min-w-[72px] grid grid-flow-col gap-[7px] text-center justify-center">
           { 
             getPagesNumberArray(pageSelected, pagesNumber).map((pageNumber, index) => {
+              const colorsArray = [
+                '#7A7A7A',
+                'rgba(122, 122, 122, 0.6)',
+                'rgba(122, 122, 122, 0.4)',
+                'rgba(122, 122, 122, 0.2)',
+                'rgba(122, 122, 122, 0.1)',
+              ]
               return (
                 <a 
                   key={index}
-                  className="cursor-pointer flex items-center" 
+                  style={{ color: colorsArray[Math.abs(pageSelected - pageNumber)] }}
+                  className={`
+                    cursor-pointer 
+                    flex 
+                    items-center
+                  `}
                   onClick={() => onPageSelectedChange(pageNumber)}
                 >
-                  {pageNumber === pageSelected ? <b>{pageNumber}</b> : pageNumber }
+                  { pageNumber }
                 </a>
               ) 
             })
           }
         </div>
-        <a onClick={() => onPageSelectedChange(pageSelected + 1)} className="cursor-pointer">
-          <Image
-            src={arrowRightIcon.src}
-            alt={"arrow_right_icon"}
-            className="ms-[10px]"
-            width={24}
-            height={24}
-          />
-        </a>
-        <a onClick={() => onPageSelectedChange(pagesNumber)} className="cursor-pointer">
-          <Image
-            src={doubleArrowRightIcon.src}
-            alt={"double_arrow_right_icon"}
-            width={24}
-            height={24}
-          />
-        </a>
+        {
+          pageSelected !== pagesNumber 
+            ? <>
+              <a onClick={() => onPageSelectedChange(pageSelected + 1)} className="cursor-pointer">
+                <Image
+                  src={arrowRightIcon.src}
+                  alt={"arrow_right_icon"}
+                  className="ms-[10px]"
+                  width={24}
+                  height={24}
+                />
+              </a>
+              <a onClick={() => onPageSelectedChange(pagesNumber)} className="cursor-pointer">
+                <Image
+                  src={doubleArrowRightIcon.src}
+                  alt={"double_arrow_right_icon"}
+                  width={24}
+                  height={24}
+                />
+              </a>
+            </>
+            : <div className="w-[48px] ms-[10px]"></div>
+        }
+        
       </div>
 
-      { onDelete && 
+      { onDeleteRow && 
           <a 
             href="#"
-            onClick={onDelete}
+            onClick={onDeleteRow}
             className="flex items-center"
           >
             <div className="inline-block me-[5px]">

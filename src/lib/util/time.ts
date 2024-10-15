@@ -1,4 +1,7 @@
-export function getDateTime(): string {
+const AM = 'a.m.'
+const PM = 'p.m.'
+
+export function getDateTime(datetime?: string): string {
   const options: Intl.DateTimeFormatOptions = { 
     year: "numeric", 
     month: "2-digit", 
@@ -10,7 +13,9 @@ export function getDateTime(): string {
     hour12: false
   }
   
-  return new Intl.DateTimeFormat("es-ES", options).format(new Date()).replace(",", "");
+  const date = datetime ? new Date(datetime) : new Date()
+ 
+  return new Intl.DateTimeFormat("es-ES", options).format(date).replace(",", "");
 }
 
 function getDateObjectFromString(datetime: string): Date {
@@ -30,10 +35,26 @@ function getDateObjectFromString(datetime: string): Date {
 
 export function formatDate(datetime: string): string {
   const date = getDateObjectFromString(datetime)
+  const formatToTwoDigits = (num: number) => String(num).padStart(2, '0');
   let hours = date.getHours()
-  const ampm = hours >= 12 ? 'p.m.' : 'a.m.';
-  hours = hours % 12;
-  hours = hours ? hours : 12;
+  const ampm = hours >= 12 ? PM : AM
+  hours = hours % 12
+  hours = hours ? hours : 12
 
-  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${hours}:${date.getMinutes()}:${date.getSeconds()} ${ampm}`
+  return `${formatToTwoDigits(date.getDate())}/${formatToTwoDigits(date.getMonth() + 1)}/${date.getFullYear()} ${formatToTwoDigits(hours)}:${formatToTwoDigits(date.getMinutes())}:${formatToTwoDigits(date.getSeconds())} ${ampm}`;
+}
+
+export function formatToDatetimeLocal(datetime: string): string {
+  if (!datetime) return datetime
+  const [date, time, period] = datetime.split(" ")
+  const [day, month, year] = date.split("/")
+  let [hours, minutes, seconds] = time.split(":")
+
+  if (period.toLowerCase() === PM && hours !== "12") {
+    hours = String(+hours + 12).padStart(2, '0')
+  } else if (period.toLowerCase() === AM && hours === "12") {
+    hours = "00"  
+  }
+
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}`
 }

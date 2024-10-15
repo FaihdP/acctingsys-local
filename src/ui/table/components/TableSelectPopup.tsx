@@ -1,7 +1,7 @@
 import Input from "@ui/core/components/Input";
 import { ColumType } from "../interfaces/Table";
 import Spin from "@ui/core/components/Spin";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 
 interface TableSelectPopupProps {
   relationship: Map<string, any> | any[]
@@ -38,7 +38,7 @@ const Content = ({
 }) => {
   return (
     <span
-      onClick={onClick ? onClick : () => {}}
+      onClick={onClick ? onClick : null}
       className={`
         bg-slate-200 
         rounded-lg 
@@ -98,7 +98,7 @@ const renderOptions = (
           <Content 
             styles={
               columnType === ColumType.SELECT 
-                ? { background: value.colors.background, color: value.colors.color }
+                ? { background: value.colors.background, color: value.colors.fontColor }
                 : { background: '', color: '' }
             }
             content={renderOptionContent(value, columnFields || [], columnType)}
@@ -147,10 +147,9 @@ export default function TableSelectPopup({
             0 8px 16px rgba(0, 0, 0, 0.12)
           `
         }}
-        className="fixed w-50 bg-white rounded-lg mt-[2px] z-10"
+        className="absolute w-50 bg-white rounded-lg mt-[2px] z-10"
       >
         <div className="border-b px-[5px] pt-[5px] border-gray-100">
-          {/* TODO: Solve bug with select popup, when the user does click in the input, the popup is closed */}
           <input 
             value={filter}
             onChange={onChangeFilter}

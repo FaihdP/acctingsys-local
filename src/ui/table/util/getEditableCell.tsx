@@ -1,8 +1,8 @@
-import Input from "@ui/core/components/Input";
 import { ColumType } from "@ui/table/interfaces/Table";
-import { ChangeEvent, EventHandler, MouseEvent } from "react";
+import { ChangeEvent, MouseEvent } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import TableSelectPopup from "../components/TableSelectPopup";
+import { formatDate, formatToDatetimeLocal, getDateTime } from "@lib/util/time";
 
 interface GetEditableCellProps {
   columnType: ColumType
@@ -14,6 +14,7 @@ interface GetEditableCellProps {
   onChange: (data: any) => void
   onSelected: () => void
   onChangeFilter: (e: ChangeEvent<HTMLInputElement>) => void
+  error?: string
 }
 
 function TableData(
@@ -39,7 +40,8 @@ export default function getEditableCell({
   filter,
   onChange, 
   onSelected,
-  onChangeFilter
+  onChangeFilter,
+  error
 }: GetEditableCellProps) {
   let Element
   const classname = `
@@ -58,6 +60,12 @@ export default function getEditableCell({
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
           />
+          { 
+            error &&
+              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+                { error }
+              </div> 
+          }
         </TableData>
       break
     }
@@ -69,6 +77,12 @@ export default function getEditableCell({
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
           />
+          { 
+            error &&
+              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+                { error }
+              </div> 
+          }
         </TableData>
       break
     }
@@ -80,16 +94,17 @@ export default function getEditableCell({
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname} 
           />
+          { 
+            error &&
+              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+                { error }
+              </div> 
+          }
         </TableData>
       break
     }
     // TODO: Solve visual bug when the popup is showed and the page has been scrolled
     case ColumType.LIST: {
-      if (!Array.isArray(content)) {
-        Element = <TableData> </TableData>
-        break
-      }
-
       const handleChangeList = (item: string | number, action: 'add' | 'delete') => {
         if (action === 'add') {
           onChange([ ...content, item])
@@ -112,7 +127,7 @@ export default function getEditableCell({
             `} 
             onClick={() => onSelected()}
           >
-            { 
+            { Array.isArray(content) &&
               content.map((value, index) => 
                 <span 
                   key={index} 
@@ -161,7 +176,12 @@ export default function getEditableCell({
                 onChangeFilter={onChangeFilter}
               />
           }
-
+          { 
+            error &&
+              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+                { error }
+              </div> 
+          }
         </TableData>
 
       break
@@ -191,6 +211,7 @@ export default function getEditableCell({
                     onClick={(e) => { 
                       e.stopPropagation()
                       if (!selected) onSelected()
+                      onChange(null)
                     }}
                     className="
                       ms-1 
@@ -204,13 +225,6 @@ export default function getEditableCell({
                 </span>
             }
           </div>
-          {
-            selected &&
-              <div 
-                className="fixed w-[100vw] h-[100vh] top-0 left-0 cursor-default z-0 overflow-hidden" 
-                onClick={() => onSelected()}
-              />
-          }
           { 
             selected && 
               <TableSelectPopup 
@@ -223,7 +237,12 @@ export default function getEditableCell({
                 onChangeFilter={onChangeFilter}
               />
           }
-              
+          { 
+            error &&
+              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+                { error }
+              </div> 
+          }
         </TableData>
       </>
 
@@ -231,87 +250,93 @@ export default function getEditableCell({
     }
     case ColumType.SELECT: {
       if (!relationship || !Array.isArray(relationship)) return <td></td>
-      const colors = 
+      const colors: { background: string, fontColor: string } = 
         relationship.filter(
-          (tag: { key: string, colors: any }) => 
-            tag.key === content
+          (tag: { key: string, colors: any }) => tag.key === content
         )[0]?.colors
 
       Element = 
-        <TableData onClick={() => onSelected()} classname="xd">
-          <div>
+        <TableData>
+          <div
+            className={`
+              w-full 
+              h-full 
+              min-h-[28px] 
+              flex
+              items-center
+              relative
+              ${selected ? "z-10" : ""}
+            `} 
+            onClick={() => onSelected()}
+          >
             {
               colors &&
                 <span
-                  className="rounded-lg px-[6px] py-[2px]" 
+                  className={`
+                    rounded-lg 
+                    px-[6px] 
+                    py-[2px]
+                  `}
                   style={{ 
                     background: colors.background, 
                     color: colors.fontColor 
                   }}
                 >
                   { content }
-                </span>
-            }
-            {
-              (!colors && content) &&
-                <span
-                  className="rounded-lg px-[6px] py-[2px] bg-slate-200" 
-                >
-                  { content }
+                  <button 
+                    onClick={(e) => { 
+                      e.stopPropagation()
+                      if (!selected) onSelected()
+                      onChange(null)
+                    }}
+                    className="
+                      ms-1 
+                      cursor-pointer 
+                      inline 
+                      text-inherit
+                    "
+                  >
+                    ⨉
+                  </button>
                 </span>
             }
           </div>
 
           {
-            selected &&
-              <>
-                <div 
-                  className="fixed w-[100vw] h-[100vh] top-0 left-0 cursor-default z-0" 
-                  onClick={() => onSelected()}
-                />
-                  { 
-                    (relationship && Array.isArray(relationship)) &&
-                      <TableSelectPopup 
-                        relationship={relationship} 
-                        columnType={columnType}
-                        filter={filter}
-                        onSelected={onSelected} 
-                        onChange={onChange}
-                        onChangeFilter={onChangeFilter}
-                      />
-                  }
-              </>
+            selected && (relationship && Array.isArray(relationship)) &&
+              <TableSelectPopup 
+                relationship={relationship} 
+                columnType={columnType}
+                filter={filter}
+                onSelected={onSelected} 
+                onChange={onChange}
+                onChangeFilter={onChangeFilter}
+              />
+          }
+          { 
+            error &&
+              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+                { error }
+              </div> 
           }
         </TableData>
-
       break
     }
     case ColumType.DATE: {
-      Element = <TableData> </TableData>
-        {/* TODO: Make a editable date component */}
-        {/* <div
-          onClick={handleShowEditablePopup}
-          onChange={onChange} 
-          className="cursor-pointer"
-        >
-          { content } 
-        </div>
-
-        { showEditablePopup &&
-            <div className="
-              absolute 
-              bg-white 
-              w-[300px] 
-              h-[200px] 
-              mt-1 
-              flex 
-              justify-center 
-              items-center 
-              rounded
-              shadow-[0_0_3px_0px_rgba(0,0,0,0.3)]"
-            >
-              Hola
-            </div> } */}
+      Element =
+        <TableData>
+          <input 
+            type="datetime-local" 
+            defaultValue={formatToDatetimeLocal(content)}
+            onChange={(e) => onChange(formatDate(getDateTime(e.target.value)))}
+          />
+          { 
+            error &&
+              <div className="absolute mt-[6px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+                { error }
+              </div> 
+          }
+        </TableData>
       break
     }
     default: {

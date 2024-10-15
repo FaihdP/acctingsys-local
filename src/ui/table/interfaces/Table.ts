@@ -23,6 +23,8 @@ export interface Column {
   width?: number
   minWidth?: number
   type: ColumType
+  required?: boolean
+  defaultValue?: any
 }
 
 export interface TableConfigHeaderProps {
