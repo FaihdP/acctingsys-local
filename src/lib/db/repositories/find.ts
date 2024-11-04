@@ -5,6 +5,10 @@ export interface Page {
   size: number
 }
 
+type ToNumbers<T> = {
+  [K in keyof T]: number
+}
+
 export interface FindResults<T> {
   pages_number: number,
   data: T
@@ -24,10 +28,11 @@ export default async function find<T>(
     number: 1, 
     size: 10 
   },
-  sort = {}
+  sort = {},
+  fields?: Partial<ToNumbers<T>>
 ): Promise<FindResults<T[]>>  {
   try {
-    return await invoke('find', { collection, filter, page, sort });
+    return await invoke('find', { collection, filter, page, sort, fields });
   } catch (err) {
     throw (err as Error)
   }

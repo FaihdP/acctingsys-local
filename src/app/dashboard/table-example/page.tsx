@@ -33,7 +33,7 @@ export default function TableExample() {
           minWidth: 160,
           autocomplete: false,
           required: true,
-          defaultValue: formatDate(getDateTime())
+          defaultValue: () => formatDate(getDateTime())
         },
         { 
           label: "Valor",

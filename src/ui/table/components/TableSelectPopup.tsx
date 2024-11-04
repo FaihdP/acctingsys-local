@@ -1,7 +1,6 @@
-import Input from "@ui/core/components/Input";
 import { ColumType } from "../interfaces/Table";
 import Spin from "@ui/core/components/Spin";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent } from "react";
 
 interface TableSelectPopupProps {
   relationship: Map<string, any> | any[]
@@ -149,15 +148,15 @@ export default function TableSelectPopup({
         }}
         className="absolute w-50 bg-white rounded-lg mt-[2px] z-10"
       >
-        <div className="border-b px-[5px] pt-[5px] border-gray-100">
+        <div className="border-b px-[5px] py-[5px] border-gray-100">
           <input 
             value={filter}
             onChange={onChangeFilter}
             type="text" 
-            autoComplete="false"
+            autoComplete="off"
             name="search_client" 
             placeholder="Busca una opción..."
-            className="w-full !h-[15px] !text-[12px] !ps-2 border-none border-0"
+            className="w-full h-[15px] text-[12px] ps-2 border-none border-0"
           />
         </div>
         <div 

@@ -21,14 +21,24 @@ function TableData(
   { 
     children, 
     classname,
-    onClick
+    onClick,
+    error
   }: { 
     children: React.ReactNode, 
-    classname?: string,
-    onClick?: (e: MouseEvent<HTMLTableCellElement>) => void
+    classname?: string | undefined,
+    onClick?: (e: MouseEvent<HTMLTableCellElement>) => void,
+    error?: string
   }
 ) { 
-  return <td onClick={onClick} className={classname}>{ children }</td>
+  return ( 
+    <td onClick={onClick} className={classname}>
+      { children }
+      { error &&
+          <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+            { error }
+          </div> }
+    </td>
+  )
 }
 
 export default function getEditableCell({ 
@@ -54,35 +64,25 @@ export default function getEditableCell({
   switch (columnType) {
     case ColumType.TEXT: {
       Element = 
-        <TableData>
+        <TableData error={error}>
           <ContentEditable 
             html={content.toString()} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
           />
-          { 
-            error &&
-              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-                { error }
-              </div> 
-          }
+          
         </TableData>
       break
     }
     case ColumType.CURRENCY: { 
       Element = 
-        <TableData>
+        <TableData error={error}>
           <ContentEditable 
             html={content.toString()} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
           />
-          { 
-            error &&
-              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-                { error }
-              </div> 
-          }
+          
         </TableData>
       break
     }
@@ -94,16 +94,9 @@ export default function getEditableCell({
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname} 
           />
-          { 
-            error &&
-              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-                { error }
-              </div> 
-          }
         </TableData>
       break
     }
-    // TODO: Solve visual bug when the popup is showed and the page has been scrolled
     case ColumType.LIST: {
       const handleChangeList = (item: string | number, action: 'add' | 'delete') => {
         if (action === 'add') {
@@ -117,7 +110,7 @@ export default function getEditableCell({
       }
 
       Element = 
-        <TableData>
+        <TableData error={error}>
           <div 
             className={`
               w-full 
@@ -176,19 +169,14 @@ export default function getEditableCell({
                 onChangeFilter={onChangeFilter}
               />
           }
-          { 
-            error &&
-              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-                { error }
-              </div> 
-          }
+          
         </TableData>
 
       break
     }
     case ColumType.OBJECT: {
       Element = <>
-        <TableData>
+        <TableData error={error}>
           <div 
             className={`
               w-full 
@@ -237,12 +225,7 @@ export default function getEditableCell({
                 onChangeFilter={onChangeFilter}
               />
           }
-          { 
-            error &&
-              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-                { error }
-              </div> 
-          }
+          
         </TableData>
       </>
 
@@ -256,7 +239,7 @@ export default function getEditableCell({
         )[0]?.colors
 
       Element = 
-        <TableData>
+        <TableData error={error}>
           <div
             className={`
               w-full 
@@ -264,8 +247,7 @@ export default function getEditableCell({
               min-h-[28px] 
               flex
               items-center
-              relative
-              ${selected ? "z-10" : ""}
+              ${selected ? "z-10 relative" : ""}
             `} 
             onClick={() => onSelected()}
           >
@@ -281,6 +263,7 @@ export default function getEditableCell({
                     background: colors.background, 
                     color: colors.fontColor 
                   }}
+                  onClick={e => { if (selected) e.stopPropagation() }}
                 >
                   { content }
                   <button 
@@ -313,29 +296,18 @@ export default function getEditableCell({
                 onChangeFilter={onChangeFilter}
               />
           }
-          { 
-            error &&
-              <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-                { error }
-              </div> 
-          }
+          
         </TableData>
       break
     }
     case ColumType.DATE: {
       Element =
-        <TableData>
+        <TableData error={error}>
           <input 
             type="datetime-local" 
             defaultValue={formatToDatetimeLocal(content)}
             onChange={(e) => onChange(formatDate(getDateTime(e.target.value)))}
           />
-          { 
-            error &&
-              <div className="absolute mt-[6px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-                { error }
-              </div> 
-          }
         </TableData>
       break
     }

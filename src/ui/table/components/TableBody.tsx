@@ -1,11 +1,6 @@
 'use client'
 
-import Image from "next/image"
 import TableProps, { TableConfigHeaderProps } from "@ui/table/interfaces/Table";
-import tableEditIcon from "@public/dashboard/table_edit.svg"
-import tableAcceptIcon from "@public/dashboard/table_accept.svg"
-import tableCancelIcon from "@public/dashboard/table_cancel.svg"
-import TableCell from "../components/TableCell";
 import { MappedObject, Row } from "@ui/table/interfaces/Row";
 import TableRow from "./TableRow";
 

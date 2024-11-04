@@ -1,4 +1,4 @@
-import { Column, ColumType } from "@ui/table/interfaces/Table"
+import { ColumType } from "@ui/table/interfaces/Table"
 import { MappedObject } from "@ui/table/interfaces/Row"
 import { ChangeEvent, useCallback, useEffect, useState } from "react"
 import getCell from "../util/getCell"
@@ -40,14 +40,19 @@ export default function TableCell({
       || column.type === ColumType.LIST
     ) {
       const getRelationship = async () => {
-        return await processRelationship(column, filter, column.type === ColumType.OBJECT ? column.fields : undefined)
+        return await processRelationship(
+          column, 
+          filter, 
+          column.type === ColumType.OBJECT ? column.fields : undefined,
+          row._id.$oid
+        )
       }
       (async () => {
         const result = await getRelationship()
         setRelationship(result)
       })()
     }
-  }, [column, filter])
+  }, [column, filter, row._id.$oid])
 
   const handleChange = useCallback((newData: any) => {
     row[column.tag] = newData

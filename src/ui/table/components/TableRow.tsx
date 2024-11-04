@@ -73,11 +73,16 @@ export default function TableRow({
       { 
         header.columns.map(
           (column, indexColumn: number) => {
+            let value = row.value[column.tag] || ""
+            if (row.value.isNewRow) {
+              if (column.defaultValue instanceof Function) value = column.defaultValue()
+              else value = column.defaultValue || ""
+            }
             return (
               <TableCell 
                 key={row.key + "_column_" + indexColumn}
                 row={row.value}
-                value={(row.value.isNewRow ? column.defaultValue : row.value[column.tag]) || ""}
+                value={value}
                 errorMessage={errors ? errors.get(column.tag) : undefined}
                 column={column}
                 className={`
@@ -144,6 +149,19 @@ export default function TableRow({
                     height={sizeIconOptionsTable}
                   />
                 </a>
+            }
+            { 
+              header.options.others && !row.value.isEditable &&
+                header.options.others.map((option, index) => 
+                  <a key={index} onClick={() => option.onClick(row.value._id.$oid)}>
+                    <Image 
+                      src={option.icon}
+                      alt={option.alt}
+                      width={sizeIconOptionsTable}  
+                      height={sizeIconOptionsTable}
+                    />
+                  </a>
+                )
             }
           </td>
       }

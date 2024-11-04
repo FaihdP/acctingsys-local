@@ -3,7 +3,8 @@ import MongoDocument from "@schemas/common/MongoDocument"
 
 export interface Product {
   name: string
-  value?: string
+  value?: number
+  amount?: number
   description?: string
   type?: string
   userId: string

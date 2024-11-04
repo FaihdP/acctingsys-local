@@ -1,10 +1,11 @@
 import { ColumType } from "../interfaces/Table"
-import ColumTypes, { ListColumn, ObjectColumn, SelectColumn } from "../interfaces/ColumTypes"
+import { ListColumn, ObjectColumn, SelectColumn } from "../interfaces/ColumTypes"
 
 export default async function processRelationship(
   column: ListColumn | ObjectColumn | SelectColumn, 
   filter: string, 
-  columnFileds?: string[]
+  columnFileds?: string[],
+  documentId?: string
 ) {
   if (!column.relationship) return []
   if (column.relationship instanceof Function) {
@@ -24,11 +25,10 @@ export default async function processRelationship(
         field[columnField] = { $regex: filter, $options: 'i' }
         filterObject.$or.push(field)
       })
-  
+
       return (await column.relationship(filterObject)).data
     } else {
-      //return await column.relationship()
-      return []
+      return (await column.relationship(documentId))
     }
   }
 

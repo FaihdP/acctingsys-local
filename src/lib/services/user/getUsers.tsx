@@ -6,7 +6,10 @@ export default async function getUsers(filter: any) {
   return (
     await find<UserDocument>(
       "users", 
-      filter
+      filter,
+      undefined,
+      undefined,
+      { name: 1, lastname: 1 }
     )
   )
 } 

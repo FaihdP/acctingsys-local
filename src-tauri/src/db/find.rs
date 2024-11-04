@@ -26,7 +26,8 @@ pub async fn find(
   collection: String,
   filter: bson::Document,
   page: Page,
-  sort: bson::Document 
+  sort: bson::Document,
+  fields: Option<bson::Document>
 ) -> Result<FindResults, String> {
   let db = client.default_database().unwrap();
   let target_collection: mongodb::Collection<Document> = db.collection::<Document>(&collection);
@@ -35,6 +36,7 @@ pub async fn find(
     // Pagination
     .skip(u64::from((page.number - 1) * u32::from(page.size)))
     .limit(i64::from(page.number * u32::from(page.size)))
+    .projection(fields)
     // Sort
     .sort(sort)
     .build();

@@ -14,7 +14,7 @@ export enum ColumType {
 export interface Option {
   icon: any
   alt: string
-  onClick?: (e: ChangeEvent<HTMLAnchorElement>) => void
+  onClick: (id: string) => void
 }
 
 export interface Column {
