@@ -11,8 +11,8 @@ pub struct Credentials {
 pub fn decode(string: String) -> Result<String, String> {
   return Ok(
     String::from_utf8(
-      BASE64_STANDARD.decode(string).expect("ASDAS")
-    ).expect("ERROR")
+      BASE64_STANDARD.decode(string).expect("ERROR: String can't be decoding")
+    ).expect("ERROR: String can't be instanced")
   );
 }
 
