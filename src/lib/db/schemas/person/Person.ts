@@ -14,6 +14,7 @@ export default interface Person {
   type: PersonType,
   phone?: Phone[]
   debt?: Debt
+  isDeleted: boolean
 }
 
 export interface PersonDocument extends Person, MongoDocument {}

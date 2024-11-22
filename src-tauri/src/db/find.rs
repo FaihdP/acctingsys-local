@@ -46,10 +46,6 @@ pub async fn find(
     .await
     .unwrap() as f32 / page.size as f32).ceil() as u32;
 
-  // if collection.eq("invoices") {
-  //   println!("Numero de paginas: {}", pages_number);
-  // }
-
   let mut cursor = target_collection
     .find(filter.clone(), find_options)
     .await

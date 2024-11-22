@@ -1,3 +1,5 @@
+// TODO: Change date format in db
+
 const AM = 'a.m.'
 const PM = 'p.m.'
 

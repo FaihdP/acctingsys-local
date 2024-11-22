@@ -17,6 +17,7 @@ export default interface Payment {
   type: PaymentType
   bank?: Bank
   migrated: boolean
+  isDeleted: boolean
 }
 
 export interface PaymentDocument extends Payment, MongoDocument {}

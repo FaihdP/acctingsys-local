@@ -32,7 +32,7 @@ export default function Input({
       <label>
         <div className="relative">
           { image &&
-              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-3">
+              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-3 select-none">
                 <Image
                   src={image.src}
                   alt={image.alt}

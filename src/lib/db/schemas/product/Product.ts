@@ -9,6 +9,7 @@ export interface Product {
   type?: string
   userId: string
   user: Person
+  isDeleted: boolean
 }
 
 export interface ProductDocument extends Product, MongoDocument {}

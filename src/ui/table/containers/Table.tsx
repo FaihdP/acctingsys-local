@@ -29,7 +29,7 @@ export default function Table({
   
   const fetchData = useCallback(async () => {
     const result = await getData(filters, pageSelected)
-    //pagesNumber.current = result.pages_number
+    pagesNumber.current = result.pages_number
     setData(mapData(result.data))
   }, [getData, filters, pageSelected])
 

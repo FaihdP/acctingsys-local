@@ -44,7 +44,7 @@ export default function TableCell({
           column, 
           filter, 
           column.type === ColumType.OBJECT ? column.fields : undefined,
-          row._id.$oid
+          row?._id?.$oid ? row._id.$oid : undefined
         )
       }
       (async () => {
@@ -52,7 +52,7 @@ export default function TableCell({
         setRelationship(result)
       })()
     }
-  }, [column, filter, row._id.$oid])
+  }, [column, filter, row])
 
   const handleChange = useCallback((newData: any) => {
     row[column.tag] = newData

@@ -20,6 +20,7 @@ export default interface User {
   password: string
   type: UserType
   state: UserStatus
+  isDeleted: boolean
 }
 
 export interface UserDocument extends User, MongoDocument {}

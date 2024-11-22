@@ -1,3 +1,4 @@
+import Backdrop from "@ui/core/components/Backdrop";
 import { ColumType } from "../interfaces/Table";
 import Spin from "@ui/core/components/Spin";
 import { ChangeEvent } from "react";
@@ -133,10 +134,7 @@ export default function TableSelectPopup({
 
   return (
     <>
-      <div 
-        className="fixed w-[100vw] h-[100vh] top-0 left-0 cursor-default z-0" 
-        onClick={onSelected}
-      />
+      <Backdrop onClick={onSelected} />
       <div 
         style={{
           boxShadow: `

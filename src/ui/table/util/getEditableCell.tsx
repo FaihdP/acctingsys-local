@@ -138,7 +138,7 @@ export default function getEditableCell({
                 >
                   { value }
                   <button 
-                    onClick={(e) => { 
+                    onClick={e => { 
                       e.stopPropagation()
                       if (!selected) onSelected()
                       handleChangeList(index, "delete")

@@ -11,8 +11,12 @@ import Input from "@ui/core/components/Input"
 import SearchIcon from "@public/dashboard/search.svg"
 import deleteInvoices from "@lib/services/invoice/deleteInvoices"
 import { formatDate, getDateTime } from "@lib/util/time"
+import { useState } from "react"
+import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice"
 
 export default function TableExample() {
+  const [filters, setFilters] = useState<Partial<InvoiceDocument>>({})
+
   const tableConfig: TableConfigProps = {
     modifiers: {},
     actions: { 
@@ -98,7 +102,8 @@ export default function TableExample() {
         shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
       "
       styles={{
-        fontSize: '16px'
+        fontSize: '16px',
+        userSelect: "none"
       }}
       image={{
         alt: 'search_icon',
@@ -110,7 +115,7 @@ export default function TableExample() {
     <Table 
       getData={getInvoices}
       config={tableConfig} 
-      filters={{}}
+      filters={filters}
     />
   </>
 }

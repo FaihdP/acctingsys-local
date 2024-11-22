@@ -3,8 +3,8 @@ import Product from "@schemas/embedded/Product"
 import MongoDocument from "@schemas/common/MongoDocument"
 
 export enum InvoiceType {
-  SALE,
-  BUY
+  SALE = "SALE",
+  BUY = "BUY"
 }
 
 export interface Invoice {
@@ -17,7 +17,9 @@ export interface Invoice {
   user: Person
   person?: Person
   productOverview?: Product[],
-  migrated: boolean
+  migrated: boolean,
+  isDeleted: boolean,
+  status?: string
 }
 
 export interface InvoiceDocument extends Invoice, MongoDocument {}

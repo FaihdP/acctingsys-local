@@ -3,28 +3,30 @@
 
 extern crate app;
 
-use app::db::find;
-use app::db::save;
-use app::db::update;
-use app::db::delete;
+use app::db;
+use db::find;
+use db::save;
+use db::update;
+use db::delete;
 use app::api::get_credentials;
 use dotenv::dotenv;
 use mongodb::{options::ClientOptions, Client};
 use std::env;
 
-fn main() {
-  dotenv().ok();
-
+fn get_client_db() -> Client {
   let db_url = env::var("MONGODB_URL")
     .expect("ERROR: MONGODB_URL variable not found");
 
   let options = ClientOptions::parse(db_url.as_str())
     .expect("ERROR: Invalid database url");
 
-  let client = Client::with_options(options).unwrap();
+  return Client::with_options(options).unwrap();
+}
 
+fn main() {
+  dotenv().ok();
   tauri::Builder::default()
-    .manage(client)
+    .manage(get_client_db())
     .invoke_handler(
       tauri::generate_handler![
         find::find, 

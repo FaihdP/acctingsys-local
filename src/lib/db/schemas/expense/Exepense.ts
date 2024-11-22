@@ -9,6 +9,7 @@ export default interface Expense {
   userId: string
   migrated: boolean
   user: Person
+  isDeleted: boolean
 }
 
 export interface ExpenseDocument extends Expense, MongoDocument {}

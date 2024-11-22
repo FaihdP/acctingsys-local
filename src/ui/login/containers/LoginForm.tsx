@@ -50,7 +50,7 @@ export default function LoginForm() {
       setStatusLogin(LOGIN_STATUS.LOADING)
       const loginStatus = await validateForm()
       setStatusLogin(loginStatus)
-      if (loginStatus === LOGIN_STATUS.OK) router.push("/dashboard")
+      if (loginStatus === LOGIN_STATUS.OK) router.push("/dashboard/sales")
     } catch (err) {
       console.error((err as Error).message)
     }
