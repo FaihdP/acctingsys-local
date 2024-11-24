@@ -1,7 +1,7 @@
 'use client'
 
 import { ChangeEvent, FormEvent, useState } from "react"
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { LoginFormData } from "@ui/core/interfaces/LoginFormData";
 import { validateCredentials } from "@lib/services/auth/login";
 import Input from "@ui/core/components/Input";
@@ -11,19 +11,13 @@ import acountCircleIcon from "@public/login/account_circle.svg"
 import passwordIcon from "@public/login/password.svg"
 import ErrorMessage from "../components/ErrorMessage";
 import setToken from "@lib/token/setToken";
-
-enum LOGIN_STATUS {
-  VOID_CREDENTIALS,
-  BAD_CREDENTIALS,
-  LOADING,
-  OK,
-  ERROR
-}
+import URL_PARAMS from "@ui/core/util/urlParams";
+import LOGIN_STATUS from "../interfaces/loginStatus";
+import getErrorLogin from "../util/getErrorLogin";
 
 export default function LoginForm() {
   const router = useRouter()
-  const err = useSearchParams().get("err")
-
+  const tokenError = useSearchParams().get(URL_PARAMS.TOKEN_ERROR)
   const [formData, setFormData] = useState<LoginFormData>({ userName: "", password: "" })
   const [statusLogin, setStatusLogin] = useState<LOGIN_STATUS | null>(null)
 
@@ -83,18 +77,11 @@ export default function LoginForm() {
       "
       style={{ backgroundColor: COLORS.DARK_BLUE }}
     >
-      { statusLogin === LOGIN_STATUS.VOID_CREDENTIALS && 
-          <ErrorMessage message="Es necesario llenar todos los campos del formulario 🙂" /> } 
+      { 
+        (statusLogin !== LOGIN_STATUS.LOADING || tokenError) && 
+          <ErrorMessage message={getErrorLogin(statusLogin, tokenError)} /> 
+      } 
           
-      { statusLogin === LOGIN_STATUS.BAD_CREDENTIALS &&
-          <ErrorMessage message="Usuario o contraseña incorrectas 😑" /> }
-
-      { statusLogin === LOGIN_STATUS.ERROR &&
-          <ErrorMessage message="Tenemos un problema con nuestro servicio ⚠️" /> }
-
-      { (err && err === "tokenExpired") && 
-          <ErrorMessage message="⌛ Tu sesión ha expirado vuelve a ingresar." /> }
-
       <form 
         onSubmit={hanldeSubmit} 
         className="

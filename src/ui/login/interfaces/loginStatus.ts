@@ -1,0 +1,9 @@
+enum LOGIN_STATUS {
+  VOID_CREDENTIALS,
+  BAD_CREDENTIALS,
+  LOADING,
+  OK,
+  ERROR
+}
+
+export default LOGIN_STATUS
