@@ -1,5 +1,7 @@
 import Nav from "@ui/nav/containers/Nav";
+import NavigationEvents from "@ui/navitgationEvents/containers/NavigationEvents";
 import NotificationContext from "@ui/notification/hooks/NotificationContext";
+import { Suspense } from "react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +12,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       h-screen
       bg-[#E8EAED] 
     ">
+      <Suspense fallback={null}>
+        <NavigationEvents />
+      </Suspense>
       <NotificationContext>
         <Nav/>
         <main className="flex flex-col h-full">

@@ -1,7 +1,7 @@
 'use client'
 
 import { ChangeEvent, FormEvent, useState } from "react"
-import { useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { LoginFormData } from "@ui/core/interfaces/LoginFormData";
 import { validateCredentials } from "@lib/services/auth/login";
 import Input from "@ui/core/components/Input";
@@ -10,6 +10,7 @@ import Button from "@ui/login/components/Button";
 import acountCircleIcon from "@public/login/account_circle.svg"
 import passwordIcon from "@public/login/password.svg"
 import ErrorMessage from "../components/ErrorMessage";
+import setToken from "@lib/token/setToken";
 
 enum LOGIN_STATUS {
   VOID_CREDENTIALS,
@@ -21,6 +22,7 @@ enum LOGIN_STATUS {
 
 export default function LoginForm() {
   const router = useRouter()
+  const err = useSearchParams().get("err")
 
   const [formData, setFormData] = useState<LoginFormData>({ userName: "", password: "" })
   const [statusLogin, setStatusLogin] = useState<LOGIN_STATUS | null>(null)
@@ -50,7 +52,10 @@ export default function LoginForm() {
       setStatusLogin(LOGIN_STATUS.LOADING)
       const loginStatus = await validateForm()
       setStatusLogin(loginStatus)
-      if (loginStatus === LOGIN_STATUS.OK) router.push("/dashboard/sales")
+      if (loginStatus === LOGIN_STATUS.OK) {
+        setToken(formData.userName)
+        router.push("/dashboard")
+      }
     } catch (err) {
       console.error((err as Error).message)
     }
@@ -86,6 +91,9 @@ export default function LoginForm() {
 
       { statusLogin === LOGIN_STATUS.ERROR &&
           <ErrorMessage message="Tenemos un problema con nuestro servicio ⚠️" /> }
+
+      { (err && err === "tokenExpired") && 
+          <ErrorMessage message="⌛ Tu sesión ha expirado vuelve a ingresar." /> }
 
       <form 
         onSubmit={hanldeSubmit} 
