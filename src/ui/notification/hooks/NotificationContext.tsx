@@ -4,14 +4,14 @@ import { createContext, ReactNode, useState } from "react"
 import INotificationContext from "../interfaces/NotificationContext"
 import Notification from "../interfaces/Notification"
 
-export const NotificationsContext = createContext({} as INotificationContext)
+export const NotificationContext = createContext({} as INotificationContext)
 
-export default function NotificationContext({ children }: { children: ReactNode }) {
+export default function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Map<string, Notification>>(new Map())
 
   return (
-    <NotificationsContext.Provider value={{ notifications, setNotifications }}>
+    <NotificationContext.Provider value={{ notifications, setNotifications }}>
       { children }
-    </NotificationsContext.Provider>
+    </NotificationContext.Provider>
   )
 }

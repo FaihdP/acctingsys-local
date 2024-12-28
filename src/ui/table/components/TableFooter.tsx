@@ -7,23 +7,17 @@ import arrowRightIcon from "@public/dashboard/table_arrow_right.svg"
 import doubleArrowRightIcon from "@public/dashboard/table_double_arrow_right.svg"
 import doubleArrowLeftIcon from "@public/dashboard/table_double_arrow_left.svg"
 import getPagesNumberArray from "../util/getPagesNumberArray";
+import { useTable } from "../hooks/useTable";
 
-interface TableFooterProps {
-  onAddRow: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void),
-  onDeleteRow?: ((e: MouseEvent<HTMLAnchorElement>) => void) | (() => void),
-  pageSelected: number,
-  onPageSelectedChange: (pageNumber: number) => void,
-  pagesNumber: number
-}
-
-export default function TableFooter(
-  { 
-    onAddRow,
-    onDeleteRow,
-    pageSelected,
-    onPageSelectedChange,
+export default function TableFooter() {
+  const { 
+    pageSelected, 
+    setPageSelected, 
     pagesNumber,
-  }: TableFooterProps) {
+    handleDeleteRow,
+    handleAddRow
+  } = useTable()
+
   return (
     <div 
       className="
@@ -38,28 +32,26 @@ export default function TableFooter(
       " 
       style={{ fontSize: "16px" }}
     >
-      { onAddRow && 
-          <a 
-            href="#" 
-            onClick={onAddRow}
-            className="flex items-center"
-          > 
-            <div className="inline-block me-[5px]">
-              <Image
-                src={addCircleIcon.src}
-                alt={"add_circle_icon"}
-                width={20}
-                height={20}
-              />
-            </div>
-            Agregar
-          </a> }
+      <a 
+        onClick={handleAddRow}
+        className="flex items-center cursor-pointer"
+      > 
+        <div className="inline-block me-[5px]">
+          <Image
+            src={addCircleIcon.src}
+            alt={"add_circle_icon"}
+            width={20}
+            height={20}
+          />
+        </div>
+        Agregar
+      </a> 
 
       <div className="text-[14px] flex flex-row">
         {
           pageSelected !== 1 
             ? <>
-              <a onClick={() => onPageSelectedChange(1)} className="cursor-pointer">
+              <a onClick={() => setPageSelected(1)} className="cursor-pointer">
                 <Image
                   src={doubleArrowLeftIcon.src}
                   alt={"double_arrow_right_icon"}
@@ -67,7 +59,7 @@ export default function TableFooter(
                   height={24}
                 />
               </a>
-              <a onClick={() => onPageSelectedChange(pageSelected - 1)} className="cursor-pointer"> 
+              <a onClick={() => setPageSelected(pageSelected - 1)} className="cursor-pointer"> 
                 <Image
                   src={arrowLeftIcon.src}
                   alt={"arrow_left_icon"}
@@ -81,7 +73,7 @@ export default function TableFooter(
         }
         <div className="min-w-[72px] grid grid-flow-col gap-[7px] text-center justify-center">
           { 
-            getPagesNumberArray(pageSelected, pagesNumber).map((pageNumber, index) => {
+            getPagesNumberArray(pageSelected, pagesNumber.current).map((pageNumber, index) => {
               const colorsArray = [
                 '#7A7A7A',
                 'rgba(122, 122, 122, 0.6)',
@@ -98,7 +90,7 @@ export default function TableFooter(
                     flex 
                     items-center
                   `}
-                  onClick={() => onPageSelectedChange(pageNumber)}
+                  onClick={() => setPageSelected(pageNumber)}
                 >
                   { pageNumber }
                 </a>
@@ -107,9 +99,9 @@ export default function TableFooter(
           }
         </div>
         {
-          pageSelected !== pagesNumber 
+          pageSelected < pagesNumber.current
             ? <>
-              <a onClick={() => onPageSelectedChange(pageSelected + 1)} className="cursor-pointer">
+              <a onClick={() => setPageSelected(pageSelected + 1)} className="cursor-pointer">
                 <Image
                   src={arrowRightIcon.src}
                   alt={"arrow_right_icon"}
@@ -118,36 +110,33 @@ export default function TableFooter(
                   height={24}
                 />
               </a>
-              <a onClick={() => onPageSelectedChange(pagesNumber)} className="cursor-pointer">
+              <a onClick={() => setPageSelected(pagesNumber.current)} className="cursor-pointer">
                 <Image
                   src={doubleArrowRightIcon.src}
                   alt={"double_arrow_right_icon"}
                   width={24}
                   height={24}
-                />
+                />  
               </a>
             </>
             : <div className="w-[48px] ms-[10px]"></div>
         }
         
       </div>
-
-      { onDeleteRow && 
-          <a 
-            href="#"
-            onClick={onDeleteRow}
-            className="flex items-center"
-          >
-            <div className="inline-block me-[5px]">
-              <Image
-                src={deleteIcon.src}
-                alt={"add_circle_icon"}
-                width={20}
-                height={20}
-              />
-            </div>
-            Eliminar
-          </a> } 
+      <a 
+        onClick={handleDeleteRow}
+        className="flex items-center cursor-pointer"
+      >
+        <div className="inline-block me-[5px]">
+          <Image
+            src={deleteIcon.src}
+            alt={"add_circle_icon"}
+            width={20}
+            height={20}
+          />
+        </div>
+        Eliminar
+      </a> 
     </div>
     
     

@@ -7,24 +7,21 @@ import TableProps, { TableConfigHeaderProps } from "../interfaces/Table"
 import { Row } from "../interfaces/Row"
 import validateRow from "../util/validateRow"
 import { useState } from "react"
+import { useTable } from "../hooks/useTable"
 
 interface TableRowProps {
-  header: TableConfigHeaderProps, 
-  row: Row,
-  actions: TableProps["config"]["actions"],
-  onEditRow: (rowIndex: string) => void,
-  onCancelEditRow: (rowIndex: string, newRow?: boolean) => void
-  onSelectRow: (rowIndex: string) => void
+  row: Row
 }
 
-export default function TableRow({ 
-  header, 
-  row,  
-  actions,
-  onSelectRow,
-  onCancelEditRow,
-  onEditRow
-}: TableRowProps) {
+export default function TableRow({ row }: TableRowProps) {
+  const { 
+    header, 
+    actions, 
+    handleEditRow, 
+    handleSelectRow, 
+    handleCancelEditRow 
+  } = useTable()
+  
   const sizeIconOptionsTable = 18
   const [errors, setErrors] = useState<Map<string, string>>(new Map())
 
@@ -41,7 +38,7 @@ export default function TableRow({
         await actions.onEdit(row.value["_id"], row.value)
       }
     }
-    onEditRow(row.key)
+    handleEditRow(row.key)
   }
 
   return (
@@ -62,7 +59,7 @@ export default function TableRow({
               <label className="table-picker">
                 <input 
                   type="checkbox"
-                  onChange={() => onSelectRow(row.key)} 
+                  onChange={() => handleSelectRow(row.key)} 
                   checked={row.value.isSelected}
                 />
                 <span className="shadow-[0_0_3px_0px_rgba(0,0,0,5)]"></span>
@@ -123,7 +120,7 @@ export default function TableRow({
                   </a>
                   <a 
                     href="#" 
-                    onClick={() => onCancelEditRow(row.key, row.value.isNewRow)}
+                    onClick={() => handleCancelEditRow(row.key, row.value.isNewRow)}
                     className="inline-block ms-[5px]"
                   >
                     <Image
@@ -139,7 +136,7 @@ export default function TableRow({
               ((header.options.onEdit && actions.onEdit) && !row.value.isEditable) &&
                 <a 
                   href="#" 
-                  onClick={() => onEditRow(row.key)}
+                  onClick={() => handleEditRow(row.key)}
                   className="inline-block"
                 >
                   <Image

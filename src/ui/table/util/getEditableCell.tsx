@@ -34,9 +34,9 @@ function TableData(
     <td onClick={onClick} className={classname}>
       { children }
       { error &&
-          <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
-            { error }
-          </div> }
+        <div className="absolute mt-[2px] bg-[#f87171] rounded-b text-[9px] text-white px-4 py-[0.5px]">
+          { error }
+        </div> }
     </td>
   )
 }
@@ -78,7 +78,7 @@ export default function getEditableCell({
       Element = 
         <TableData error={error}>
           <ContentEditable 
-            html={content.toString()} 
+            html={content} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
           />
@@ -90,7 +90,7 @@ export default function getEditableCell({
       Element = 
         <TableData classname="text-right">
           <ContentEditable 
-            html={content.toString()} 
+            html={content} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname} 
           />
@@ -101,7 +101,9 @@ export default function getEditableCell({
       const handleChangeList = (item: string | number, action: 'add' | 'delete') => {
         if (action === 'add') {
           onChange([ ...content, item])
-        } else if (action === 'delete') {
+        } 
+        
+        if (action === 'delete') {
           if (typeof item === 'number') {
             content.splice(item, 1)
             onChange([ ...content ])

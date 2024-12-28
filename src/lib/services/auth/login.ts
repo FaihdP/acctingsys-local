@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { LoginFormData } from "@ui/core/interfaces/LoginFormData";
+import { LoginFormData } from "@ui/login/interfaces/LoginFormData";
 import find from "@lib/db/repositories/find";
 import { UserDocument } from "@schemas/user/User";
 import handleError from "@lib/util/error/handleError";

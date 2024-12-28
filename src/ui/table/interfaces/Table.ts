@@ -1,5 +1,6 @@
-import { ChangeEvent } from "react"
+import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from "react"
 import ColumTypes from "./ColumTypes"
+import { MappedObject } from "./Row"
 
 export enum ColumType {
   TEXT,
@@ -56,7 +57,10 @@ export interface TableConfigProps {
 }
 
 export default interface TableProps {
-  getData: (...args: any[]) => Promise<any>,
-  filters?: any,
   config: TableConfigProps
+  initialData: Map<string, MappedObject> | null
+  //setData: Dispatch<SetStateAction<Map<string, MappedObject> | null>>
+  pageSelected: number
+  setPageSelected: Dispatch<SetStateAction<number>>,
+  pagesNumber: MutableRefObject<number>
 }

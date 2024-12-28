@@ -1,5 +1,5 @@
 import Input from "@ui/core/components/Input";
-import { RegisterFormdata } from "@ui/core/interfaces/RegisterFormData";
+import { RegisterFormdata } from "@ui/login/interfaces/RegisterFormData";
 import { ChangeEvent, useState } from "react";
 
 export default function RegisterForm() {

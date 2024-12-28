@@ -2,7 +2,7 @@
 
 import { ChangeEvent, FormEvent, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation";
-import { LoginFormData } from "@ui/core/interfaces/LoginFormData";
+import { LoginFormData } from "@ui/login/interfaces/LoginFormData";
 import { validateCredentials } from "@lib/services/auth/login";
 import Input from "@ui/core/components/Input";
 import COLORS from "@ui/core/util/colors";
@@ -97,7 +97,7 @@ export default function LoginForm() {
           name="userName"
           onChange={handleInputChange} 
           image={{ src: acountCircleIcon.src, alt: "account_circle_icon", width: 26, height: 26 }} 
-          className="mb-[37px]" 
+          className="mb-[37px] h-[40px] w-[290px]" 
           placeholder="Nombre de usuario"
           value={formData.userName}
         />
@@ -106,7 +106,7 @@ export default function LoginForm() {
           name="password"
           onChange={handleInputChange} 
           image={{ src: passwordIcon.src, alt: "password_icon", width: 24, height: 24 }} 
-          className="mb-[48px]"
+          className="mb-[48px] h-[40px] w-[290px]"
           placeholder="Contraseña"
           value={formData.password}
         />

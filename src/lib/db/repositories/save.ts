@@ -1,12 +1,13 @@
+import handleError from "@lib/util/error/handleError";
 import { invoke } from "@tauri-apps/api/tauri";
 
-export default async function save(
+export default async function save<T>(
   collection: string, 
-  object: object, 
+  objects: T[], 
 ): Promise<unknown>  {
   try {
-    return await invoke('save', { collection, object });
+    return await invoke('save', { collection, objects });
   } catch (err) {
-    throw (err as Error)
+    throw handleError(err)
   }
 }

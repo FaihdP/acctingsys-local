@@ -1,10 +1,13 @@
 import Spin from "@ui/core/components/Spin";
+import { useTable } from "../hooks/useTable";
 
-export default function TableBodySkeleton({ columnsNumber }: { columnsNumber: number }) {
+export default function TableBodySkeleton() {
+  const { getColumnsNumber } = useTable()
+
   return (
     <tbody>
       <tr>
-        <td colSpan={columnsNumber} className="h-[300px] text-center text-xl">
+        <td colSpan={getColumnsNumber()} className="h-[300px] text-center text-xl">
           <Spin size={30}/> Cargando ...
         </td>
       </tr>

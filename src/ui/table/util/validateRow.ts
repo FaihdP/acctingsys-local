@@ -2,17 +2,15 @@ import { Row } from "../interfaces/Row";
 import { Column, ColumType } from "../interfaces/Table";
 
 function validateCell(value: any, column: Column): string | null {
-  if (!value) {
-    if (column.required) return "Campo obligatorio"
-    if (!column.required) return null
-  }
+  if (!value) if (column.required) return "Campo obligatorio"
   if (!column.required && !value) return null
+
   switch (column.type) {
     case ColumType.TEXT:
       // Without validation
       break
     case ColumType.CURRENCY || ColumType.NUMBER:
-      if (!/^[0-9]/.test(value)) return "Debe ser un número"
+      if (!/^\d+$/.test(value)) return "Debe ser un número"
       break
     case ColumType.DATE:
       // Without validation

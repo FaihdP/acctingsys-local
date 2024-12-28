@@ -1,23 +1,18 @@
 import { Column, Option } from "@ui/table/interfaces/Table";
 import { useState } from "react";
+import { useTable } from "../hooks/useTable";
+import { TableActions } from "../hooks/TableReducer";
 
-export default function TableHeader(
-  { 
-    picker, 
-    columns, 
-    options,
-    onSelectAllRows
-  }: {
-    picker: boolean
-    options?: {
-      onEdit: boolean
-      others?: Option[]
-    }
-    columns: Column[]
-    onSelectAllRows: (allRowsSelected: boolean) => void
+export default function TableHeader() {
+  const { header } = useTable()
+  const { picker, columns, options } = header
+  const [ allRowsSelected, setAllRowsSelected ] = useState(false)
+
+  const { tableDispatch } = useTable()
+
+  const handleSelectAllRows = (allRowsSelected: boolean) => {
+    tableDispatch({ type: TableActions.SELECT_ALL_ROWS, payload: allRowsSelected })
   }
-) {
-  const [allRowsSelected, setAllRowsSelected] = useState(false)
 
   return (
     <thead 
@@ -35,7 +30,7 @@ export default function TableHeader(
                 <input 
                   type="checkbox" 
                   onChange={() => {
-                    onSelectAllRows(!allRowsSelected)
+                    handleSelectAllRows(!allRowsSelected)
                     setAllRowsSelected(!allRowsSelected)
                   }}
                 />

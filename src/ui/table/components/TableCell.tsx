@@ -5,6 +5,7 @@ import getCell from "../util/getCell"
 import getEditableCell from "../util/getEditableCell"
 import processRelationship from "../util/processRelationship"
 import ColumTypes from "../interfaces/ColumTypes"
+import useCell from "../hooks/useCell"
 
 interface CellProps { 
   row: MappedObject
@@ -21,17 +22,16 @@ export default function TableCell({
   className,
   errorMessage
 }: CellProps) {
+  const { content, setContent, error, setError } = useCell(value, errorMessage)
   const [selected, setSelected] = useState<boolean>(false)
   const [relationship, setRelationship] = useState([])
-  const [content, setContent] = useState(value)
   const [filter, setFilter] = useState<string>("")
-  const [error, setError] = useState<string | undefined>(errorMessage)
 
   useEffect(() => { 
     setContent(value) 
     row[column.tag] = value
     setError(errorMessage)
-  }, [value, row.isEditable, errorMessage, row, column])
+  }, [value, errorMessage, row, column, setContent, setError])
 
   useEffect(() => {
     if (
@@ -44,7 +44,7 @@ export default function TableCell({
           column, 
           filter, 
           column.type === ColumType.OBJECT ? column.fields : undefined,
-          row?._id?.$oid ? row._id.$oid : undefined
+          row?._id?.$oid
         )
       }
       (async () => {
@@ -63,7 +63,7 @@ export default function TableCell({
     ) {
       setContent(newData)
     }
-	}, [row, column.tag, column.type])
+	}, [row, column.tag, column.type, setContent])
   
   const handleSelected = () => setSelected(!selected)
 

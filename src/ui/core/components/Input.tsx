@@ -28,11 +28,11 @@ export default function Input({
   image,
 }: inputProps) {
   return (
-    <div>
+    <>
       <label>
         <div className="relative">
           { image &&
-              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none z-20 ps-3 select-none">
+              <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3 select-none">
                 <Image
                   src={image.src}
                   alt={image.alt}
@@ -57,13 +57,11 @@ export default function Input({
               border
               rounded-lg 
               text-sm
-              w-[290px]
-              h-[40px]
             ` + className
             }
           />
         </div>
       </label>
-    </div>
+    </>
   );
 }

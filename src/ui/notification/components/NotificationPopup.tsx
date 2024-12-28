@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { NotificationsContext } from "../hooks/NotificationContext";
+import { NotificationContext } from "../hooks/NotificationContext";
 import Backdrop from "@ui/core/components/Backdrop";
 import NotificationItem from "./NotificationItem";
 import Notification from "../interfaces/Notification";
@@ -10,7 +10,7 @@ export default function NotificationPopup({ handleIsOpen }: { handleIsOpen: () =
   const { 
     notifications, 
     setNotifications 
-  } = useContext(NotificationsContext)
+  } = useContext(NotificationContext)
 
   useEffect(() => {
     setNotifications(new Map([
