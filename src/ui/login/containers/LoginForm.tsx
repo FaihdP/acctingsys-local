@@ -14,23 +14,21 @@ import setToken from "@lib/token/setToken";
 import URL_PARAMS from "@ui/core/util/urlParams";
 import LOGIN_STATUS from "../interfaces/loginStatus";
 import getErrorLogin from "../util/getErrorLogin";
+import { UserDocument } from "@lib/db/schemas/user/User";
+import getUserByUsername from "@lib/services/user/getUserByUsername";
 
 export default function LoginForm() {
   const router = useRouter()
   const tokenError = useSearchParams().get(URL_PARAMS.TOKEN_ERROR)
-  const [formData, setFormData] = useState<LoginFormData>({ userName: "", password: "" })
+  const [formData, setFormData] = useState<LoginFormData>({ username: "", password: "" })
   const [statusLogin, setStatusLogin] = useState<LOGIN_STATUS | null>(null)
 
-  const validateForm = async (): Promise<LOGIN_STATUS> => {
-    if (!formData.userName || !formData.password) 
+  const validateForm = async (userData: UserDocument): Promise<LOGIN_STATUS> => {
+    if (!formData.username || !formData.password) 
       return LOGIN_STATUS.VOID_CREDENTIALS
     
-    try {
-      if (!(await validateCredentials(formData))) 
-        return LOGIN_STATUS.BAD_CREDENTIALS
-    } catch (err) {
-      return LOGIN_STATUS.ERROR
-    }
+    if (!(await validateCredentials(formData, userData))) 
+      return LOGIN_STATUS.BAD_CREDENTIALS
     
     return LOGIN_STATUS.OK
   }
@@ -43,14 +41,16 @@ export default function LoginForm() {
     e.preventDefault()
     
     try {
+      const user = await getUserByUsername(formData.username) 
       setStatusLogin(LOGIN_STATUS.LOADING)
-      const loginStatus = await validateForm()
+      const loginStatus = await validateForm(user)
       setStatusLogin(loginStatus)
       if (loginStatus === LOGIN_STATUS.OK) {
-        setToken(formData.userName)
+        setToken(user)
         router.push("/dashboard")
       }
     } catch (err) {
+      setStatusLogin(LOGIN_STATUS.ERROR)
       console.error((err as Error).message)
     }
   }
@@ -94,12 +94,12 @@ export default function LoginForm() {
       >
         <Input
           type="text" 
-          name="userName"
+          name="username"
           onChange={handleInputChange} 
           image={{ src: acountCircleIcon.src, alt: "account_circle_icon", width: 26, height: 26 }} 
           className="mb-[37px] h-[40px] w-[290px]" 
           placeholder="Nombre de usuario"
-          value={formData.userName}
+          value={formData.username}
         />
         <Input
           type="password" 

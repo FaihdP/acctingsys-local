@@ -1,0 +1,7 @@
+enum INVOICE_POPUP_MODE {
+  CREATE,
+  EDIT,
+  DELETE
+}
+
+export default INVOICE_POPUP_MODE

@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { MouseEvent } from "react";
 import deleteIcon from "@public/dashboard/delete.svg"
 import addCircleIcon from "@public/dashboard/add_circle.svg"
 import arrowLeftIcon from "@public/dashboard/table_arrow_left.svg"

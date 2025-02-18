@@ -64,7 +64,7 @@ export default function tableReducer(state: TableDataState, action: TableAction)
         state.map.forEach((row, key) => {
           if (row.isSelected) {
             newMap.delete(key)
-            if (action.payload.onDelete) action.payload.onDelete(row["_id"]["$oid"])
+            if (action.payload.onDelete) action.payload.onDelete(key, row)
           }
         })
       }
@@ -79,7 +79,6 @@ export default function tableReducer(state: TableDataState, action: TableAction)
         newMap.delete(rowIndex)
       } else {
         const row = newMap.get(rowIndex)
-        // TODO: Fix bug when changing the list field
         if (row) {
           row.isEditable = false
         }

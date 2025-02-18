@@ -1,8 +1,8 @@
 import MongoDocument from "@schemas/common/MongoDocument"
 
 export enum PaymentType {
-  CASH,
-  CREDIT
+  CASH = "CASH",
+  CREDIT = "CREDIT"
 }
 
 export enum Bank {

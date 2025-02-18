@@ -29,7 +29,7 @@ function TableData(
     onClick?: (e: MouseEvent<HTMLTableCellElement>) => void,
     error?: string
   }
-) { 
+) {
   return ( 
     <td onClick={onClick} className={classname}>
       { children }
@@ -78,7 +78,7 @@ export default function getEditableCell({
       Element = 
         <TableData error={error}>
           <ContentEditable 
-            html={content} 
+            html={content.toString()} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
           />
@@ -88,9 +88,9 @@ export default function getEditableCell({
     }
     case ColumType.NUMBER: {
       Element = 
-        <TableData classname="text-right">
+        <TableData classname="text-right" error={error}>
           <ContentEditable 
-            html={content} 
+            html={content.toString()} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname} 
           />

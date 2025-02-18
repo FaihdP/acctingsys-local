@@ -1,4 +1,4 @@
-import TableProvider from "../hooks/TableContext";
+import TableProvider from "../hooks/TableProvider";
 import TableProps from "../interfaces/Table";
 import Table from "./Table";
 

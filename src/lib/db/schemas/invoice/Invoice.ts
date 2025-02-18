@@ -1,6 +1,7 @@
 import Person from "@schemas/embedded/Person"
 import Product from "@schemas/embedded/Product"
 import MongoDocument from "@schemas/common/MongoDocument"
+import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus"
 
 export enum InvoiceType {
   SALE = "SALE",
@@ -9,7 +10,7 @@ export enum InvoiceType {
 
 export interface Invoice {
   date: string
-  value?: number
+  value: number
   type: InvoiceType
   userId: string
   personId?: string
@@ -19,7 +20,7 @@ export interface Invoice {
   productOverview?: Product[],
   migrated: boolean,
   isDeleted: boolean,
-  status?: string
+  status?: INVOICE_STATUS
 }
 
 export interface InvoiceDocument extends Invoice, MongoDocument {}

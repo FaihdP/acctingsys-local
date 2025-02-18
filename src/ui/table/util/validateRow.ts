@@ -9,7 +9,10 @@ function validateCell(value: any, column: Column): string | null {
     case ColumType.TEXT:
       // Without validation
       break
-    case ColumType.CURRENCY || ColumType.NUMBER:
+    case ColumType.CURRENCY:
+      if (!/^\d+$/.test(value)) return "Debe ser un número"
+      break
+    case ColumType.NUMBER:
       if (!/^\d+$/.test(value)) return "Debe ser un número"
       break
     case ColumType.DATE:

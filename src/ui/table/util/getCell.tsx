@@ -38,7 +38,7 @@ export default function getCell({ columnType, content, relationship, columnField
     case ColumType.CURRENCY: {
       Element = 
         <TableData classname="text-right"> 
-          <span className="me-4">{ formatCurrency(content) }</span>
+          <span className="me-4">{ content <= 0 ? "" : formatCurrency(content) }</span>
         </TableData>
 
       break

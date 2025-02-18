@@ -29,16 +29,29 @@ export default function TableProvider(
   const dataBackup = useRef<Map<string, MappedObject>>(new Map())
 
   const handleAddRow = () => { 
-    if (modifiers.onAddRow) return modifiers.onAddRow()
-    tableDispatch({ type: TableActions.ADD_ROW, payload: { onAdd: actions.onAdd } })
+    if (modifiers?.onAddRow) return modifiers.onAddRow()
+    if (actions?.onAdd) {
+      tableDispatch({ type: TableActions.ADD_ROW, payload: { onAdd: actions.onAdd } })
+    }
   }
 
   const handleDeleteRow = () => {
-    if (modifiers.onDeleteRow) return modifiers.onDeleteRow()
-    tableDispatch({ type: TableActions.DELETE_ROW, payload: { onDelete: actions.onDelete } })
+    if (data.map && modifiers?.onDeleteRow) {
+        const selectedRows = 
+          Array
+            .from(data.map, ([key, value]) => { return {key, value} })
+            .filter(row => row.value.isSelected)
+            .map(row => row.value["_id"] ? row.value["_id"]["$oid"] : row.key)
+
+        return modifiers.onDeleteRow(selectedRows)
+    }
+    if (actions?.onDelete) {
+      tableDispatch({ type: TableActions.DELETE_ROW, payload: { onDelete: actions.onDelete } })
+    }
   }
 
   const handleEditRow = (rowIndex: string) => {
+    if (modifiers?.onEditRow) return modifiers.onEditRow(data.map?.get(rowIndex))
     tableDispatch({ type: TableActions.EDIT_ROW, payload: { rowIndex, dataBackup } })
   }
 

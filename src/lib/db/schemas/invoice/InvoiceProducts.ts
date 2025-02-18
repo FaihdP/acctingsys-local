@@ -3,10 +3,10 @@ import MongoDocument from "@schemas/common/MongoDocument"
 
 export interface InvoiceProducts {
   invoiceId: string
-  amount?: number
-  value: number
+  quantity?: number
+  totalValue: number
   productId?: string
-  product: ProductValue
+  product?: ProductValue
 }
 
 export interface InvoiceProductsDocument extends InvoiceProducts, MongoDocument {}

@@ -12,7 +12,9 @@ interface CellProps {
   value: any
   column: ColumTypes
   className?: string
-  errorMessage?: string
+  errorMessage?: string,
+  updateRow: boolean
+  onUpdateRow: () => void
 }
 
 export default function TableCell({ 
@@ -20,18 +22,20 @@ export default function TableCell({
   value,
   column,
   className,
-  errorMessage
+  errorMessage,
+  updateRow,
+  onUpdateRow,
 }: CellProps) {
   const { content, setContent, error, setError } = useCell(value, errorMessage)
   const [selected, setSelected] = useState<boolean>(false)
-  const [relationship, setRelationship] = useState([])
+  const [relationship, setRelationship] = useState(null)
   const [filter, setFilter] = useState<string>("")
 
   useEffect(() => { 
     setContent(value) 
     row[column.tag] = value
     setError(errorMessage)
-  }, [value, errorMessage, row, column, setContent, setError])
+  }, [value, errorMessage, row, column, setContent, setError, updateRow])
 
   useEffect(() => {
     if (
@@ -63,7 +67,20 @@ export default function TableCell({
     ) {
       setContent(newData)
     }
-	}, [row, column.tag, column.type, setContent])
+
+    if (column.relatedFields) {
+      column.relatedFields.forEach((handlRelatedFieldChange, key) => {
+        row[key] = handlRelatedFieldChange(row)
+      })
+      onUpdateRow()
+    }
+
+	}, [
+    row, 
+    column.tag, column.type, column.relatedFields, 
+    setContent, 
+    onUpdateRow
+  ])
   
   const handleSelected = () => setSelected(!selected)
 

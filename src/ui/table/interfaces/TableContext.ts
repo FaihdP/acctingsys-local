@@ -3,7 +3,7 @@ import { TableAction, TableDataState } from "../hooks/TableReducer"
 import { TableConfigProps } from "./Table"
 import { MappedObject } from "./Row"
 
-export default interface TableContext extends TableConfigProps {
+type TableContext = TableConfigProps & {
   data: TableDataState
   tableDispatch: Dispatch<TableAction>
   dataBackup: MutableRefObject<Map<string, MappedObject>>
@@ -18,3 +18,5 @@ export default interface TableContext extends TableConfigProps {
   handlePageSelectedChange: (newPageSelected: number) => void
   getColumnsNumber: () => number
 }
+
+export default TableContext

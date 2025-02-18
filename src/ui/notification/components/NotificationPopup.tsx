@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { NotificationContext } from "../hooks/NotificationContext";
+import { NotificationContext } from "../hooks/NotificationProvider";
 import Backdrop from "@ui/core/components/Backdrop";
 import NotificationItem from "./NotificationItem";
 import Notification from "../interfaces/Notification";
@@ -9,135 +9,127 @@ import NotificationStyles from "../styles/NotificationTypesStyles";
 export default function NotificationPopup({ handleIsOpen }: { handleIsOpen: () => void }) {
   const { 
     notifications, 
-    setNotifications 
+    setNotifications,
+    handleDeleteNotification,
   } = useContext(NotificationContext)
 
-  useEffect(() => {
-    setNotifications(new Map([
-      [ 
-        "notification_1", 
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.ERROR,
-          showMore: "No se"
-        } 
-      ],
-      [
-        "notification_2",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.INFO,
-        }
-      ],
-      [
-        "notification_3",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación. Este es un ejemplo del texto de una notificación. Este es un ejemplo del texto de una notificación",
-          type: NotificationType.OK,
-          showMore: <span>XD</span>
-        }
-      ],
-      [
-        "notification_4",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_5",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_6",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_7",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_8",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_9",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_10",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_11",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_12",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_13",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ],
-      [
-        "notification_14",
-        {
-          title: "Ejemplo",
-          text: "Este es un ejemplo del texto de una notificación",
-          type: NotificationType.WARNING,
-        }
-      ]
-    ]))
-  }, [setNotifications])
-
-  const handleDelete = (rowId: string) => {
-    setNotifications((prevData) => {
-      const newMap = new Map(prevData)
-      newMap.delete(rowId)
-      return newMap
-    })
-  }
+  // useEffect(() => {
+  //   setNotifications(new Map([
+  //     [ 
+  //       "notification_1", 
+  //       { 
+  //         title: "Factura guardada",
+  //         text: "La factura fue guardada existosamente",
+  //         type: NotificationType.OK
+  //       }
+  //     ],
+  //     [
+  //       "notification_2",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.INFO,
+  //       }
+  //     ],
+  //     [
+  //       "notification_3",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación. Este es un ejemplo del texto de una notificación. Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.OK,
+  //         showMore: <span>XD</span>
+  //       }
+  //     ],
+  //     [
+  //       "notification_4",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_5",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_6",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_7",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_8",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_9",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_10",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_11",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_12",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_13",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ],
+  //     [
+  //       "notification_14",
+  //       {
+  //         title: "Ejemplo",
+  //         text: "Este es un ejemplo del texto de una notificación",
+  //         type: NotificationType.WARNING,
+  //       }
+  //     ]
+  //   ]))
+  // }, [setNotifications])
 
   return (
     <>
@@ -157,13 +149,14 @@ export default function NotificationPopup({ handleIsOpen }: { handleIsOpen: () =
         {  
           Array
             .from(notifications, ([key, notification]) => { return { key, notification}} )
+            .reverse()
             .map(({ key, notification }: { key: string, notification: Notification}, index: number) => 
               <NotificationItem 
                 key={index}
                 rowId={key}
                 notification={notification}
                 notificationStyles={NotificationStyles.get(notification.type)}
-                onClickDelete={handleDelete}
+                onClickDelete={handleDeleteNotification}
               />
             )
         }

@@ -3,7 +3,6 @@ import TableCell from "./TableCell"
 import tableEditIcon from "@public/dashboard/table_edit.svg"
 import tableAcceptIcon from "@public/dashboard/table_accept.svg"
 import tableCancelIcon from "@public/core/table_cancel.svg"
-import TableProps, { TableConfigHeaderProps } from "../interfaces/Table"
 import { Row } from "../interfaces/Row"
 import validateRow from "../util/validateRow"
 import { useState } from "react"
@@ -17,11 +16,18 @@ export default function TableRow({ row }: TableRowProps) {
   const { 
     header, 
     actions, 
+    modifiers,
     handleEditRow, 
     handleSelectRow, 
     handleCancelEditRow 
   } = useTable()
   
+  const [updateRow, setUpdateRow] = useState<boolean>(false)
+
+  const handleUpdateRow = () => {
+    setUpdateRow(!updateRow)
+  }
+
   const sizeIconOptionsTable = 18
   const [errors, setErrors] = useState<Map<string, string>>(new Map())
 
@@ -29,14 +35,12 @@ export default function TableRow({ row }: TableRowProps) {
     const errors = validateRow(row, header.columns)
     setErrors(errors)
     if (errors.size > 0) return
-    if (row.value.isNewRow) {
+    if (row.value.isNewRow && actions?.onAdd) {
       // TODO: Add this action result in a notification
       await actions.onAdd([row.value]) 
       row.value.isNewRow = false
-    } else {
-      if (actions.onEdit) { 
-        await actions.onEdit(row.value["_id"], row.value)
-      }
+    } else if (actions?.onEdit) {
+      await actions.onEdit(row.key, row.value)
     }
     handleEditRow(row.key)
   }
@@ -71,13 +75,15 @@ export default function TableRow({ row }: TableRowProps) {
         header.columns.map(
           (column, indexColumn: number) => {
             let value = row.value[column.tag] || ""
-            if (row.value.isNewRow) {
+            if (row.value.isNewRow && column.defaultValue) {
               if (column.defaultValue instanceof Function) value = column.defaultValue()
-              else value = column.defaultValue || ""
+              else value = column.defaultValue
             }
             return (
               <TableCell 
                 key={row.key + "_column_" + indexColumn}
+                updateRow={updateRow}
+                onUpdateRow={handleUpdateRow}
                 row={row.value}
                 value={value}
                 errorMessage={errors ? errors.get(column.tag) : undefined}
@@ -104,7 +110,7 @@ export default function TableRow({ row }: TableRowProps) {
             " 
           >
             {
-              ((header.options.onEdit && actions.onEdit) && row.value.isEditable) &&
+              ((header.options.onEdit && actions?.onEdit) && row.value.isEditable) &&
                 <>
                   <a 
                     href="#" 
@@ -133,7 +139,7 @@ export default function TableRow({ row }: TableRowProps) {
                 </>
             }
             {
-              ((header.options.onEdit && actions.onEdit) && !row.value.isEditable) &&
+              ((header.options.onEdit && (actions?.onEdit || modifiers?.onEditRow)) && !row.value.isEditable) &&
                 <a 
                   href="#" 
                   onClick={() => handleEditRow(row.key)}

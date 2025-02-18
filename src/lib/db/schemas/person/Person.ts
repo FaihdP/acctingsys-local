@@ -3,8 +3,8 @@ import Debt from "@schemas/embedded/Debt"
 import MongoDocument from "@schemas/common/MongoDocument"
 
 export enum PersonType {
-  SELLER,
-  BUYER
+  PROVIDER = "provider",
+  CLIENT = "client"
 }
 
 export default interface Person {

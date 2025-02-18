@@ -1,6 +1,7 @@
 import Logo from "@ui/core/components/Logo";
 import COLORS from "@ui/core/util/colors";
 import LoginForm from "@ui/login/containers/LoginForm";
+import { Suspense } from "react";
 
 export default async function Home() {
   return (
@@ -21,7 +22,9 @@ export default async function Home() {
       >
         <div>
           <Logo size={30}/>
-          <LoginForm />
+          <Suspense fallback={null}>
+            <LoginForm />
+          </Suspense>
         </div>
         <footer className="mt-[30px]">
           © {(new Date()).getFullYear()} Todos los derechos reservados.

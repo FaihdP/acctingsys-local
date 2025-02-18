@@ -5,7 +5,7 @@ import { ColumType, TableConfigProps } from "@ui/table/interfaces/Table"
 import COLORS from "@ui/core/util/colors"
 import saveInvoices from "@lib/services/invoice/saveInvoices"
 import getUsers from "@lib/services/user/getUsers"
-import getProductOverview from "@lib/services/invoice/getProductInvoicesByInvoiceId"
+import getProductOverviewByInvoiceId from "@lib/services/invoice/getProductOverviewByInvoiceId"
 import Input from "@ui/core/components/Input"
 import SearchIcon from "@public/dashboard/search.svg"
 import deleteInvoices from "@lib/services/invoice/deleteInvoices"
@@ -39,7 +39,6 @@ export default function TableExample() {
     actions: { 
       onEdit: async () => {}, 
       onAdd: saveInvoices, 
-      onDelete: deleteInvoices
     },
     header: {
       picker: true, 
@@ -97,7 +96,7 @@ export default function TableExample() {
           tag: "productOverview",
           type: ColumType.LIST,
           width: 400,
-          relationship: getProductOverview
+          relationship: getProductOverviewByInvoiceId
         },
       ],
     }

@@ -1,4 +1,4 @@
-import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from "react"
+import { Dispatch, MutableRefObject, SetStateAction } from "react"
 import ColumTypes from "./ColumTypes"
 import { MappedObject } from "./Row"
 
@@ -21,11 +21,12 @@ export interface Option {
 export interface Column {
   tag: string
   label: string
+  type: ColumType
   width?: number
   minWidth?: number
-  type: ColumType
   required?: boolean
   defaultValue?: any
+  relatedFields?: Map<string, ((newValue: any) => any)>
 }
 
 export interface TableConfigHeaderProps {
@@ -37,29 +38,54 @@ export interface TableConfigHeaderProps {
   columns: ColumTypes[]
 }
 
-export interface TableConfigProps {
-  /**
-   * #### Modify the table data 
-   */
-  modifiers: {
-    onAddRow?: () => Promise<any>,
-    onDeleteRow?: () => Promise<any>,
-  },
-  /**
-   * #### Modify the database data 
-   */
-  actions: {
-    onAdd: (data: any) => Promise<any>,
-    onDelete?: (id: string) => Promise<any>,
-    onEdit?: (id: string, data: any) => Promise<any>
-  }
-  header: TableConfigHeaderProps,
+export interface TableConfigPropsBase {
+  header: TableConfigHeaderProps
 }
+
+export type TableConfigProps = TableConfigPropsBase & (
+  /**
+   * ### Modifiers
+   * It will be execute when interacting with the different funcionalities in the table (add, edit, delete). 
+   */
+  | { 
+      actions?: never
+      modifiers?: {
+        onAddRow?: () => Promise<any>,
+        onDeleteRow?: (id: string[]) => Promise<any>,
+        onEditRow?: (data: any) => Promise<any>
+      },
+    }
+  /**
+   * ### Actions
+   * It executes when interacting with the different funcionalities in the table and modify the data in db. 
+   */
+  | {
+      modifiers?: never,
+      actions?: {
+        onAdd?: (data: any) => Promise<any>,
+        onDelete?: (rowKey: string, data: any) => Promise<any>,
+        onEdit?: (rowKey: string, data: any) => Promise<any>
+      }
+    }
+  // TODO: validate if it is necessary to have both (modifiers and actions)
+  | 
+    {
+      modifiers?: {
+        onAddRow?: () => Promise<any>,
+        onDeleteRow?: (id: string[]) => Promise<any>,
+        onEditRow?: (data: any) => Promise<any>
+      },
+      actions?: {
+        onAdd?: (data: any) => Promise<any>,
+        onDelete?: (id: string, data: any) => Promise<any>,
+        onEdit?: (id: string, data: any) => Promise<any>
+      }
+    }
+)
 
 export default interface TableProps {
   config: TableConfigProps
   initialData: Map<string, MappedObject> | null
-  //setData: Dispatch<SetStateAction<Map<string, MappedObject> | null>>
   pageSelected: number
   setPageSelected: Dispatch<SetStateAction<number>>,
   pagesNumber: MutableRefObject<number>

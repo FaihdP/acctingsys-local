@@ -1,10 +1,11 @@
 import { ColumType } from "../interfaces/Table"
 import { ListColumn, ObjectColumn, SelectColumn } from "../interfaces/ColumTypes"
+import getDatabaseFilterObject from "@ui/core/util/getDatabaseFilterObject"
 
 export default async function processRelationship(
   column: ListColumn | ObjectColumn | SelectColumn, 
   filter: string, 
-  columnFileds?: string[],
+  columnFields?: string[],
   documentId?: string
 ) {
   if (!column.relationship) return []
@@ -13,20 +14,10 @@ export default async function processRelationship(
      * // TODO: Improve this so that the filter searches loaded array first,
      * if it doesn't get information, execute the consult
      */
-    if (column.type === ColumType.OBJECT && columnFileds) {
-      const filterObject: { 
-        $or: Record<string, any>[] 
-      } = {
-        $or: []
-      }
-  
-      columnFileds.forEach((columnField) => {
-        const field: Record<string, any> = {}
-        field[columnField] = { $regex: filter, $options: 'i' }
-        filterObject.$or.push(field)
-      })
-
-      return (await column.relationship(filterObject)).data
+    if (column.type === ColumType.OBJECT && columnFields) {
+      const filterObject = getDatabaseFilterObject(columnFields, filter)
+      const data = (await column.relationship(filterObject)).data
+      return data
     } else {
       return (await column.relationship(documentId))
     }
