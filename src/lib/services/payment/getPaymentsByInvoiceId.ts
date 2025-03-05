@@ -1,14 +1,19 @@
 import find, { FindResults } from "@lib/db/repositories/find";
 import COLLECTIONS from "@lib/db/schemas/common/Collections";
+import { InvoiceProductsDocument } from "@lib/db/schemas/invoice/InvoiceProducts";
 import { PaymentDocument } from "@lib/db/schemas/payment/Payment";
 import handleError from "@lib/util/error/handleError";
 
-export default async function getPaymentsByInvoiceId(invoiceId: string): Promise<FindResults<PaymentDocument[]>> {
+export default async function getPaymentsByInvoiceId(
+  invoiceId: string, 
+  options?: Partial<InvoiceProductsDocument>
+): Promise<FindResults<PaymentDocument[]>> {
+  const filter = options ? { ...options } : { isDeleted: false }
   try {
     const result = await find<PaymentDocument>(
       COLLECTIONS.PAYMENTS, 
       { 
-        isDeleted: false, 
+        ...filter, 
         invoiceId 
       }, 
       undefined

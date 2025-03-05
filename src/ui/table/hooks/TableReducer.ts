@@ -37,7 +37,7 @@ export default function tableReducer(state: TableDataState, action: TableAction)
 
       return {
         map: (new Map(state.map)).set(
-          "row_" + (state.map.size), 
+          "row_" + (state.map.size + 1), 
           { isEditable: true, isSelected: false, isNewRow: true }
         )
       }

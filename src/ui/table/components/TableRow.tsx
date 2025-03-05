@@ -55,6 +55,7 @@ export default function TableRow({ row }: TableRowProps) {
         border-b
         min-h-[30px] 
         shadow-[0_1px_3px_-1px_rgba(0,0,0,0.1)]
+        hover:bg-[rgb(251,251,251,1)]
       "
     > 
       { 

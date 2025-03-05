@@ -6,19 +6,49 @@ import InvoiceProductsTable from "../components/InvoiceProductsTable";
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode";
 import { InvoicePopupContext } from "../hooks/InvoicePopupProvider";
 import InvoiceForm from "../components/InvoiceForm";
+import { INVOICE_WARNINGS } from "../hooks/useInvoiceWarnings";
+import InvoiceMigratedCantChangeToCreatedPopup from "../components/InvoiceMigratedCantChangeToCreatedPopup";
+import InvoiceDeletePaymentsPopup from "../components/InvoiceDeletePaymentsPopup";
+import InvoiceSavePaymentPopup from "../components/InvoiceSavePaymentPopup";
+import InvoiceRestaurePaymentsPopup from "../components/InvoiceRestaurePaymentsPopup";
 
 export default function InvoicePopupWithoutContext() {
   const {
-    errors,
+    warnings,
     onChangePopupMode,
     invoicePopupMode,
-    handleSave
+    handleSave,
   } = useContext(InvoicePopupContext)
+  const action = invoicePopupMode === INVOICE_POPUP_MODE.CREATE ? "Crea" : "Edita"
   
+  const isBlockingButton = () => {
+    const existsBlockingWarning =
+      Array
+        .from(warnings, ([invoiceWarningType, warning]) => { return warning.isBlocking })
+        .find((isBlocking) => isBlocking === true)
+
+    return existsBlockingWarning || false
+  }
+
   return createPortal(
     <>
+      {
+        warnings.get(INVOICE_WARNINGS.INVOICE_MIGRATED_CANT_CHANGE_TO_CREATED)?.isVisible && 
+          <InvoiceMigratedCantChangeToCreatedPopup />
+      }
+      {
+        warnings.get(INVOICE_WARNINGS.DELETE_PAYMENTS)?.isVisible &&
+          <InvoiceDeletePaymentsPopup />
+      }
+      {
+        warnings.get(INVOICE_WARNINGS.SAVE_PAYMENT_QUESTION)?.isVisible &&
+          <InvoiceSavePaymentPopup />
+      }
+      {
+        warnings.get(INVOICE_WARNINGS.RESTAURE_PAYMENTS)?.isVisible &&
+          <InvoiceRestaurePaymentsPopup />
+      }
       <div
-        onClick={() => onChangePopupMode(null)}
         className="
           absolute 
           w-[100vw] 
@@ -49,11 +79,11 @@ export default function InvoicePopupWithoutContext() {
           "
         >
           <span className="text-[30px]">
-            { invoicePopupMode === INVOICE_POPUP_MODE.CREATE ? "Crea" : "Edita" } tu factura
+            { action } tu factura
           </span>
           <div className="absolute flex w-full justify-end">
             <button 
-              disabled={errors.size > 0 && errors.get("totalValue")}
+              disabled={isBlockingButton()}
               className="
                 me-[30px] 
                 flex 

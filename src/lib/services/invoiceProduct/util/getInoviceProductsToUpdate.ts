@@ -1,12 +1,14 @@
-import { InvoiceProducts, InvoiceProductsDocument } from "@lib/db/schemas/invoice/InvoiceProducts"
+import { InvoiceProducts } from "@lib/db/schemas/invoice/InvoiceProducts"
 import { MappedObject } from "@ui/table/interfaces/Row"
+
+export type InvoiceProductsNulleableId = Omit<InvoiceProducts, "_id" | "__v"> & { _id?: { $oid: string }, __v?: number }
 
 export default function getInvoiceProductsToUpdate(
   invoiceId: string, 
   invoiceProducts: Map<string, MappedObject>, 
-) {
+): InvoiceProductsNulleableId[] {
   return Array.from(invoiceProducts.values()).map((invoiceProduct) => {
-    const result: any = {
+    const result: InvoiceProductsNulleableId = {
       _id: invoiceProduct._id ? { $oid: invoiceProduct._id.$oid } : undefined,
       productId: invoiceProduct.product._id?.$oid || invoiceProduct.productId, 
       product: { 

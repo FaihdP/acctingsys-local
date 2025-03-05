@@ -18,7 +18,6 @@ export default function NotificationProvider({ children }: { children: ReactNode
   }
 
   const handleAddNotification = (notification: Notification) => {
-    console.log(notification)
     setNotifications((prevData) => {
       const newMap = new Map(prevData)
       newMap.set("notification_" + notifications.size + 1, notification)

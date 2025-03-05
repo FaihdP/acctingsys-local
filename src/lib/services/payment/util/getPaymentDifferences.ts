@@ -1,8 +1,8 @@
+import MongoUpdateOptions from "@lib/db/interfaces/MongoUpdateOptions";
 import { PaymentDocument } from "@lib/db/schemas/payment/Payment";
-import { updateObject } from "@lib/services/invoiceProduct/util/getInvoiceProductDifferences";
 
 export default function getPaymentDifferences(newPayment: PaymentDocument, oldPayment: PaymentDocument) {
-  const result: updateObject = {}
+  const result: MongoUpdateOptions<PaymentDocument> = {}
 
   if (newPayment.bank) { 
     if (newPayment.bank !== oldPayment.bank) {

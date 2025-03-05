@@ -1,4 +1,4 @@
-import { ChangeEvent, createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, createContext, Dispatch, ReactNode, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from "react";
 import IInvoicePopupContext from "../interfaces/InvoicePopupContext";
 import { SessionContext } from "@ui/session/hooks/SessionProvider";
 import { PersonDocument } from "@lib/db/schemas/person/Person";
@@ -11,11 +11,14 @@ import mapData from "@ui/table/util/mapData";
 import getInvoiceProductsByInvoiceId from "@lib/services/invoiceProduct/getInvoiceProductsByInvoiceId";
 import getDatabaseFilterObject from "@ui/core/util/getDatabaseFilterObject";
 import getClients from "@lib/services/client/getClients";
-import handleSaveInvoice from "@lib/controllers/invoice/handleSave";
+import handleSaveInvoice from "@lib/controllers/invoice/handleSaveInvoice";
 import { NotificationContext } from "@ui/notification/hooks/NotificationProvider";
 import NotificationType from "@ui/notification/interfaces/NotificationType";
 import handleError from "@lib/util/error/handleError";
-import handleUpdateInvoice from "@lib/controllers/invoice/handleUpdate";
+import handleUpdateInvoice from "@lib/controllers/invoice/handleUpdateInvoice";
+import useInvoiceWarnings, { INVOICE_WARNINGS, Warning } from "./useInvoiceWarnings" ;
+import getInvoiceProductsToUpdate from "@lib/services/invoiceProduct/util/getInoviceProductsToUpdate";
+import getPaymentsByInvoiceId from "@lib/services/payment/getPaymentsByInvoiceId";
 
 export const InvoicePopupContext = createContext({} as IInvoicePopupContext)
 
@@ -33,14 +36,19 @@ interface InvoicePopupProviderProps {
 export default function InvoicePopupProvider({ children, data }: InvoicePopupProviderProps) {
   const { invoicePopupMode, invoiceData, onChangePopupMode } = data
   const { user } = useContext(SessionContext)
+  const { warnings, setWarnings } = useInvoiceWarnings()
   const [isVisiblePersonPopup, setIsVisiblePersonPopup] = useState<boolean>(false)
   const [isVisibleStatusPopup, setIsVisibleStatusPopup] = useState<boolean>(false)
   const [clients, setClients] = useState<PersonDocument[]>([])
   const [filterClient, setFilterClient] = useState<string | null>(null)
-  const [invoiceProducts, setInvoiceProducts] = useState<Map<string, MappedObject> | null>(
+  const shouldSavePayment = useRef<boolean>(false)
+  const shouldRestorePayments = useRef<boolean>(false)
+  const [
+    invoiceProducts, 
+    setInvoiceProducts
+  ] = useState<Map<string, MappedObject> | null>(
     invoicePopupMode === INVOICE_POPUP_MODE.EDIT ? null : new Map()
   )
-  const [errors, setErrors] = useState<Map<string, any>>(new Map())
   const [invoice, setInvoice] = useState<InvoiceDocument>({ 
     __v: 0,
     _id: { $oid: invoiceData?._id.$oid || "" },
@@ -86,11 +94,20 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
   }, [fetchInvoiceProducts, invoiceData])
 
   useEffect(() => {
-    setErrors((prevErrors) => {
-      if (invoice.status === INVOICE_STATUS.CREATED) return new Map(prevErrors)
-      return new Map(prevErrors).set("totalValue", invoice.value <= 0)
+    setWarnings((prevWarnings) => {
+      const newMap = new Map(prevWarnings)
+      const invoiceValueLowerZeroAndDifferenceCreated = invoice.value <= 0 && invoice.status !== INVOICE_STATUS.CREATED
+      newMap.set(
+        INVOICE_WARNINGS.TOTAL_INVOICE_IS_ZERO,
+        { 
+          isBlocking: invoiceValueLowerZeroAndDifferenceCreated, 
+          isVisible: invoiceValueLowerZeroAndDifferenceCreated
+        }
+      )
+
+      return newMap
     })
-  }, [invoice.value, invoice.status])
+  }, [invoice.status, invoice.value, setWarnings])
 
   useEffect(() => {
     if (isVisiblePersonPopup) fetchClients()
@@ -126,22 +143,58 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
     }
   }
 
-  const handleInputStatusChange = (status: INVOICE_STATUS) => {
-    if (invoice.status === status) return
-
-    if ([INVOICE_STATUS.PAID, INVOICE_STATUS.DEBT].includes(status)) {
-      handleInputChange("isPaid", status === "Pagada")
+  const handleIsVisibleInvoicePopup = (invoiceWarning: INVOICE_WARNINGS) => {
+    const warning: Warning | undefined = warnings.get(invoiceWarning)
+    if (warning) {
+      setWarnings(
+        new Map(warnings).set(
+          invoiceWarning, 
+          { ...warning, isVisible: !warning.isVisible }
+        )
+      )
+    } else {
+      setWarnings(
+        new Map(warnings).set(
+          invoiceWarning, 
+          { isBlocking: [INVOICE_WARNINGS.TOTAL_INVOICE_IS_ZERO].includes(invoiceWarning), isVisible: true }
+        )
+      )
     }
-    
-    if (invoice.migrated && INVOICE_STATUS.CREATED ) {
-      // TODO: make advice that says: "No es posible cambiar el estado de la factura a "Creada" si esta ya fue migrada."
-      return
-    } 
-    
-    if (invoice.status === INVOICE_STATUS.CREATED) delete invoice.status
+  }
 
-    setErrors(new Map(errors).set("totalValue", status !== "Creada"))
-    handleInputChange("status", status)
+  const handleInputStatusChange = (newStatus: INVOICE_STATUS) => {
+    const oldStatus = invoice.status
+    if (oldStatus === newStatus) return
+    if (oldStatus === INVOICE_STATUS.CREATED) delete invoice.status
+
+    if (invoice.migrated && newStatus === INVOICE_STATUS.CREATED) {
+      handleIsVisibleStatusPopup()
+      return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.INVOICE_MIGRATED_CANT_CHANGE_TO_CREATED)
+    } 
+
+    if ([INVOICE_STATUS.PAID, INVOICE_STATUS.DEBT].includes(newStatus)) {
+      if (oldStatus === INVOICE_STATUS.CREATED) {
+        //TODO: Get payment and validate
+        /*const payments = (await getPaymentsByInvoiceId(invoice._id.$oid, {})).data
+        if (payments.find((payment) => payment.isDeleted === false)) {}*/
+
+        handleIsVisibleInvoicePopup(INVOICE_WARNINGS.RESTAURE_PAYMENTS)
+        return handleIsVisibleStatusPopup()
+      }
+      handleInputChange("isPaid", newStatus === "Pagada")
+    }
+
+    if (newStatus === INVOICE_STATUS.CREATED) {
+      handleIsVisibleStatusPopup()
+      return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.DELETE_PAYMENTS)
+    }
+
+    if (newStatus === INVOICE_STATUS.PAID && oldStatus === INVOICE_STATUS.DEBT) {
+      handleIsVisibleStatusPopup()
+      return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.SAVE_PAYMENT_QUESTION)
+    }
+
+    handleInputChange("status", newStatus)
   }
 
   const handleInputClientFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -149,28 +202,37 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
   }
 
   const handleSave = async () => {
-    if (invoicePopupMode === INVOICE_POPUP_MODE.CREATE) {
-      try {
+    try {
+      let message
+      if (invoicePopupMode === INVOICE_POPUP_MODE.CREATE) {
         await handleSaveInvoice(invoice, invoiceProducts || new Map())
-        handleAddNotification ({ 
-          title: "Factura",
-          text: `La factura fue guardada exitosamente.`,
-          type: NotificationType.OK
-        })
-      } catch (error) {
-        handleError(error)
-        handleAddNotification({ 
-          title: "Factura",
-          text: `La factura no pudo ser guardada.`,
-          type: NotificationType.ERROR
-        })
-      }
-    } else {
-      try {
-        await handleUpdateInvoice(invoice, invoiceProducts || new Map())
-      } catch (error) {
-        
-      }
+        message = "La factura fue guardada exitosamente." 
+      } else {
+        await handleUpdateInvoice(
+          { 
+            invoice, 
+            invoiceProducts: getInvoiceProductsToUpdate(invoice._id.$oid, invoiceProducts || new Map())
+          },
+          {
+            shouldSavePayment: shouldSavePayment.current,
+            shouldRestorePayments: shouldRestorePayments.current
+          }
+        )
+        message = "Los cambios en la factura fueron guardados exitosamente." 
+      } 
+      handleAddNotification ({ 
+        title: "Factura",
+        text: message,
+        type: NotificationType.OK
+      })
+    } catch (error) {
+      const message = handleError(error)
+      handleAddNotification({ 
+        title: "Factura",
+        text: `La factura no pudo ser guardada.`,
+        type: NotificationType.ERROR,
+        showMore: <span>{ message }</span>
+      })
     }
     onChangePopupMode(null)
   }
@@ -187,8 +249,8 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
       setFilterClient,
       invoiceProducts,
       setInvoiceProducts,
-      errors,
-      setErrors,
+      warnings,
+      setWarnings,
       invoice,
       setInvoice,
       onChangePopupMode,
@@ -199,7 +261,10 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
       handleIsVisiblePersonPopup,
       handleIsVisibleStatusPopup,
       handleInputStatusChange,
-      handleSave
+      handleSave,
+      handleIsVisibleInvoicePopup,
+      shouldSavePayment,
+      shouldRestorePayments
     }}>
       { children }
     </InvoicePopupContext.Provider>

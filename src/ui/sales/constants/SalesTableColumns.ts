@@ -33,7 +33,7 @@ const SALES_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     type: ColumType.SELECT,
     label: "Estado",
     tag: "status",
-    relationship: INVOICE_STATUS_COLORS,
+    relationship: new Map(Object.entries(INVOICE_STATUS_COLORS)),
     minWidth: 80,
     required: true,
     defaultValue: "Creada"

@@ -1,8 +1,10 @@
 import { Invoice } from "@lib/db/schemas/invoice/Invoice";
-import { updateObject } from "@lib/services/invoiceProduct/util/getInvoiceProductDifferences";
+import INVOICE_STATUS from "../interfaces/InvoiceStatus";
+import MongoUpdateOptions from "@lib/db/interfaces/MongoUpdateOptions";
 
-export default function getInvoiceDifferences(oldInvoice: Invoice, newInvoice: Invoice): updateObject {
-  const result: updateObject = { $set: {} }
+export default function getInvoiceDifferences(oldInvoice: Invoice, newInvoice: Invoice): MongoUpdateOptions<Invoice> {
+  const result: MongoUpdateOptions<Invoice> = { $set: {} }
+  result.$set = {}
   if (oldInvoice.date !== newInvoice.date) {
     result.$set.date = newInvoice.date
   }
@@ -12,7 +14,7 @@ export default function getInvoiceDifferences(oldInvoice: Invoice, newInvoice: I
   }
 
   // TODO: validate rules to know if add or not to add the status attribute
-  if (oldInvoice.status && (oldInvoice.status !== newInvoice.status)) {
+  if (oldInvoice.status !== newInvoice.status && newInvoice.status === INVOICE_STATUS.CREATED) {
     result.$set.status = newInvoice.status
   }
 

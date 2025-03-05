@@ -15,7 +15,7 @@ interface InvoiceDeletePopupProps {
 }
 
 export default function InvoiceDeletePopup({ onChangePopupMode, invoicesToDelete }: InvoiceDeletePopupProps) {
-  const plural = invoicesToDelete.length > 1
+  const isPlural = invoicesToDelete.length > 1
   const handleClosePopup = () => onChangePopupMode(null)
   const { handleAddNotification } = useContext(NotificationContext)
 
@@ -78,7 +78,7 @@ export default function InvoiceDeletePopup({ onChangePopupMode, invoicesToDelete
             invoicesToDelete.length > 0 &&
               <>
                 <div className="text-[20px] mt-2">
-                  ¿Estás seguro de eliminar <span className="font-bold">{ invoicesToDelete?.length }</span> factura{ plural ? "s" : "" }?
+                  ¿Estás seguro de eliminar <span className="font-bold">{ invoicesToDelete?.length }</span> factura{ isPlural ? "s" : "" }?
                 </div>
                 <span className="mt-2 text-[#7A7A7A]">
                   Se eliminaran todos los productos y pagos asociados a la factura.

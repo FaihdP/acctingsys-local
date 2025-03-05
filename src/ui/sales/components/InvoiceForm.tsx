@@ -5,15 +5,15 @@ import { useContext } from "react"
 import { InvoicePopupContext } from "../hooks/InvoicePopupProvider"
 import { formatToDatetimeLocal } from "@lib/util/time"
 import DatetimeInput from "@ui/core/components/DatetimeInput"
-import COLORS from "@ui/core/util/colors"
 import Image from "next/image"
-import Backdrop from "@ui/core/components/Backdrop"
 import ClockIcon from "@public/dashboard/clock.svg"
 import PaymentsIcon from "@public/dashboard/nav/PaymentsIcon";
 import SteppersIcon from "@public/dashboard/steppers.svg";
 import AcountCircleIcon from "@public/login/account_circle.svg"
 import getInvoiceStatus from "@lib/services/invoice/util/getInvoiceStatus"
-import Popover, { renderOptions } from "@ui/core/components/Popover"
+import Popover from "@ui/core/components/Popover"
+import { INVOICE_WARNINGS } from "../hooks/useInvoiceWarnings"
+import InvoiceStatusTag from "@ui/core/components/InvoiceStatusTag"
 
 const columnsFields = ["name", "lastname"]
 
@@ -22,8 +22,7 @@ export default function InvoiceForm() {
     handleInputChange, 
     invoice, 
     clients,
-    errors, 
-    setErrors,
+    warnings, 
     isVisiblePersonPopup,
     isVisibleStatusPopup,
     filterClient,
@@ -31,12 +30,17 @@ export default function InvoiceForm() {
     handleIsVisibleStatusPopup,
     handleInputClientChange,
     handleInputClientFilterChange,
-    handleInputStatusChange
+    handleInputStatusChange,
+    handleIsVisibleInvoicePopup
   } = useContext(InvoicePopupContext)
 
   const invoiceStatus = getInvoiceStatus(invoice)
+  const color = INVOICE_STATUS_COLORS[invoiceStatus]
 
-  const colors = INVOICE_STATUS_COLORS.get(invoiceStatus as INVOICE_STATUS)
+  const isVisibleInvoiceZeroPopup = () => {
+    const warning = warnings.get(INVOICE_WARNINGS.TOTAL_INVOICE_IS_ZERO)
+    return warning && warning.isVisible
+  }
 
   return (
     <>
@@ -100,29 +104,18 @@ export default function InvoiceForm() {
               bg-white 
               rounded-lg 
               shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
-              transition-opacity ${ errors && errors.get("totalValue") ? "opacity-1" : "opacity-0" }
+              transition-opacity ${ isVisibleInvoiceZeroPopup() ? "opacity-1" : "opacity-0" }
             `}>
               <div className="p-3">
                 <div className="flex flex-row ">
                   <div>
-                    Las facturas con estado <span 
-                      className="inline-block mx-1 rounded-lg px-[6px] py-[2px] whitespace-nowrap" 
-                      style={{ background: "#FB8383", color: "#922323" }}
-                    >
-                      En deuda
-                    </span>
-                    o
-                    <span 
-                      className="inline-block mx-1 rounded-lg px-[6px] py-[2px]" 
-                      style={{ background: COLORS.GREEN, color: "#0D6948" }}
-                    >
-                      Pagada
-                    </span>
+                    Las facturas con estado <InvoiceStatusTag invoiceStatus={INVOICE_STATUS.DEBT} />
+                    o <InvoiceStatusTag invoiceStatus={INVOICE_STATUS.PAID} />
                     deben tener un valor mayor a 0
                   </div>  
                   <div>
                     <button 
-                      onClick={() => setErrors(new Map(errors).set("totalValue", false))} 
+                      onClick={() => handleIsVisibleInvoicePopup(INVOICE_WARNINGS.TOTAL_INVOICE_IS_ZERO)} 
                       className="
                         ms-[10px]
                         cursor-pointer 
@@ -248,8 +241,8 @@ export default function InvoiceForm() {
                 py-[2px]
               `}
               style={{ 
-                background: colors ? colors.background : "", 
-                color: colors ? colors.fontColor : "" 
+                background: color ? color.background : "", 
+                color: color ? color.fontColor : "" 
               }}
             >
               { invoiceStatus }
@@ -274,7 +267,12 @@ export default function InvoiceForm() {
           isVisibleStatusPopup &&
             <div className="text-[12px] text-[#5C5C5C]">
               <Popover 
-                options={Array.from(INVOICE_STATUS_COLORS, ([key, value]) => { return { key, colors: value } })}
+                options={
+                  Array.from(
+                    Object.entries(INVOICE_STATUS_COLORS), 
+                    ([key, value]) => { return { key, colors: value } }
+                  )
+                }
                 columnType={ColumType.SELECT}
                 columnFields={columnsFields}
                 onChangeVisiblePopover={handleIsVisibleStatusPopup}

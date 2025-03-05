@@ -23,7 +23,7 @@ export default async function updatePaymentByInvoice(invoiceId: string, payment:
     if (updatePaymentObject.$set || updatePaymentObject.$unset) {
       return await update<PaymentDocument>(
         COLLECTIONS.PAYMENTS,
-        { _id: { $oid: payment._id.$oid }  },
+        { _id: { $oid: payment._id.$oid } },
         updatePaymentObject
       )
     }

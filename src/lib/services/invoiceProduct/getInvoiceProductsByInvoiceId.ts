@@ -6,8 +6,8 @@ import handleError from "@lib/util/error/handleError";
 export default async function getInvoiceProductsByInvoiceId(
   invoiceId: string,
   pageNumber?: number 
-): Promise<FindResults<InvoiceProductsDocument[]> | undefined> {
-  await new Promise((r) => setTimeout(r, 1000))
+): Promise<FindResults<InvoiceProductsDocument[]>> {
+  //await new Promise((r) => setTimeout(r, 1000))
   try {
     const result = await find<InvoiceProductsDocument>(
       COLLECTIONS.INVOICE_PRODUCTS, 

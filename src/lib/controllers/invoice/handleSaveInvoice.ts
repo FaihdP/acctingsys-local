@@ -1,7 +1,7 @@
 import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
 import saveInvoices, { SaveResult } from "@lib/services/invoice/saveInvoices";
 import { MappedObject } from "@ui/table/interfaces/Row";
-import getInvoiceProductsToSave from "./getInvoiceProductsToSave";
+import getInvoiceProductsToSave from "../../services/invoiceProduct/util/getInvoiceProductsToSave";
 import saveInvoiceProducts from "@lib/services/invoiceProduct/saveInvoiceProducts";
 import handleError from "@lib/util/error/handleError";
 import deleteInvoices from "@lib/services/invoice/deleteInvoices";
@@ -41,6 +41,6 @@ export default async function handleSaveInvoice(invoice: InvoiceDocument, invoic
     if (savedInvoice) deleteInvoices([savedInvoice.insertedIds[0].$oid])
     if (savedInvoiceProducts) deleteInvoiceProducts(savedInvoiceProducts.insertedIds.map((id) => id.$oid))
     if (savedPayment) deletePayments(savedPayment.insertedIds.map(id => id.$oid))
-    handleError(e)
+    throw handleError(e)
   }
 }

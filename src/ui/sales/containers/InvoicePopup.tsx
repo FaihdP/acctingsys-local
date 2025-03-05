@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react"
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode"
 import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice"
-import SalesProvider from "../hooks/InvoicePopupProvider"
+import InvoicePopupProvider from "../hooks/InvoicePopupProvider"
 import InvoicePopupWithoutContext from "./InvoicePopupWithoutContext"
 
-interface InvoicePopupWithContextProps {
+interface InvoicePopupProps {
   invoicePopupMode: INVOICE_POPUP_MODE
   onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE | null>>
   invoiceData: InvoiceDocument | null
@@ -14,9 +14,9 @@ export default function InvoicePopup({
   invoicePopupMode, 
   onChangePopupMode, 
   invoiceData 
-}: InvoicePopupWithContextProps) {
+}: InvoicePopupProps) {
   return (
-    <SalesProvider
+    <InvoicePopupProvider
       data={{
         invoiceData,
         invoicePopupMode,
@@ -24,6 +24,6 @@ export default function InvoicePopup({
       }}
     >
       <InvoicePopupWithoutContext/>
-    </SalesProvider>
+    </InvoicePopupProvider>
   )
 }
