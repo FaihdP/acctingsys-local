@@ -1,4 +1,4 @@
-import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
+import { Invoice, InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
 import saveInvoices, { SaveResult } from "@lib/services/invoice/saveInvoices";
 import { MappedObject } from "@ui/table/interfaces/Row";
 import getInvoiceProductsToSave from "../../services/invoiceProduct/util/getInvoiceProductsToSave";
@@ -11,7 +11,7 @@ import deleteInvoiceProducts from "@lib/services/invoiceProduct/deleteInvoicePro
 import deletePayments from "@lib/services/payment/deletePayments";
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus";
 
-export default async function handleSaveInvoice(invoice: InvoiceDocument, invoiceProducts: Map<string, MappedObject>) {
+export default async function handleSaveInvoice(invoice: Invoice, invoiceProducts: Map<string, MappedObject>) {
   let savedInvoice: SaveResult | void = undefined
   let savedInvoiceProducts: SaveResult | void = undefined
   let savedPayment: SaveResult | void = undefined

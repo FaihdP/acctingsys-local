@@ -4,7 +4,7 @@ import { SessionContext } from "@ui/session/hooks/SessionProvider";
 import { PersonDocument } from "@lib/db/schemas/person/Person";
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode";
 import { MappedObject } from "@ui/table/interfaces/Row";
-import { InvoiceDocument, InvoiceType } from "@lib/db/schemas/invoice/Invoice";
+import { Invoice, InvoiceDocument, InvoiceType } from "@lib/db/schemas/invoice/Invoice";
 import { formatDate, getDateTime } from "@lib/util/time";
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus";
 import mapData from "@ui/table/util/mapData";
@@ -167,31 +167,30 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
     if (oldStatus === newStatus) return
     if (oldStatus === INVOICE_STATUS.CREATED) delete invoice.status
 
-    if (invoice.migrated && newStatus === INVOICE_STATUS.CREATED) {
+    if (invoicePopupMode === INVOICE_POPUP_MODE.EDIT) {
       handleIsVisibleStatusPopup()
-      return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.INVOICE_MIGRATED_CANT_CHANGE_TO_CREATED)
-    } 
-
-    if ([INVOICE_STATUS.PAID, INVOICE_STATUS.DEBT].includes(newStatus)) {
-      if (oldStatus === INVOICE_STATUS.CREATED) {
-        //TODO: Get payment and validate
-        /*const payments = (await getPaymentsByInvoiceId(invoice._id.$oid, {})).data
-        if (payments.find((payment) => payment.isDeleted === false)) {}*/
-
-        handleIsVisibleInvoicePopup(INVOICE_WARNINGS.RESTAURE_PAYMENTS)
-        return handleIsVisibleStatusPopup()
+      if (invoice.migrated && newStatus === INVOICE_STATUS.CREATED) {
+        return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.INVOICE_MIGRATED_CANT_CHANGE_TO_CREATED)
+      } 
+  
+      if ([INVOICE_STATUS.PAID, INVOICE_STATUS.DEBT].includes(newStatus)) {
+        if (oldStatus === INVOICE_STATUS.CREATED) {
+          //TODO: Get payment and validate
+          /*const payments = (await getPaymentsByInvoiceId(invoice._id.$oid, {})).data
+          if (payments.find((payment) => payment.isDeleted === false)) {}*/
+  
+          return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.RESTAURE_PAYMENTS)
+        }
+        handleInputChange("isPaid", newStatus === "Pagada")
       }
-      handleInputChange("isPaid", newStatus === "Pagada")
-    }
-
-    if (newStatus === INVOICE_STATUS.CREATED) {
-      handleIsVisibleStatusPopup()
-      return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.DELETE_PAYMENTS)
-    }
-
-    if (newStatus === INVOICE_STATUS.PAID && oldStatus === INVOICE_STATUS.DEBT) {
-      handleIsVisibleStatusPopup()
-      return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.SAVE_PAYMENT_QUESTION)
+  
+      if (newStatus === INVOICE_STATUS.CREATED) {
+        return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.DELETE_PAYMENTS)
+      }
+  
+      if (newStatus === INVOICE_STATUS.PAID && oldStatus === INVOICE_STATUS.DEBT) {
+        return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.SAVE_PAYMENT_QUESTION)
+      }
     }
 
     handleInputChange("status", newStatus)
@@ -205,7 +204,7 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
     try {
       let message
       if (invoicePopupMode === INVOICE_POPUP_MODE.CREATE) {
-        await handleSaveInvoice(invoice, invoiceProducts || new Map())
+        await handleSaveInvoice(invoice as Invoice, invoiceProducts || new Map())
         message = "La factura fue guardada exitosamente." 
       } else {
         await handleUpdateInvoice(
