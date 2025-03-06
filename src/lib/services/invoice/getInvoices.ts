@@ -1,6 +1,6 @@
 import find, { FindResults } from "@lib/db/repositories/find";
 import COLLECTIONS from "@lib/db/schemas/common/Collections";
-import { InvoiceDocument, InvoiceType } from "@lib/db/schemas/invoice/Invoice";
+import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
 import getInvoiceStatus from "./util/getInvoiceStatus";
 
 export default async function getInvoices(

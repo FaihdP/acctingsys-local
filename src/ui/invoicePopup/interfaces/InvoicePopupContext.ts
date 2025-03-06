@@ -1,4 +1,4 @@
-import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
+import { InvoiceDocument, INVOICE_TYPE } from "@lib/db/schemas/invoice/Invoice";
 import { PersonDocument } from "@lib/db/schemas/person/Person";
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus";
 import { MappedObject } from "@ui/table/interfaces/Row";
@@ -6,7 +6,8 @@ import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from "react";
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode";
 import { INVOICE_WARNINGS, Warning } from "../hooks/useInvoiceWarnings";
 
-export default interface SalesContext {
+export default interface InvoicePopupContext {
+  invoiceType: INVOICE_TYPE
   isVisiblePersonPopup: boolean,
   setIsVisiblePersonPopup: Dispatch<SetStateAction<boolean>>,
   isVisibleStatusPopup: boolean,
@@ -33,7 +34,7 @@ export default interface SalesContext {
   handleIsVisiblePersonPopup: () => void,
   handleIsVisibleStatusPopup: () => void,
   handleInputStatusChange: (status: INVOICE_STATUS) => void,
-  onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE | null>>,
+  onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE>>,
   invoicePopupMode: INVOICE_POPUP_MODE,
   handleSave: () => Promise<void>,
   handleIsVisibleInvoicePopup: (invoiceWarning: INVOICE_WARNINGS) => void,

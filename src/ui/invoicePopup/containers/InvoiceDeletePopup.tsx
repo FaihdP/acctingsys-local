@@ -10,13 +10,13 @@ import NotificationType from "@ui/notification/interfaces/NotificationType"
 import handleError from "@lib/util/error/handleError"
 
 interface InvoiceDeletePopupProps {
-  onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE | null>>,
+  onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE>>,
   invoicesToDelete: string[]
 }
 
 export default function InvoiceDeletePopup({ onChangePopupMode, invoicesToDelete }: InvoiceDeletePopupProps) {
   const isPlural = invoicesToDelete.length > 1
-  const handleClosePopup = () => onChangePopupMode(null)
+  const handleClosePopup = () => onChangePopupMode(INVOICE_POPUP_MODE.NONE)
   const { handleAddNotification } = useContext(NotificationContext)
 
   const handleClickAccept = async () => {

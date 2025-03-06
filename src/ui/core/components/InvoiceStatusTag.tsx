@@ -1,5 +1,5 @@
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus"
-import INVOICE_STATUS_COLORS from "@ui/sales/constants/InvoiceStatusColors"
+import INVOICE_STATUS_COLORS from "@ui/core/constants/InvoiceStatusColors"
 
 export default function InvoiceStatusTag({ invoiceStatus }: { invoiceStatus: INVOICE_STATUS }) {
   const invoiceColors = INVOICE_STATUS_COLORS[invoiceStatus]

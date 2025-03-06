@@ -1,25 +1,23 @@
 'use client'
 
-import { InvoiceDocument, InvoiceType } from "@lib/db/schemas/invoice/Invoice"
+import { InvoiceDocument, INVOICE_TYPE } from "@lib/db/schemas/invoice/Invoice"
 import getInvoices from "@lib/services/invoice/getInvoices"
-import SearchIcon from "@public/dashboard/search.svg"
-import Input from "@ui/core/components/Input"
-import Spin from "@ui/core/components/Spin"
 import DynamicTable from "@ui/table/containers/DynamicTable"
 import { MappedObject } from "@ui/table/interfaces/Row"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import mapData from "@ui/table/util/mapData"
 import { useCallback, useEffect, useRef, useState } from "react"
-import InvoicePopup from "@ui/sales/containers/InvoicePopup"
-import INVOICE_POPUP_MODE from "@ui/sales/constants/InvoicePopupMode"
-import SALES_TABLE_COLUMNS from "@ui/sales/constants/SalesTableColumns"
-import InvoiceDeletePopup from "@ui/sales/containers/InvoiceDeletePopup"
+import INVOICE_POPUP_MODE from "@ui/invoicePopup/constants/InvoicePopupMode"
+import SALES_TABLE_COLUMNS from "@ui/sales/containers/SalesTableColumns"
+import InvoiceDeletePopup from "@ui/invoicePopup/containers/InvoiceDeletePopup"
+import InvoiceSalePopup from "@ui/sales/containers/InvoiceSalePopup"
+import InputSearchTable from "@ui/core/components/InputSearchTable"
 
 export default function Sales() {
-  const [data, setData] = useState<Map<string, MappedObject> | null>(null)
+  const [salesInvoices, setSalesInvoices] = useState<Map<string, MappedObject> | null>(null)
   const [filters, setFilters] = useState<Partial<InvoiceDocument>>({})
   const [sort, setSort] = useState()
-  const [invoicePopupMode, setInvoicePopupMode] = useState<INVOICE_POPUP_MODE | null>(null)
+  const [invoicePopupMode, setInvoicePopupMode] = useState<INVOICE_POPUP_MODE>(INVOICE_POPUP_MODE.NONE)
   const [invoiceToEdit, setInvoiceToEdit] = useState<InvoiceDocument | null>(null)
   const [invoicesToDelete, setInvoicesToDelete] = useState<string[] | null>(null)
 
@@ -27,18 +25,19 @@ export default function Sales() {
   const pagesNumber = useRef<number>(1)
 
   const fetchData = useCallback(async () => {
-    if (invoicePopupMode !== null) return
+    if (invoicePopupMode !== INVOICE_POPUP_MODE.NONE) return
     const result = await getInvoices(
       {
-        type: InvoiceType.SALE, 
+        type: INVOICE_TYPE.SALE, 
         isDeleted: false,
         ...filters 
       }, 
       pageSelected
     )
     pagesNumber.current = result.pages_number
-    setData(mapData(result.data)) 
-  }, [filters, pageSelected, setData, invoicePopupMode])
+    console.log(result)
+    setSalesInvoices(mapData(result.data)) 
+  }, [filters, pageSelected, setSalesInvoices, invoicePopupMode])
 
   useEffect(() => { fetchData() }, [fetchData])
 
@@ -71,53 +70,27 @@ export default function Sales() {
   return (
     <>
       { 
-        (
-          invoicePopupMode !== null 
-            && [INVOICE_POPUP_MODE.CREATE, INVOICE_POPUP_MODE.EDIT].includes(invoicePopupMode)
-        ) &&
-          <InvoicePopup 
+        [INVOICE_POPUP_MODE.CREATE, INVOICE_POPUP_MODE.EDIT].includes(invoicePopupMode) &&
+          <InvoiceSalePopup
             invoicePopupMode={invoicePopupMode}
             onChangePopupMode={setInvoicePopupMode}  
             invoiceData={invoiceToEdit}
           /> 
       }
       {
-        (invoicePopupMode !== null && invoicePopupMode === INVOICE_POPUP_MODE.DELETE) &&
+        invoicePopupMode === INVOICE_POPUP_MODE.DELETE &&
           <InvoiceDeletePopup 
             onChangePopupMode={setInvoicePopupMode} 
             invoicesToDelete={invoicesToDelete || []}
           />
       }
-      <div className="flex flex-row mb-[40px]">
-        <Input 
-          type="text" 
-          name="search_invoice" 
-          value="" 
-          onChange={() => {}} 
-          placeholder="Buscar..." 
-          className="
-            h-[40px]
-            w-[450px]
-            bg-[#F4F4F4]
-            placeholder-[#7A7A7A]
-            shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
-          "
-          styles={{
-            fontSize: '16px',
-            userSelect: "none"
-          }}
-          image={{
-            alt: 'search_icon',
-            src: SearchIcon.src,
-            height: 24,
-            width: 24
-          }}
-        /> 
-        <span className="ms-[24px]">{ data ? data.size : <Spin size={9} className="!me-1" /> } elemento{ !data || data.size > 1 ? "s" : "" } • Ordenado por Fecha de venta • Filtrado por “Ejemplo”</span>
-      </div>
+      <InputSearchTable 
+        data={salesInvoices}
+        onChange={() => {}}
+      />
       <DynamicTable 
         config={tableConfig}
-        initialData={data} 
+        initialData={salesInvoices} 
         pageSelected={pageSelected} 
         pagesNumber={pagesNumber}   
         setPageSelected={setPageSelected}   

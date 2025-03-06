@@ -1,4 +1,5 @@
 enum INVOICE_POPUP_MODE {
+  NONE,
   CREATE,
   EDIT,
   DELETE

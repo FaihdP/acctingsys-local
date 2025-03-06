@@ -4,7 +4,7 @@ import { SessionContext } from "@ui/session/hooks/SessionProvider";
 import { PersonDocument } from "@lib/db/schemas/person/Person";
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode";
 import { MappedObject } from "@ui/table/interfaces/Row";
-import { Invoice, InvoiceDocument, InvoiceType } from "@lib/db/schemas/invoice/Invoice";
+import { Invoice, InvoiceDocument, INVOICE_TYPE } from "@lib/db/schemas/invoice/Invoice";
 import { formatDate, getDateTime } from "@lib/util/time";
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus";
 import mapData from "@ui/table/util/mapData";
@@ -29,12 +29,13 @@ interface InvoicePopupProviderProps {
   data: {
     invoicePopupMode: INVOICE_POPUP_MODE,
     invoiceData: InvoiceDocument | null,
-    onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE | null>>,
+    invoiceType: INVOICE_TYPE,
+    onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE>>,
   }
 }
 
 export default function InvoicePopupProvider({ children, data }: InvoicePopupProviderProps) {
-  const { invoicePopupMode, invoiceData, onChangePopupMode } = data
+  const { invoicePopupMode, invoiceData, invoiceType, onChangePopupMode } = data
   const { user } = useContext(SessionContext)
   const { warnings, setWarnings } = useInvoiceWarnings()
   const [isVisiblePersonPopup, setIsVisiblePersonPopup] = useState<boolean>(false)
@@ -57,7 +58,7 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
     status: invoiceData?.status || undefined,
     date: invoiceData?.date || formatDate(getDateTime()),
     value: invoiceData?.value || 0,
-    type: invoiceData?.type || InvoiceType.SALE,
+    type: invoiceData?.type || invoiceType,
     isPaid: invoiceData?.isPaid !== undefined ? invoiceData?.isPaid : true,
     userId: invoiceData?.userId || user.id,
     user: {
@@ -236,11 +237,12 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
         showMore: <span>{ message }</span>
       })
     }
-    onChangePopupMode(null)
+    onChangePopupMode(INVOICE_POPUP_MODE.NONE)
   }
 
   return (
     <InvoicePopupContext.Provider value={{
+      invoiceType,
       isVisiblePersonPopup,
       setIsVisiblePersonPopup,
       isVisibleStatusPopup,

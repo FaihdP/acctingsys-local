@@ -1,5 +1,5 @@
 import { ColumType } from "@ui/table/interfaces/Table"
-import INVOICE_STATUS_COLORS from "../constants/InvoiceStatusColors"
+import INVOICE_STATUS_COLORS from "../../core/constants/InvoiceStatusColors"
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus"
 import { useContext } from "react"
 import { InvoicePopupContext } from "../hooks/InvoicePopupProvider"

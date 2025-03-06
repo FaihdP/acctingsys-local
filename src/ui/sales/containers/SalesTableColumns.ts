@@ -2,7 +2,7 @@ import getProductInvoicesByInvoiceId from "@lib/services/invoice/getProductOverv
 import getUsers from "@lib/services/user/getUsers"
 import { formatDate, getDateTime } from "@lib/util/time"
 import { ColumType, TableConfigHeaderProps } from "@ui/table/interfaces/Table"
-import INVOICE_STATUS_COLORS from "./InvoiceStatusColors"
+import INVOICE_STATUS_COLORS from "../../core/constants/InvoiceStatusColors"
 
 const SALES_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
   { 
