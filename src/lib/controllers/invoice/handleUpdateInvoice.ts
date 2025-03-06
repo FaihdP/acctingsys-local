@@ -32,19 +32,13 @@ export default async function handleUpdateInvoice(
 ) {
   try {
     const { invoice, invoiceProducts } = newData
-    
-    // console.log("newInvoiceProducts", invoiceProducts)
 
     const oldInvoice = (await find<InvoiceDocument>(COLLECTIONS.INVOICES, { _id: { $oid: invoice._id.$oid } })).data[0]
     const oldInvoiceProducts = (await getInvoiceProductsByInvoiceId(invoice._id.$oid)).data
     const oldPayments = (await getPaymentsByInvoiceId(invoice._id.$oid, {})).data
 
-    // console.log("oldInvoiceProducts", oldInvoiceProducts)
-
     const updateInvoiceObject = getInvoiceDifferences(oldInvoice, invoice)
     const updateInvoiceProductsObjects = getInvoiceProductsDifferences(oldInvoiceProducts, invoiceProducts)
-
-    // console.log("updateInvoiceProducts", updateInvoiceProductsObjects)
     
     if (invoice.status === INVOICE_STATUS.CREATED) {
       await deleteByUpdatePayments(
@@ -91,8 +85,6 @@ export default async function handleUpdateInvoice(
       Object.keys(updateInvoiceObject.$set || {}).length > 0 
       || Object.keys(updateInvoiceObject.$unset || {}).length > 0
     ) {
-      console.log(invoice)
-      console.log(updateInvoiceObject)
       validateInvoice(invoice)
       await updateInvoice(invoice._id.$oid, updateInvoiceObject)
     }

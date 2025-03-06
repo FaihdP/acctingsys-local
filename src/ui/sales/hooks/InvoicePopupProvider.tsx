@@ -173,24 +173,24 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
         return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.INVOICE_MIGRATED_CANT_CHANGE_TO_CREATED)
       } 
   
-      if ([INVOICE_STATUS.PAID, INVOICE_STATUS.DEBT].includes(newStatus)) {
-        if (oldStatus === INVOICE_STATUS.CREATED) {
-          //TODO: Get payment and validate
-          /*const payments = (await getPaymentsByInvoiceId(invoice._id.$oid, {})).data
-          if (payments.find((payment) => payment.isDeleted === false)) {}*/
-  
-          return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.RESTAURE_PAYMENTS)
-        }
-        handleInputChange("isPaid", newStatus === "Pagada")
-      }
-  
       if (newStatus === INVOICE_STATUS.CREATED) {
         return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.DELETE_PAYMENTS)
       }
   
       if (newStatus === INVOICE_STATUS.PAID && oldStatus === INVOICE_STATUS.DEBT) {
         return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.SAVE_PAYMENT_QUESTION)
+      }        
+    }
+
+    if ([INVOICE_STATUS.PAID, INVOICE_STATUS.DEBT].includes(newStatus)) {
+      if (oldStatus === INVOICE_STATUS.CREATED && invoicePopupMode === INVOICE_POPUP_MODE.EDIT) {
+        //TODO: Get payment and validate
+        /*const payments = (await getPaymentsByInvoiceId(invoice._id.$oid, {})).data
+        if (payments.find((payment) => payment.isDeleted === false)) {}*/
+
+        return handleIsVisibleInvoicePopup(INVOICE_WARNINGS.RESTAURE_PAYMENTS)
       }
+      handleInputChange("isPaid", newStatus === "Pagada")
     }
 
     handleInputChange("status", newStatus)
@@ -204,6 +204,9 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
     try {
       let message
       if (invoicePopupMode === INVOICE_POPUP_MODE.CREATE) {
+        type InvoiceWithoutId = Omit<InvoiceDocument, "_id"> & { _id?: { $oid: string } }
+        const invoiceWithoutId: InvoiceWithoutId = invoice
+        delete invoiceWithoutId._id
         await handleSaveInvoice(invoice as Invoice, invoiceProducts || new Map())
         message = "La factura fue guardada exitosamente." 
       } else {

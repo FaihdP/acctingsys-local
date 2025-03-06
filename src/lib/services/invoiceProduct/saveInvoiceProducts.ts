@@ -8,7 +8,6 @@ import validateInvoiceProduct from "./util/validateInvoiceProduct"
 export default async function saveInvoiceProducts(invoiceProducts: InvoiceProducts[]): Promise<SaveResult | void> {
   try {
     invoiceProducts.forEach(validateInvoiceProduct)
-    console.log(invoiceProducts)
     return (await save<InvoiceProducts>(COLLECTIONS.INVOICE_PRODUCTS, invoiceProducts) as SaveResult)
   } catch (err) {
     throw handleError(err)
