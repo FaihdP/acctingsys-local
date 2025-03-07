@@ -4,7 +4,7 @@ import { createPortal } from "react-dom"
 import Image from "next/image"
 import deleteIcon from "@public/dashboard/delete.svg"
 import tableCancelIcon from "@public/core/table_cancel.svg"
-import handleDelete from "@lib/controllers/invoice/handleDelete"
+import handleDeleteInvoice from "@lib/controllers/invoice/handleDeleteInvoice"
 import { NotificationContext } from "@ui/notification/hooks/NotificationProvider"
 import NotificationType from "@ui/notification/interfaces/NotificationType"
 import handleError from "@lib/util/error/handleError"
@@ -21,7 +21,7 @@ export default function InvoiceDeletePopup({ onChangePopupMode, invoicesToDelete
 
   const handleClickAccept = async () => {
     try {
-      await handleDelete(invoicesToDelete)
+      await handleDeleteInvoice(invoicesToDelete)
       handleAddNotification({ 
         title: "Factura",
         text: `La factura ha sido eliminada correctamente.`,

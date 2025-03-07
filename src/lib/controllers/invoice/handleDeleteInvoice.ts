@@ -3,7 +3,7 @@ import deleteByUpdatePayments from "@lib/services/payment/deleteByUpdatePayments
 import getPayments from "@lib/services/payment/getPayments";
 import handleError from "@lib/util/error/handleError";
 
-export default async function handleDelete(invoiceIds: string[]) {
+export default async function handleDeleteInvoice(invoiceIds: string[]) {
   try {
     await deleteByUpdateInvoices(invoiceIds)
     for (let i = 0; i < invoiceIds.length; i++) {

@@ -110,7 +110,7 @@ export default function InvoicePopupWithoutContext() {
             </button>
             <button 
               className="cursor-pointer text-[#7A7A7A] text-[20px] me-7"
-              onClick={() => onChangePopupMode(null)}
+              onClick={() => onChangePopupMode(INVOICE_POPUP_MODE.NONE)}
             >
               ⨉
             </button>
