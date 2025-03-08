@@ -19,6 +19,7 @@ import handleUpdateInvoice from "@lib/controllers/invoice/handleUpdateInvoice";
 import useInvoiceWarnings, { INVOICE_WARNINGS, Warning } from "./useInvoiceWarnings" ;
 import getInvoiceProductsToUpdate from "@lib/services/invoiceProduct/util/getInoviceProductsToUpdate";
 import getPaymentsByInvoiceId from "@lib/services/payment/getPaymentsByInvoiceId";
+import getInitialInvoice from "../util/getInitialInvoice";
 
 export const InvoicePopupContext = createContext({} as IInvoicePopupContext)
 
@@ -36,7 +37,10 @@ interface InvoicePopupProviderProps {
 
 export default function InvoicePopupProvider({ children, data }: InvoicePopupProviderProps) {
   const { invoicePopupMode, invoiceData, invoiceType, onChangePopupMode } = data
+  
   const { user } = useContext(SessionContext)
+  const { handleAddNotification } = useContext(NotificationContext)
+
   const { warnings, setWarnings } = useInvoiceWarnings()
   const [isVisiblePersonPopup, setIsVisiblePersonPopup] = useState<boolean>(false)
   const [isVisibleStatusPopup, setIsVisibleStatusPopup] = useState<boolean>(false)
@@ -44,30 +48,16 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
   const [filterClient, setFilterClient] = useState<string | null>(null)
   const shouldSavePayment = useRef<boolean>(false)
   const shouldRestorePayments = useRef<boolean>(false)
-  const [
-    invoiceProducts, 
-    setInvoiceProducts
-  ] = useState<Map<string, MappedObject> | null>(
+  const [invoiceProducts, setInvoiceProducts] = useState<Map<string, MappedObject> | null>(
     invoicePopupMode === INVOICE_POPUP_MODE.EDIT ? null : new Map()
   )
-  const [invoice, setInvoice] = useState<InvoiceDocument>({ 
-    __v: 0,
-    _id: { $oid: invoiceData?._id.$oid || "" },
-    isDeleted: invoiceData?.isDeleted || false,
-    migrated: invoiceData?.migrated || false,
-    status: invoiceData?.status || undefined,
-    date: invoiceData?.date || formatDate(getDateTime()),
-    value: invoiceData?.value || 0,
-    type: invoiceData?.type || invoiceType,
-    isPaid: invoiceData?.isPaid !== undefined ? invoiceData?.isPaid : true,
-    userId: invoiceData?.userId || user.id,
-    user: {
-      name: invoiceData?.user?.name || user.name,
-      lastname: invoiceData?.user?.lastname || user.lastname
-    },
-  })
-  
-  const { handleAddNotification } = useContext(NotificationContext)
+
+  const getInitialInvoiceCallback = useCallback(
+    () => getInitialInvoice(invoiceData, invoiceType, user), 
+    [invoiceData, invoiceType, user]
+  )
+
+  const [invoice, setInvoice] = useState<InvoiceDocument>(getInitialInvoiceCallback())
 
   const fetchClients = useCallback(async () => {
     const result = await getClients(filterClient ? getDatabaseFilterObject(columnsFields, filterClient) : {})
@@ -112,7 +102,7 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
 
   useEffect(() => {
     if (isVisiblePersonPopup) fetchClients()
-  }, [filterClient, isVisiblePersonPopup, fetchClients, clients.length])
+  }, [filterClient, isVisiblePersonPopup, fetchClients])
 
   const handleIsVisiblePersonPopup = () => {  
     setIsVisiblePersonPopup(!isVisiblePersonPopup)

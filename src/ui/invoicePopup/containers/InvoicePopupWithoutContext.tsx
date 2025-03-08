@@ -24,7 +24,7 @@ export default function InvoicePopupWithoutContext() {
   const isBlockingButton = () => {
     const existsBlockingWarning =
       Array
-        .from(warnings, ([invoiceWarningType, warning]) => { return warning.isBlocking })
+        .from(warnings, ([, warning]) => { return warning.isBlocking })
         .find((isBlocking) => isBlocking === true)
 
     return existsBlockingWarning || false

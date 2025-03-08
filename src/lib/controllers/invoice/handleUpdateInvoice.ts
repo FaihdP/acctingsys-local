@@ -39,7 +39,29 @@ export default async function handleUpdateInvoice(
 
     const updateInvoiceObject = getInvoiceDifferences(oldInvoice, invoice)
     const updateInvoiceProductsObjects = getInvoiceProductsDifferences(oldInvoiceProducts, invoiceProducts)
+
+    if (
+      Object.keys(updateInvoiceObject.$set || {}).length > 0 
+      || Object.keys(updateInvoiceObject.$unset || {}).length > 0
+    ) {
+      validateInvoice(invoice)
+      await updateInvoice(invoice._id.$oid, updateInvoiceObject)
+    }
     
+    if (updateInvoiceProductsObjects.toSave.length > 0) {
+      await saveInvoiceProducts(updateInvoiceProductsObjects.toSave)
+    }
+
+    if (updateInvoiceProductsObjects.toDelete.length > 0) {
+      await deleteInvoiceProducts(
+        updateInvoiceProductsObjects.toDelete.map(({ invoiceProductId }) => invoiceProductId)
+      )
+    }
+
+    if (updateInvoiceProductsObjects.toUpdate.length > 0) {
+      await updateInvoiceProducts(updateInvoiceProductsObjects.toUpdate)
+    }
+
     if (invoice.status === INVOICE_STATUS.CREATED) {
       await deleteByUpdatePayments(
         oldPayments
@@ -79,28 +101,6 @@ export default async function handleUpdateInvoice(
           invoiceId: invoice._id.$oid,
         }
       ])
-    }
-
-    if (
-      Object.keys(updateInvoiceObject.$set || {}).length > 0 
-      || Object.keys(updateInvoiceObject.$unset || {}).length > 0
-    ) {
-      validateInvoice(invoice)
-      await updateInvoice(invoice._id.$oid, updateInvoiceObject)
-    }
-    
-    if (updateInvoiceProductsObjects.toSave.length > 0) {
-      await saveInvoiceProducts(updateInvoiceProductsObjects.toSave)
-    }
-
-    if (updateInvoiceProductsObjects.toDelete.length > 0) {
-      await deleteInvoiceProducts(
-        updateInvoiceProductsObjects.toDelete.map(({ invoiceProductId }) => invoiceProductId)
-      )
-    }
-
-    if (updateInvoiceProductsObjects.toUpdate.length > 0) {
-      await updateInvoiceProducts(updateInvoiceProductsObjects.toUpdate)
     }
 
     if (oldPayments.length > 0) {
