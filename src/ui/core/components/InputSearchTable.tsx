@@ -5,9 +5,11 @@ import Spin from "./Spin";
 
 export default function InputSearchTable({
   data,
+  filter,
   onChange
 }: {
   data: Map<string, any> | null,
+  filter: string,
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }) {
   return (
@@ -15,7 +17,7 @@ export default function InputSearchTable({
       <Input 
         type="text" 
         name="search" 
-        value="" 
+        value={filter}
         onChange={onChange} 
         placeholder="Buscar..." 
         className="
