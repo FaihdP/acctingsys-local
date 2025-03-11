@@ -4,7 +4,7 @@ import { ChangeEvent, useCallback, useEffect, useState } from "react"
 import getCell from "../util/getCell"
 import getEditableCell from "../util/getEditableCell"
 import processRelationship from "../util/processRelationship"
-import ColumTypes from "../interfaces/ColumTypes"
+import ColumTypes, { ListColumn, ObjectColumn, SelectColumn } from "../interfaces/ColumTypes"
 import useCell from "../hooks/useCell"
 
 interface CellProps { 
@@ -30,6 +30,7 @@ export default function TableCell({
   const [selected, setSelected] = useState<boolean>(false)
   const [relationship, setRelationship] = useState(null)
   const [filter, setFilter] = useState<string>("")
+  const columnTypeHasList = [ColumType.OBJECT, ColumType.SELECT, ColumType.LIST].includes(column.type)
 
   useEffect(() => { 
     setContent(value) 
@@ -38,14 +39,10 @@ export default function TableCell({
   }, [value, errorMessage, row, column, setContent, setError, updateRow])
 
   useEffect(() => {
-    if (
-      column.type === ColumType.OBJECT 
-      || column.type === ColumType.SELECT
-      || column.type === ColumType.LIST
-    ) {
+    if (columnTypeHasList) {
       const getRelationship = async () => {
         return await processRelationship(
-          column, 
+          column as ObjectColumn | ListColumn | SelectColumn, 
           filter, 
           column.type === ColumType.OBJECT ? column.fields : undefined,
           row?._id?.$oid
@@ -56,17 +53,11 @@ export default function TableCell({
         setRelationship(result)
       })()
     }
-  }, [column, filter, row])
+  }, [column, filter, row, columnTypeHasList])
 
   const handleChange = useCallback((newData: any) => {
     row[column.tag] = newData
-    if (
-      column.type !== ColumType.TEXT 
-      && column.type !== ColumType.NUMBER
-      && column.type !== ColumType.CURRENCY
-    ) {
-      setContent(newData)
-    }
+    if (!columnTypeHasList) setContent(newData)
 
     if (column.relatedFields) {
       column.relatedFields.forEach((handlRelatedFieldChange, key) => {
@@ -77,9 +68,10 @@ export default function TableCell({
 
 	}, [
     row, 
-    column.tag, column.type, column.relatedFields, 
+    column.tag, column.relatedFields, 
     setContent, 
-    onUpdateRow
+    onUpdateRow,
+    columnTypeHasList
   ])
   
   const handleSelected = () => setSelected(!selected)

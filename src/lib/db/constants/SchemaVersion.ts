@@ -1,0 +1,1 @@
+export const INVOICE_VERSION = 0
