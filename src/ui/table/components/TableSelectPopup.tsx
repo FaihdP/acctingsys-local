@@ -1,6 +1,4 @@
-import Backdrop from "@ui/core/components/Backdrop";
 import { ColumType } from "../interfaces/Table";
-import Spin from "@ui/core/components/Spin";
 import { ChangeEvent } from "react";
 import Popover from "@ui/core/components/Popover";
 

@@ -1,4 +1,3 @@
-import { MutableRefObject } from "react"
 import { MappedObject } from "../interfaces/Row"
 
 export enum TableActions {

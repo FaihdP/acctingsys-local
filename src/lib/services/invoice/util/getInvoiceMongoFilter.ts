@@ -1,5 +1,3 @@
-import { INVOICE_TYPE } from "@lib/db/schemas/invoice/Invoice";
-
 export default function getInvoiceMongoFilter(text: string, defaultFilter: any) {
   const searchText = text.trim().toLowerCase()
   if (!searchText || searchText.trim() === "") return defaultFilter
@@ -49,5 +47,6 @@ export default function getInvoiceMongoFilter(text: string, defaultFilter: any) 
     $and: [defaultFilter]
   }
 
+  console.log(query)
   return query
 }
