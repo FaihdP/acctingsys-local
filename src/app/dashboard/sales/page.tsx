@@ -12,31 +12,43 @@ import SALES_TABLE_COLUMNS from "@ui/sales/constants/SalesTableColumns"
 import InvoiceDeletePopup from "@ui/invoicePopup/containers/InvoiceDeletePopup"
 import InvoiceSalePopup from "@ui/sales/containers/InvoiceSalePopup"
 import InputSearchTable from "@ui/core/components/InputSearchTable"
-import getInvoiceFilter from "@lib/services/invoice/util/getInvoiceFilter"
+import useDebounce from "@ui/core/hooks/useDebounce"
+import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
+
+const DEBOUNCE_TIME: number = 200
+
+const DEFAULT_INVOICE_SALES_FILTER: Partial<Invoice> = {
+  type: INVOICE_TYPE.SALE,
+  isDeleted: false
+}
 
 export default function Sales() {
   const [salesInvoices, setSalesInvoices] = useState<Map<string, MappedObject> | null>(null)
-  const [filters, setFilters] = useState<string>("")
+  const [filter, setFilter] = useState<string>("")
   const [sort, setSort] = useState()
   const [invoicePopupMode, setInvoicePopupMode] = useState<INVOICE_POPUP_MODE>(INVOICE_POPUP_MODE.NONE)
   const [invoiceToEdit, setInvoiceToEdit] = useState<InvoiceDocument | null>(null)
   const [invoicesToDelete, setInvoicesToDelete] = useState<string[] | null>(null)
+  const debouncedFilter = useDebounce(filter, DEBOUNCE_TIME)
 
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
 
-  const fetchData = useCallback(async () => {
-    if (invoicePopupMode !== INVOICE_POPUP_MODE.NONE) return
-    const result = await getInvoices(
-      getInvoiceFilter(filters), 
+  const fetchInvoices = useCallback(async () => {
+    let result;
+    result = await getInvoices(
+      debouncedFilter ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_SALES_FILTER) : DEFAULT_INVOICE_SALES_FILTER, 
       pageSelected
     )
-    pagesNumber.current = result.pages_number
-    console.log(result)
-    setSalesInvoices(mapData(result.data)) 
-  }, [filters, pageSelected, setSalesInvoices, invoicePopupMode])
 
-  useEffect(() => { fetchData() }, [fetchData])
+    pagesNumber.current = result.pages_number
+    setSalesInvoices(mapData(result.data)) 
+  }, [pageSelected, setSalesInvoices, debouncedFilter])
+
+  useEffect(() => { 
+    if (invoicePopupMode !== INVOICE_POPUP_MODE.NONE) return
+    fetchInvoices() 
+  }, [fetchInvoices, invoicePopupMode])
 
   const tableConfig: TableConfigProps = {
     modifiers: {
@@ -83,8 +95,8 @@ export default function Sales() {
       }
       <InputSearchTable 
         data={salesInvoices}
-        filter={filters}
-        onChange={(e) => setFilters(e.target.value)}
+        filter={filter}
+        onChange={(e) => setFilter(e.target.value)}
       />
       <DynamicTable 
         config={tableConfig}

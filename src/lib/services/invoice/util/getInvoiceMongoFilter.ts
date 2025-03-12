@@ -1,11 +1,8 @@
 import { INVOICE_TYPE } from "@lib/db/schemas/invoice/Invoice";
 
-export default function getInvoiceFilter(text: string) {
+export default function getInvoiceMongoFilter(text: string, defaultFilter: any) {
   const searchText = text.trim().toLowerCase()
-  if (!searchText || searchText.trim() === "") return {
-    type: INVOICE_TYPE.SALE, 
-    isDeleted: false,
-  }
+  if (!searchText || searchText.trim() === "") return defaultFilter
 
   const searchWordsArray = searchText.split(" ")
 
@@ -49,10 +46,7 @@ export default function getInvoiceFilter(text: string) {
       ...(clientQuery.length > 0 ? clientQuery : []),
       ...(possibleNumber ? [{ value: possibleNumber }] : []),
     ],
-    $and: [{
-      type: INVOICE_TYPE.SALE, 
-      isDeleted: false,
-    }]
+    $and: [defaultFilter]
   }
 
   return query
