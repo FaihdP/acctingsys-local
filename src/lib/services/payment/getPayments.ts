@@ -6,7 +6,7 @@ import handleError from "@lib/util/error/handleError"
 export default async function getPayments(
   filters: any, 
   pageNumber?: number
-): Promise<FindResults<PaymentDocument[]> | undefined> {
+): Promise<FindResults<PaymentDocument[]>> {
   //await new Promise((r) => setTimeout(r, 1000))
   try {
     const result = await find<PaymentDocument>(

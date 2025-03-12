@@ -5,6 +5,7 @@ import getInvoices from "@lib/services/invoice/getInvoices"
 import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
 import InvoiceBuyPopup from "@ui/buys/containers/InvoiceBuyPopup"
 import InputSearchTable from "@ui/core/components/InputSearchTable"
+import DEBOUNCE_TIME from "@ui/core/constants/DebounceTime"
 import useDebounce from "@ui/core/hooks/useDebounce"
 import INVOICE_POPUP_MODE from "@ui/invoicePopup/constants/InvoicePopupMode"
 import InvoiceDeletePopup from "@ui/invoicePopup/containers/InvoiceDeletePopup"
@@ -14,8 +15,6 @@ import { MappedObject } from "@ui/table/interfaces/Row"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import mapData from "@ui/table/util/mapData"
 import { useCallback, useEffect, useRef, useState } from "react"
-
-const DEBOUNCE_TIME: number = 200
 
 const DEFAULT_INVOICE_BUYS_FILTER: Partial<Invoice> = {
   type: INVOICE_TYPE.BUY,
@@ -43,7 +42,7 @@ export default function Buys() {
   
       pagesNumber.current = result.pages_number
       setBuysInvoices(mapData(result.data)) 
-    }, [pageSelected, setBuysInvoices, debouncedFilter])
+    }, [pageSelected, debouncedFilter])
   
 
     useEffect(() => { 

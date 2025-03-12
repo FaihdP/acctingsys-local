@@ -14,8 +14,7 @@ import InvoiceSalePopup from "@ui/sales/containers/InvoiceSalePopup"
 import InputSearchTable from "@ui/core/components/InputSearchTable"
 import useDebounce from "@ui/core/hooks/useDebounce"
 import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
-
-const DEBOUNCE_TIME: number = 200
+import DEBOUNCE_TIME from "@ui/core/constants/DebounceTime"
 
 const DEFAULT_INVOICE_SALES_FILTER: Partial<Invoice> = {
   type: INVOICE_TYPE.SALE,
