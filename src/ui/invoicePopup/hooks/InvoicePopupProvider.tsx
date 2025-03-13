@@ -5,7 +5,6 @@ import { PersonDocument } from "@lib/db/schemas/person/Person";
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode";
 import { MappedObject } from "@ui/table/interfaces/Row";
 import { Invoice, InvoiceDocument, INVOICE_TYPE } from "@lib/db/schemas/invoice/Invoice";
-import { formatDate, getDateTime } from "@lib/util/time";
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus";
 import mapData from "@ui/table/util/mapData";
 import getInvoiceProductsByInvoiceId from "@lib/services/invoiceProduct/getInvoiceProductsByInvoiceId";
@@ -18,7 +17,6 @@ import handleError from "@lib/util/error/handleError";
 import handleUpdateInvoice from "@lib/controllers/invoice/handleUpdateInvoice";
 import useInvoiceWarnings, { INVOICE_WARNINGS, Warning } from "./useInvoiceWarnings" ;
 import getInvoiceProductsToUpdate from "@lib/services/invoiceProduct/util/getInoviceProductsToUpdate";
-import getPaymentsByInvoiceId from "@lib/services/payment/getPaymentsByInvoiceId";
 import getInitialInvoice from "../util/getInitialInvoice";
 
 export const InvoicePopupContext = createContext({} as IInvoicePopupContext)
@@ -28,7 +26,7 @@ const columnsFields = ["name", "lastname"]
 interface InvoicePopupProviderProps {
   children: ReactNode,
   data: {
-    invoicePopupMode: INVOICE_POPUP_MODE,
+    invoicePopupMode: INVOICE_POPUP_MODE.CREATE | INVOICE_POPUP_MODE.EDIT,
     invoiceData: InvoiceDocument | null,
     invoiceType: INVOICE_TYPE,
     onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE>>,
@@ -192,27 +190,28 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
   }
 
   const handleSave = async () => {
-    try {
-      let message
-      if (invoicePopupMode === INVOICE_POPUP_MODE.CREATE) {
+    const invoiceOperations = {
+      [INVOICE_POPUP_MODE.CREATE]: async () => {
         type InvoiceWithoutId = Omit<InvoiceDocument, "_id"> & { _id?: { $oid: string } }
         const invoiceWithoutId: InvoiceWithoutId = invoice
+        // It's necessary delete the ID because the save service returned a error if the id is void
         delete invoiceWithoutId._id
         await handleSaveInvoice(invoice as Invoice, invoiceProducts || new Map())
-        message = "La factura fue guardada exitosamente." 
-      } else {
+        return "La factura fue guardada exitosamente." 
+      },
+
+      [INVOICE_POPUP_MODE.EDIT]: async () => {
         await handleUpdateInvoice(
-          { 
-            invoice, 
-            invoiceProducts: getInvoiceProductsToUpdate(invoice._id.$oid, invoiceProducts || new Map())
-          },
-          {
-            shouldSavePayment: shouldSavePayment.current,
-            shouldRestorePayments: shouldRestorePayments.current
-          }
+          { invoice, invoiceProducts: getInvoiceProductsToUpdate(invoice._id.$oid, invoiceProducts || new Map())},
+          { shouldSavePayment: shouldSavePayment.current, shouldRestorePayments: shouldRestorePayments.current}
         )
-        message = "Los cambios en la factura fueron guardados exitosamente." 
-      } 
+        return "Los cambios en la factura fueron guardados exitosamente." 
+      }
+    }
+
+    try {  
+      const message: string = await invoiceOperations[invoicePopupMode]()
+
       handleAddNotification ({ 
         title: "Factura",
         text: message,
