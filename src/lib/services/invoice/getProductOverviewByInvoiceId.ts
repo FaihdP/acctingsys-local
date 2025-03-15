@@ -1,9 +1,9 @@
 import find from "@lib/db/repositories/find";
 import COLLECTIONS from "@lib/db/schemas/common/Collections";
-import { InvoiceProductsDocument } from "@lib/db/schemas/invoice/InvoiceProducts";
+import { InvoiceProductDocument } from "@lib/db/schemas/invoice/InvoiceProducts";
 
 export default async function getProductOverviewByInvoiceId(invoiceId: string) {
-  const invoiceProducts = await find<InvoiceProductsDocument>(
+  const invoiceProducts = await find<InvoiceProductDocument>(
     COLLECTIONS.INVOICE_PRODUCTS, 
     { invoiceId: invoiceId }, 
     undefined, 

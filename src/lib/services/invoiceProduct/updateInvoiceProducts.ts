@@ -2,15 +2,15 @@ import handleError from "@lib/util/error/handleError";
 import COLLECTIONS from "@lib/db/schemas/common/Collections";
 import { InvoiceProductUpdateOptionsWithId } from "./util/getInvoiceProductsDifferences";
 import update from "@lib/db/repositories/update";
+import { InvoiceProductDocument } from "@lib/db/schemas/invoice/InvoiceProducts";
 
 export default async function updateInvoiceProducts(invoiceProductsUpdates: InvoiceProductUpdateOptionsWithId[]) {
   try {
-    for (let i = 0; i < invoiceProductsUpdates.length; i++) {
-      const invoiceProduct = invoiceProductsUpdates[i]
-      await update(
+    for (const invoiceProductUpdate of invoiceProductsUpdates) {
+      await update<InvoiceProductDocument>(
         COLLECTIONS.INVOICE_PRODUCTS, 
-        { _id: { $oid: invoiceProduct.invoiceProductId } }, 
-        { $set: invoiceProduct.$set, $unset: invoiceProduct.$unset }
+        { _id: { $oid: invoiceProductUpdate.invoiceProductId } }, 
+        { $set: invoiceProductUpdate.$set, $unset: invoiceProductUpdate.$unset }
       )
     }
   } catch (error) {

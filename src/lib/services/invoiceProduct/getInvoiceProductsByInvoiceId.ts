@@ -1,15 +1,15 @@
 import find, { FindResults } from "@lib/db/repositories/find";
 import COLLECTIONS from "@lib/db/schemas/common/Collections";
-import { InvoiceProductsDocument } from "@lib/db/schemas/invoice/InvoiceProducts";
+import { InvoiceProductDocument } from "@lib/db/schemas/invoice/InvoiceProducts";
 import handleError from "@lib/util/error/handleError";
 
 export default async function getInvoiceProductsByInvoiceId(
   invoiceId: string,
   pageNumber?: number 
-): Promise<FindResults<InvoiceProductsDocument[]>> {
+): Promise<FindResults<InvoiceProductDocument[]>> {
   //await new Promise((r) => setTimeout(r, 1000))
   try {
-    const result = await find<InvoiceProductsDocument>(
+    const result = await find<InvoiceProductDocument>(
       COLLECTIONS.INVOICE_PRODUCTS, 
       { invoiceId }, 
       pageNumber ? { size: 25, number: pageNumber } : undefined

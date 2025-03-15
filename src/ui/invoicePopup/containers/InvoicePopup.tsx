@@ -21,7 +21,7 @@ export default function InvoicePopup({
     <InvoicePopupProvider
       data={{
         invoiceData,
-        invoicePopupMode,
+        invoicePopupMode: invoicePopupMode as INVOICE_POPUP_MODE.CREATE | INVOICE_POPUP_MODE.EDIT,
         invoiceType,
         onChangePopupMode
       }}

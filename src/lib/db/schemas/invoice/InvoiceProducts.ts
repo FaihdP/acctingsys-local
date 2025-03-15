@@ -9,4 +9,4 @@ export interface InvoiceProducts {
   product?: ProductValue
 }
 
-export interface InvoiceProductsDocument extends InvoiceProducts, MongoDocument {}
+export interface InvoiceProductDocument extends InvoiceProducts, MongoDocument {}

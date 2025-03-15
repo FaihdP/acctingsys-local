@@ -1,6 +1,6 @@
 import { InvoiceProductsNulleableId } from "@lib/services/invoiceProduct/util/getInoviceProductsToUpdate"
 import MongoUpdateOptions from "@lib/db/interfaces/MongoUpdateOptions"
-import { InvoiceProducts, InvoiceProductsDocument } from "@lib/db/schemas/invoice/InvoiceProducts"
+import { InvoiceProducts, InvoiceProductDocument } from "@lib/db/schemas/invoice/InvoiceProducts"
 
 export type InvoiceProductId = { invoiceProductId: string }
 
@@ -10,7 +10,7 @@ export type InvoiceProductUpdateOptionsWithId = InvoiceProductUpdateOptions & In
 
 export type invoiceProductsDifferences = {
   toSave: InvoiceProducts[]
-  toDelete: InvoiceProductId[],
+  toDelete: InvoiceProductDocument[],
   toUpdate: InvoiceProductUpdateOptionsWithId[] 
 }
 
@@ -20,6 +20,7 @@ function getInvoiceProductDifferences(
 ): InvoiceProductUpdateOptions {
   const result: MongoUpdateOptions<InvoiceProducts> = {}
   if ((newInvoiceProduct.product?.name 
+    // TODO: validate error in table about de value is void
     //&& newInvoiceProduct.product?.value
   ) && newInvoiceProduct.productId) {
     if (
@@ -60,7 +61,7 @@ function getInvoiceProductDifferences(
 }
 
 export default function getInvoiceProductsDifferences(
-  oldInvoiceProducts: InvoiceProductsDocument[], 
+  oldInvoiceProducts: InvoiceProductDocument[], 
   newInvoiceProducts: InvoiceProductsNulleableId[]
 ): invoiceProductsDifferences {
   const result: invoiceProductsDifferences = {
@@ -80,12 +81,13 @@ export default function getInvoiceProductsDifferences(
     )
     
     if (!newInvoiceProduct) {
-      result.toDelete.push({ invoiceProductId: oldInvoiceProduct._id.$oid })
-    } else {
-      const updateInvoiceProduct = getInvoiceProductDifferences(oldInvoiceProduct, newInvoiceProduct)
-      if (updateInvoiceProduct.$set || updateInvoiceProduct.$unset) {
-        result.toUpdate.push({ invoiceProductId: oldInvoiceProduct._id.$oid, ...updateInvoiceProduct })
-      }
+      result.toDelete.push(oldInvoiceProduct)
+      continue
+    }
+
+    const updateInvoiceProduct = getInvoiceProductDifferences(oldInvoiceProduct, newInvoiceProduct)
+    if (updateInvoiceProduct.$set || updateInvoiceProduct.$unset) {
+      result.toUpdate.push({ invoiceProductId: oldInvoiceProduct._id.$oid, ...updateInvoiceProduct })
     }
   }
 

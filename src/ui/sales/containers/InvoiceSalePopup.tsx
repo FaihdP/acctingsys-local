@@ -8,7 +8,7 @@ export default function InvoiceSalePopup({
   onChangePopupMode,
   invoiceData
 }: {
-  invoicePopupMode: INVOICE_POPUP_MODE
+  invoicePopupMode: INVOICE_POPUP_MODE.CREATE | INVOICE_POPUP_MODE.EDIT
   onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE>>
   invoiceData: InvoiceDocument | null,
 }) {

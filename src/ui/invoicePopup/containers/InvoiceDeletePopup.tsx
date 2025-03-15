@@ -8,6 +8,7 @@ import handleDeleteInvoice from "@lib/controllers/invoice/handleDeleteInvoice"
 import { NotificationContext } from "@ui/notification/hooks/NotificationProvider"
 import NotificationType from "@ui/notification/interfaces/NotificationType"
 import handleError from "@lib/util/error/handleError"
+import { SessionContext } from "@ui/session/hooks/SessionProvider"
 
 interface InvoiceDeletePopupProps {
   onChangePopupMode: Dispatch<SetStateAction<INVOICE_POPUP_MODE>>,
@@ -18,10 +19,11 @@ export default function InvoiceDeletePopup({ onChangePopupMode, invoicesToDelete
   const isPlural = invoicesToDelete.length > 1
   const handleClosePopup = () => onChangePopupMode(INVOICE_POPUP_MODE.NONE)
   const { handleAddNotification } = useContext(NotificationContext)
+  const { user } = useContext(SessionContext)
 
   const handleClickAccept = async () => {
     try {
-      await handleDeleteInvoice(invoicesToDelete)
+      await handleDeleteInvoice(invoicesToDelete, user.id)
       handleAddNotification({ 
         title: "Factura",
         text: `La factura ha sido eliminada correctamente.`,

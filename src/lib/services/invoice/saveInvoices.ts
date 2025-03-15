@@ -8,7 +8,7 @@ export interface SaveResult {
   insertedIds: { $oid: string }[]
 }
 
-export default async function saveInvoices(invoices: Invoice[]): Promise<SaveResult | void> {
+export default async function saveInvoices(invoices: Invoice[]): Promise<SaveResult> {
   try {  
     invoices.forEach(validateInvoice)
     return (await save<Invoice>(COLLECTIONS.INVOICES, invoices) as SaveResult)

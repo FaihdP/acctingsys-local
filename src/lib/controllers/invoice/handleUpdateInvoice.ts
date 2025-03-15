@@ -19,47 +19,77 @@ import updatePayment from "@lib/services/payment/updatePayment";
 import getPaymentDifferences from "@lib/services/payment/util/getPaymentDifferences";
 import savePayments from "@lib/services/payment/savePaymets";
 import { PaymentType } from "@lib/db/schemas/payment/Payment";
+import saveInvoiceLog from "@lib/services/invoiceLog/saveInvoiceLog";
+import { INVOICE_LOG_ACTION } from "@lib/db/schemas/invoice/InvoiceLog";
 
 export default async function handleUpdateInvoice(
   newData: {
     invoice: InvoiceDocument, 
-    invoiceProducts: InvoiceProductsNulleableId[]
+    invoiceProducts: InvoiceProductsNulleableId[],
+    userId: string
   },
   options: {
     shouldSavePayment: boolean,
     shouldRestorePayments: boolean,
   }
 ) {
-  try {
-    const { invoice, invoiceProducts } = newData
+  const { invoice, invoiceProducts, userId } = newData
 
+  try {
     const oldInvoice = (await find<InvoiceDocument>(COLLECTIONS.INVOICES, { _id: { $oid: invoice._id.$oid } })).data[0]
     const oldInvoiceProducts = (await getInvoiceProductsByInvoiceId(invoice._id.$oid)).data
     const oldPayments = (await getPaymentsByInvoiceId(invoice._id.$oid, {})).data
-
+  
     const updateInvoiceObject = getInvoiceDifferences(oldInvoice, invoice)
     const updateInvoiceProductsObjects = getInvoiceProductsDifferences(oldInvoiceProducts, invoiceProducts)
 
-    if (
-      Object.keys(updateInvoiceObject.$set || {}).length > 0 
-      || Object.keys(updateInvoiceObject.$unset || {}).length > 0
-    ) {
+    if (Object.keys(updateInvoiceObject.$set || updateInvoiceObject.$unset || {}).length > 0) {
       validateInvoice(invoice)
       await updateInvoice(invoice._id.$oid, updateInvoiceObject)
+      await saveInvoiceLog(
+        INVOICE_LOG_ACTION.UPDATE, 
+        "From: " + JSON.stringify(oldInvoice) + ". Update: " + JSON.stringify(updateInvoiceObject),
+        invoice._id.$oid,
+        userId
+      )
     }
     
     if (updateInvoiceProductsObjects.toSave.length > 0) {
       await saveInvoiceProducts(updateInvoiceProductsObjects.toSave)
+      for (const invoiceProduct of updateInvoiceProductsObjects.toSave) {
+        saveInvoiceLog(
+          INVOICE_LOG_ACTION.ADD_INVOICE_PRODUCT,
+          "Add invoice product " + JSON.stringify(invoiceProduct),
+          invoice._id.$oid,
+          invoice.userId
+        )
+      }
     }
 
     if (updateInvoiceProductsObjects.toDelete.length > 0) {
       await deleteInvoiceProducts(
-        updateInvoiceProductsObjects.toDelete.map(({ invoiceProductId }) => invoiceProductId)
+        updateInvoiceProductsObjects.toDelete.map(({ _id }) => _id.$oid)
       )
+      for (const invoiceProduct of updateInvoiceProductsObjects.toDelete) {
+        saveInvoiceLog(
+          INVOICE_LOG_ACTION.DELETE_INVOICE_PRODUCT,
+          "Delete invoice product " + JSON.stringify(invoiceProduct),
+          invoice._id.$oid,
+          invoice.userId
+        )
+      }
     }
 
     if (updateInvoiceProductsObjects.toUpdate.length > 0) {
       await updateInvoiceProducts(updateInvoiceProductsObjects.toUpdate)
+      for (const invoiceProduct of updateInvoiceProductsObjects.toUpdate) {
+        saveInvoiceLog(
+          INVOICE_LOG_ACTION.UPDATE_INVOICE_PRODUCT,
+          "Update invoice product " + JSON.stringify(invoiceProduct),
+          invoice._id.$oid,
+          invoice.userId
+        )
+      }
     }
 
     if (invoice.status === INVOICE_STATUS.CREATED) {
@@ -111,6 +141,12 @@ export default async function handleUpdateInvoice(
       }
     }
   } catch (error) {
-    throw handleError(error)
+    const message = handleError(error)
+    await saveInvoiceLog(
+      INVOICE_LOG_ACTION.UPDATE_ERROR, 
+      message, 
+      invoice._id.$oid, 
+      invoice.userId
+    )
   }
 } 

@@ -202,7 +202,11 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
 
       [INVOICE_POPUP_MODE.EDIT]: async () => {
         await handleUpdateInvoice(
-          { invoice, invoiceProducts: getInvoiceProductsToUpdate(invoice._id.$oid, invoiceProducts || new Map())},
+          { 
+            invoice, 
+            invoiceProducts: getInvoiceProductsToUpdate(invoice._id.$oid, invoiceProducts || new Map()),
+            userId: user.id
+          },
           { shouldSavePayment: shouldSavePayment.current, shouldRestorePayments: shouldRestorePayments.current}
         )
         return "Los cambios en la factura fueron guardados exitosamente." 

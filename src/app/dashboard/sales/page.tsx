@@ -80,7 +80,7 @@ export default function Sales() {
       { 
         [INVOICE_POPUP_MODE.CREATE, INVOICE_POPUP_MODE.EDIT].includes(invoicePopupMode) &&
           <InvoiceSalePopup
-            invoicePopupMode={invoicePopupMode}
+            invoicePopupMode={invoicePopupMode as INVOICE_POPUP_MODE.CREATE | INVOICE_POPUP_MODE.EDIT}
             onChangePopupMode={setInvoicePopupMode}  
             invoiceData={invoiceToEdit}
           /> 
