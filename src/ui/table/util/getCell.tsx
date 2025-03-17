@@ -1,6 +1,6 @@
 import formatCurrency from "@lib/util/currency"
 import { ColumType } from "@ui/table/interfaces/Table"
-import { MouseEvent } from "react"
+import { RelationshipComponent as IRelationshipComponent } from "../interfaces/RelationshipComponent"
 
 interface GetCellProps {
   columnType: ColumType
@@ -16,14 +16,12 @@ export default function getCell({ columnType, content, relationship, columnField
     { 
       children, 
       classname,
-      onClick
     }: { 
       children: React.ReactNode, 
       classname?: string,
-      onClick?: (e: MouseEvent<HTMLTableCellElement>) => void
     }
   ) { 
-    return <td onClick={onClick} className={classname}>{ children }</td>
+    return <td className={classname}>{ children }</td>
   }
 
   switch (columnType) {
@@ -85,13 +83,10 @@ export default function getCell({ columnType, content, relationship, columnField
     case ColumType.SELECT: {
       if (!relationship && !Array.isArray(relationship)) break
       
-      const colors = 
-        relationship.filter(
-          (tag: { key: string, colors: any }) => 
-            tag.key === content
-        )[0]?.colors
+      const RelationshipComponent: IRelationshipComponent = 
+        relationship.filter((tag: any) => tag.key === content)[0]?.component
 
-      if (!colors) {
+      if (!RelationshipComponent) {
         return (
           <TableData>
             <div className="
@@ -115,15 +110,7 @@ export default function getCell({ columnType, content, relationship, columnField
 
       Element = 
         <TableData>
-          <span
-            className="rounded-lg px-[6px] py-[2px]" 
-            style={{ 
-              background: colors.background, 
-              color: colors.fontColor 
-            }}
-          >
-            { content }
-          </span>
+          <RelationshipComponent onClickRemove={() => {}} onClickSpan={() => {}} isEditable={false} />
         </TableData>
 
       break

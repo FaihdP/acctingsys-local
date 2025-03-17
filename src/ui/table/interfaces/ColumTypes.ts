@@ -1,4 +1,6 @@
+import { ComponentType } from "react"
 import { Column, ColumType } from "./Table"
+import { RelationshipComponentProps } from "./RelationshipComponent"
 
 export interface DateColumn extends Column {
   type: ColumType.DATE
@@ -12,7 +14,7 @@ export interface ListColumn extends Column {
 
 export interface SelectColumn extends Column {
   type: ColumType.SELECT
-  relationship: Map<string, { background: string, fontColor: string }>
+  relationship: Map<string, ComponentType<RelationshipComponentProps>>
 }
 
 export interface ObjectColumn extends Column {

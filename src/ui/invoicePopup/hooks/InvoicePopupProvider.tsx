@@ -205,7 +205,7 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
           { 
             invoice, 
             invoiceProducts: getInvoiceProductsToUpdate(invoice._id.$oid, invoiceProducts || new Map()),
-            userId: user.id
+            user
           },
           { shouldSavePayment: shouldSavePayment.current, shouldRestorePayments: shouldRestorePayments.current}
         )

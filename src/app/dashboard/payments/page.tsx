@@ -40,6 +40,9 @@ export default function Payments() {
   useEffect(() => { fetchPayments() }, [fetchPayments])
 
   const tablePaymentsConfig: TableConfigProps = {
+    actions: {
+      onEdit: async (id, data) => {}
+    },
     header: {
       picker: true, 
       options: {

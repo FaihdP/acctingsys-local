@@ -27,7 +27,7 @@ export default async function processRelationship(
     const array = Array.from(
       column.relationship, 
       ([key, value]) => { 
-        return { key, colors: value } 
+        return { key, component: value } 
       }
     )
       

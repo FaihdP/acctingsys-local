@@ -1,8 +1,9 @@
 import { ColumType } from "@ui/table/interfaces/Table";
-import { ChangeEvent, MouseEvent } from "react";
+import { ChangeEvent, ComponentType, MouseEvent, ReactNode } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import TableSelectPopup from "../components/TableSelectPopup";
 import { formatDate, formatToDatetimeLocal, getDateTime } from "@lib/util/time";
+import { RelationshipComponent as IRelationshipComponent } from "../interfaces/RelationshipComponent";
 
 interface GetEditableCellProps {
   columnType: ColumType
@@ -235,10 +236,9 @@ export default function getEditableCell({
     }
     case ColumType.SELECT: {
       if (!relationship || !Array.isArray(relationship)) return <td></td>
-      const colors: { background: string, fontColor: string } = 
-        relationship.filter(
-          (tag: { key: string, colors: any }) => tag.key === content
-        )[0]?.colors
+      
+      const RelationshipComponent: IRelationshipComponent = 
+        relationship.filter((tag) => tag.key === content)[0]?.component
 
       Element = 
         <TableData error={error}>
@@ -254,36 +254,45 @@ export default function getEditableCell({
             onClick={() => onSelected()}
           >
             {
-              colors &&
-                <span
-                  className={`
-                    rounded-lg 
-                    px-[6px] 
-                    py-[2px]
-                  `}
-                  style={{ 
-                    background: colors.background, 
-                    color: colors.fontColor 
+              RelationshipComponent &&
+                <RelationshipComponent
+                  isEditable={true}
+                  onClickSpan={(e) => { if (selected) e.stopPropagation() }}
+                  onClickRemove={(e) => { 
+                    e.stopPropagation()
+                    if (!selected) onSelected()
+                    onChange(null)
                   }}
-                  onClick={e => { if (selected) e.stopPropagation() }}
-                >
-                  { content }
-                  <button 
-                    onClick={(e) => { 
-                      e.stopPropagation()
-                      if (!selected) onSelected()
-                      onChange(null)
-                    }}
-                    className="
-                      ms-1 
-                      cursor-pointer 
-                      inline 
-                      text-inherit
-                    "
-                  >
-                    ⨉
-                  </button>
-                </span>
+                />
+                // <span
+                //   className={`
+                //     rounded-lg 
+                //     px-[6px] 
+                //     py-[2px]
+                //   `}
+                //   style={{ 
+                //     background: colors.background, 
+                //     color: colors.fontColor 
+                //   }}
+                //   onClick={e => { if (selected) e.stopPropagation() }}
+                // >
+                //   { content }
+                //   <button 
+                //     onClick={(e) => { 
+                //       e.stopPropagation()
+                //       if (!selected) onSelected()
+                //       onChange(null)
+                //     }}
+                //     className="
+                //       ms-1 
+                //       cursor-pointer 
+                //       inline 
+                //       text-inherit
+                //     "
+                //   >
+                //     ⨉
+                //   </button>
+                // </span>
             }
           </div>
 

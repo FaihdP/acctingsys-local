@@ -16,6 +16,7 @@ import { MappedObject } from "@ui/table/interfaces/Row"
 import mapData from "@ui/table/util/mapData"
 import DynamicTable from "@ui/table/containers/DynamicTable"
 import Spin from "@ui/core/components/Spin"
+import SALES_TABLE_COLUMNS from "@ui/sales/constants/SalesTableColumns"
 
 export default function TableExample() {
   const [data, setData] = useState<Map<string, MappedObject> | null>(null)
@@ -45,60 +46,7 @@ export default function TableExample() {
       options: {
         onEdit: true
       },
-      columns: [
-        { 
-          type: ColumType.DATE,
-          label: "Fecha y hora",
-          tag: "date",
-          minWidth: 160,
-          autocomplete: false,
-          required: true,
-          defaultValue: () => formatDate(getDateTime())
-        },
-        { 
-          label: "Valor",
-          tag: "value",
-          type: ColumType.CURRENCY,
-          //minWidth: 80,
-          width: 100,
-          required: true
-        },
-        { 
-          label: "Cliente",
-          tag: "person",
-          type: ColumType.OBJECT,
-          relationship: async () => {return { data: [] }},
-          fields: ['name', 'lastname'],
-        },
-        { 
-          type: ColumType.SELECT,
-          label: "Estado",
-          tag: "status",
-          relationship: new Map([
-            ["Pagada", { background: COLORS.GREEN, fontColor: "#0D6948" }],
-            ["En deuda", { background: "#FB8383", fontColor: "#922323" }],
-            ["Creada", { background: "#8490FF", fontColor: "#1A29AE" }],
-          ]),
-          minWidth: 80,
-          required: true,
-          defaultValue: "Creada"
-        },
-        { 
-          label: "Usuario",
-          tag: "user",
-          type: ColumType.OBJECT,
-          relationship: getUsers,
-          fields: ["name", "lastname"],
-          defaultValue: { name: "Faihd", lastname: "Pineda" }
-        },
-        { 
-          label: "Productos",
-          tag: "productOverview",
-          type: ColumType.LIST,
-          width: 400,
-          relationship: getProductOverviewByInvoiceId
-        },
-      ],
+      columns: SALES_TABLE_COLUMNS,
     }
   }
 

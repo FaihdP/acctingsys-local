@@ -18,22 +18,23 @@ import deleteByUpdatePayments from "@lib/services/payment/deleteByUpdatePayments
 import updatePayment from "@lib/services/payment/updatePayment";
 import getPaymentDifferences from "@lib/services/payment/util/getPaymentDifferences";
 import savePayments from "@lib/services/payment/savePaymets";
-import { PaymentType } from "@lib/db/schemas/payment/Payment";
+import { PAYMENT_TYPE } from "@lib/db/schemas/payment/Payment";
 import saveInvoiceLog from "@lib/services/invoiceLog/saveInvoiceLog";
 import { INVOICE_LOG_ACTION } from "@lib/db/schemas/invoice/InvoiceLog";
+import User from "@ui/session/interfaces/User";
 
 export default async function handleUpdateInvoice(
   newData: {
     invoice: InvoiceDocument, 
     invoiceProducts: InvoiceProductsNulleableId[],
-    userId: string
+    user: User
   },
-  options: {
+  options: {  
     shouldSavePayment: boolean,
     shouldRestorePayments: boolean,
   }
 ) {
-  const { invoice, invoiceProducts, userId } = newData
+  const { invoice, invoiceProducts, user } = newData
 
   try {
     const oldInvoice = (await find<InvoiceDocument>(COLLECTIONS.INVOICES, { _id: { $oid: invoice._id.$oid } })).data[0]
@@ -50,7 +51,7 @@ export default async function handleUpdateInvoice(
         INVOICE_LOG_ACTION.UPDATE, 
         "From: " + JSON.stringify(oldInvoice) + ". Update: " + JSON.stringify(updateInvoiceObject),
         invoice._id.$oid,
-        userId
+        user.id
       )
     }
     
@@ -127,8 +128,13 @@ export default async function handleUpdateInvoice(
           isDeleted: false,
           migrated: false,
           value: invoice.value,
-          type: PaymentType.CASH,
+          type: PAYMENT_TYPE.CASH,
           invoiceId: invoice._id.$oid,
+          userId: user.id,
+          user: {
+            name: user.name,
+            lastname: user.lastname
+          }
         }
       ])
     }

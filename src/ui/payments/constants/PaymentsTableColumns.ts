@@ -1,6 +1,7 @@
 import getUsers from "@lib/services/user/getUsers"
 import { formatDate, getDateTime } from "@lib/util/time"
 import { ColumType, TableConfigHeaderProps } from "@ui/table/interfaces/Table"
+import CashPaymentTag from "../components/CashPaymentTag"
 
 const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
   { 
@@ -34,8 +35,8 @@ const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     label: "Tipo de pago",
     tag: "type",
     relationship: new Map([
-      ["Digital", { background: "#E2E8F0", fontColor: "#E2E8F0" }],
-      ["Fisico", { background: "#E2E8F0", fontColor: "#E2E8F0" }]
+      ["CASH", CashPaymentTag],
+      //["Fisico", ]
     ]),
     minWidth: 80,
     required: true,

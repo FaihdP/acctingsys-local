@@ -56,8 +56,9 @@ export default function TableCell({
   }, [column, filter, row, columnTypeHasList])
 
   const handleChange = useCallback((newData: any) => {
+    console.log(newData)
     row[column.tag] = newData
-    if (!columnTypeHasList) setContent(newData)
+    setContent(newData)
 
     if (column.relatedFields) {
       column.relatedFields.forEach((handlRelatedFieldChange, key) => {
@@ -71,7 +72,7 @@ export default function TableCell({
     column.tag, column.relatedFields, 
     setContent, 
     onUpdateRow,
-    columnTypeHasList
+    //columnTypeHasList
   ])
   
   const handleSelected = () => setSelected(!selected)

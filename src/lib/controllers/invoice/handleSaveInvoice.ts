@@ -6,7 +6,7 @@ import saveInvoiceProducts from "@lib/services/invoiceProduct/saveInvoiceProduct
 import handleError from "@lib/util/error/handleError";
 import deleteInvoices from "@lib/services/invoice/deleteInvoices";
 import savePayments from "@lib/services/payment/savePaymets";
-import { PaymentType } from "@lib/db/schemas/payment/Payment";
+import { PAYMENT_TYPE } from "@lib/db/schemas/payment/Payment";
 import deleteInvoiceProducts from "@lib/services/invoiceProduct/deleteInvoiceProducts";
 import deletePayments from "@lib/services/payment/deletePayments";
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus";
@@ -51,8 +51,10 @@ export default async function handleSaveInvoice(invoice: Invoice, invoiceProduct
         invoiceId: savedInvoice.insertedIds[0].$oid,
         isDeleted: false,
         migrated: false,
-        type: PaymentType.CASH,
-        value: invoice.value
+        type: PAYMENT_TYPE.CASH,
+        value: invoice.value,
+        userId: invoice.userId,
+        user: invoice.user,
       }])
     }
   } catch (e) {

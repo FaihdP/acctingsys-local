@@ -2,7 +2,9 @@ import getProductInvoicesByInvoiceId from "@lib/services/invoice/getProductOverv
 import getUsers from "@lib/services/user/getUsers"
 import { formatDate, getDateTime } from "@lib/util/time"
 import { ColumType, TableConfigHeaderProps } from "@ui/table/interfaces/Table"
-import INVOICE_STATUS_COLORS from "../../core/constants/InvoiceStatusColors"
+import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus"
+import withStatus from "../components/withStatus"
+import InvoiceStatusTagTable from "../components/InvoiceStatusTagTable"
 
 const SALES_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
   { 
@@ -33,7 +35,11 @@ const SALES_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     type: ColumType.SELECT,
     label: "Estado",
     tag: "status",
-    relationship: new Map(Object.entries(INVOICE_STATUS_COLORS)),
+    relationship: new Map([
+      [INVOICE_STATUS.CREATED, withStatus(InvoiceStatusTagTable, INVOICE_STATUS.CREATED)],
+      [INVOICE_STATUS.DEBT, withStatus(InvoiceStatusTagTable, INVOICE_STATUS.DEBT)],
+      [INVOICE_STATUS.PAID, withStatus(InvoiceStatusTagTable, INVOICE_STATUS.PAID)],
+    ]), 
     minWidth: 80,
     required: true,
     defaultValue: "Creada"
