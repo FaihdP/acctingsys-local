@@ -5,7 +5,8 @@ enum COLLECTIONS {
   PRODUCTS = "products",
   PERSONS = "persons",
   PAYMENTS = "payments",
-  INVOICE_LOG = "invoicesLogs"
+  INVOICE_LOG = "invoicesLogs",
+  BANKS = "banks"
 }
 
 export default COLLECTIONS

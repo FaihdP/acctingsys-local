@@ -1,13 +1,10 @@
 import MongoDocument from "@schemas/common/MongoDocument"
 import Person from "../embedded/Person"
+import Bank from "../bank/Bank"
 
 export enum PAYMENT_TYPE {
   CASH = "CASH",
   CREDIT = "CREDIT"
-}
-
-export enum Bank {
-  // TODO: Make alternative for the bank storage
 }
 
 export default interface Payment {
@@ -16,7 +13,8 @@ export default interface Payment {
   userId: string,
   date: string
   value: number
-  type: PAYMENT_TYPE
+  type: PAYMENT_TYPE,
+  bankId?: string,
   bank?: Bank
   migrated: boolean
   isDeleted: boolean,

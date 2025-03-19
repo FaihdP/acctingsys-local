@@ -264,35 +264,6 @@ export default function getEditableCell({
                     onChange(null)
                   }}
                 />
-                // <span
-                //   className={`
-                //     rounded-lg 
-                //     px-[6px] 
-                //     py-[2px]
-                //   `}
-                //   style={{ 
-                //     background: colors.background, 
-                //     color: colors.fontColor 
-                //   }}
-                //   onClick={e => { if (selected) e.stopPropagation() }}
-                // >
-                //   { content }
-                //   <button 
-                //     onClick={(e) => { 
-                //       e.stopPropagation()
-                //       if (!selected) onSelected()
-                //       onChange(null)
-                //     }}
-                //     className="
-                //       ms-1 
-                //       cursor-pointer 
-                //       inline 
-                //       text-inherit
-                //     "
-                //   >
-                //     ⨉
-                //   </button>
-                // </span>
             }
           </div>
 

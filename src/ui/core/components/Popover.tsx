@@ -145,20 +145,20 @@ export default function Popover({
         }}
         className="absolute w-50 bg-white rounded-lg mt-[2px] z-10"
       >
-          {
-            filter !== undefined &&
-              <div className="border-b px-[5px] py-[5px] border-gray-100">
-                <input 
-                  value={filter || ""}
-                  onChange={onChangeFilter}
-                  type="text" 
-                  autoComplete="off"
-                  name="search_client" 
-                  placeholder="Busca una opción..."
-                  className="w-full h-[15px] text-[12px] ps-2 border-none border-0"
-                />
-              </div>
-          }
+        {
+          filter !== undefined &&
+            <div className="border-b px-[5px] py-[5px] border-gray-100">
+              <input 
+                value={filter || ""}
+                onChange={onChangeFilter}
+                type="text" 
+                autoComplete="off"
+                name="search_client" 
+                placeholder="Busca una opción..."
+                className="w-full h-[15px] text-[12px] ps-2 border-none border-0"
+              />
+            </div>
+        }
         <div 
           className={`
             max-h-[250px] 
