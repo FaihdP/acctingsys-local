@@ -2,27 +2,50 @@
 
 import Image from "next/image";
 import addCircleIcon from "@public/dashboard/add_circle.svg"
-import { useEffect, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import Bank, { BankDocument } from "@lib/db/schemas/bank/Bank";
 import getBanks from "@lib/services/bank/getBanks";
 import Spin from "@ui/core/components/Spin";
 import EditIcon from "@public/core/EditIcon";
+import AcceptIcon from "@public/dashboard/table_accept.svg"
+import CancelIcon from "@public/core/table_cancel.svg"
+import handleSaveBank from "@lib/controllers/bank/handleSaveBank";
+import handleUpdateBank from "@lib/controllers/bank/handleUpdateBank";
+import trashCanIcon from "@public/dashboard/delete.svg"
 
 export default function BankPopup() {
   const [banks, setBanks] = useState<BankDocument[]>()
   const [bank, setBank] = useState<BankDocument | Bank>()
+  const [error, setError] = useState<string>()
+
+  const [render, forceRender] = useReducer(s => s + 1, 0)
 
   useEffect(() => {
     async function fetchBanks() {
       setBanks((await getBanks()).data)
     }
     fetchBanks()
-  }, [setBanks])
+  }, [render, setBanks])
 
   const handleChangeBank = (field: string, value: string) => {
     setBank((prevBank) => {
       return { ...prevBank, [field]: value } as BankDocument
     })
+  }
+
+  const handleSave = async () => {
+    if (!bank) return
+    if (bank.name) setError(undefined) 
+    else {
+      setError("Campo obligatorio")
+      return
+    }
+
+    if ('_id' in bank) await handleUpdateBank(bank)
+    else await handleSaveBank(bank)
+
+    setBank(undefined)
+    forceRender()
   }
 
   return (
@@ -42,24 +65,27 @@ export default function BankPopup() {
         text-[14px]
       "
     >
-      <div className="border-b px-2 border-gray-100 flex flex-row justify-between">
-        <input 
+      <div className="border-b px-2 border-gray-100 flex flex-row justify-between py-1">
+        {/* <input 
           value={""}
           onChange={() => {}}
           type="text" 
           autoComplete="off"
           name="search_client" 
           placeholder="Busca una opción..."
-          className="w-full h-[30px] text-[12px] ps-3"
-        />
-        <button onClick={() => setBank({
-          name: "",
-          fontColor: "",
-          backgroundColor: "E2E8F0"
-        })}>
+          className="w-full h-[30px] text-[12px] ps-3 focus:outline-0"
+        /> */}
+        <button 
+          className="ms-auto"
+          onClick={() => setBank({
+            name: "",
+            fontColor: "000000",
+            backgroundColor: "E2E8F0"
+          })}
+        >
           <Image 
             src={addCircleIcon.src}
-            alt={addCircleIcon.alt}
+            alt={"Circle add icon"}
             width={20}
             height={20}
           />
@@ -68,22 +94,25 @@ export default function BankPopup() {
       {
         bank !== undefined &&
           <div className="border-b border-gray-100 py-[10px] px-5 text-[14px]">
-            <input 
-              type="text" 
-              value={bank.name}
-              onChange={(e) => setBank((prevBank) => {
-                return {
-                  ...prevBank,
-                  name: e.target.value
-                } as any
-              })}
-              placeholder="Escribe aquí..."
-              className="rounded-xl px-3 py-1 focus:outline-0 block" 
-              style={{
-                color: "#" + bank.fontColor,
-                background: "#" + bank.backgroundColor,
-              }}
-            />
+            <div className="flex flex-row items-center">
+              <input 
+                type="text" 
+                value={bank.name}
+                onChange={(e) => setBank((prevBank) => {
+                  return {
+                    ...prevBank,
+                    name: e.target.value
+                  } as BankDocument
+                })}
+                placeholder="Escribe aquí..."
+                className="rounded-xl px-3 py-1 focus:outline-0 block" 
+                style={{
+                  color: "#" + bank.fontColor,
+                  background: "#" + bank.backgroundColor,
+                }}
+              />
+              { error && <span className="text-[#f87171] text-[10px] ms-2">{ error }</span> }
+            </div>
             <div className="mt-[10px] flex flex-row justify-between">
               <div className="flex">
                 <label className="flex items-center">
@@ -106,8 +135,38 @@ export default function BankPopup() {
                   Fondo
                 </label>
               </div>
-              <div>
-                + x
+              <div className="flex flex-row">
+                <button onClick={handleSave}>
+                  <Image
+                    src={AcceptIcon.src}
+                    alt="accept_icon"
+                    width={20}
+                    height={20}
+                  />
+                </button>
+                <button onClick={() => {
+                  setError(undefined)
+                  setBank(undefined)}
+                }>
+                  <Image
+                    className="ms-[6px]"
+                    src={CancelIcon.src}
+                    alt="cancel_icon"
+                    width={20}
+                    height={20}
+                  />
+                </button>
+                { 
+                  '_id' in bank &&
+                    <Image
+                      className="ms-[6px]"
+                      src={trashCanIcon.src}
+                      alt="Trash can icon"
+                      width={20}
+                      height={20}
+                    />
+                }
+                <button></button>
               </div>
             </div>
           </div>

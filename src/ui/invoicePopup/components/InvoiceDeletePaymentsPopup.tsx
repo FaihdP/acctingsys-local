@@ -79,7 +79,7 @@ export default function InvoiceDeletePaymentsPopup() {
               <div className="inline-block me-[5px]">
                 <Image
                   src={tableAcceptIcon.src}
-                  alt={"trash can icon"}
+                  alt={"accept icon"}
                   width={20}
                   height={20}
                 />
@@ -103,7 +103,7 @@ export default function InvoiceDeletePaymentsPopup() {
               <div className="inline-block me-[5px]">
                 <Image
                   src={tableCancelIcon.src}
-                  alt={"trash can icon"}
+                  alt={"cancel icon"}
                   width={20}
                   height={20}
                 />

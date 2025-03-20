@@ -119,7 +119,7 @@ export default function InvoiceSavePaymentPopup() {
               <div className="inline-block me-[5px]">
                 <Image
                   src={tableCancelIcon.src}
-                  alt={"trash can icon"}
+                  alt={"cancel icon"}
                   width={20}
                   height={20}
                 />
