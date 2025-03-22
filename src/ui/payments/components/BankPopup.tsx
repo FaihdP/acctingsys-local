@@ -2,51 +2,26 @@
 
 import Image from "next/image";
 import addCircleIcon from "@public/dashboard/add_circle.svg"
-import { useEffect, useReducer, useState } from "react";
-import Bank, { BankDocument } from "@lib/db/schemas/bank/Bank";
-import getBanks from "@lib/services/bank/getBanks";
+import { BankDocument } from "@lib/db/schemas/bank/Bank";
 import Spin from "@ui/core/components/Spin";
 import EditIcon from "@public/core/EditIcon";
 import AcceptIcon from "@public/dashboard/table_accept.svg"
 import CancelIcon from "@public/core/table_cancel.svg"
-import handleSaveBank from "@lib/controllers/bank/handleSaveBank";
-import handleUpdateBank from "@lib/controllers/bank/handleUpdateBank";
 import trashCanIcon from "@public/dashboard/delete.svg"
+import useBankPopup from "../hooks/useBankPopup";
 
 export default function BankPopup() {
-  const [banks, setBanks] = useState<BankDocument[]>()
-  const [bank, setBank] = useState<BankDocument | Bank>()
-  const [error, setError] = useState<string>()
-
-  const [render, forceRender] = useReducer(s => s + 1, 0)
-
-  useEffect(() => {
-    async function fetchBanks() {
-      setBanks((await getBanks()).data)
-    }
-    fetchBanks()
-  }, [render, setBanks])
-
-  const handleChangeBank = (field: string, value: string) => {
-    setBank((prevBank) => {
-      return { ...prevBank, [field]: value } as BankDocument
-    })
-  }
-
-  const handleSave = async () => {
-    if (!bank) return
-    if (bank.name) setError(undefined) 
-    else {
-      setError("Campo obligatorio")
-      return
-    }
-
-    if ('_id' in bank) await handleUpdateBank(bank)
-    else await handleSaveBank(bank)
-
-    setBank(undefined)
-    forceRender()
-  }
+  const {
+    banks,
+    setBank,
+    bank,
+    error,
+    handleChangeBank,
+    handleSaveOrUpdate,
+    handleDelete,
+    setError,
+    handleCloseModal
+  } = useBankPopup()
 
   return (
     <div 
@@ -136,7 +111,7 @@ export default function BankPopup() {
                 </label>
               </div>
               <div className="flex flex-row">
-                <button onClick={handleSave}>
+                <button onClick={handleSaveOrUpdate}>
                   <Image
                     src={AcceptIcon.src}
                     alt="accept_icon"
@@ -146,8 +121,8 @@ export default function BankPopup() {
                 </button>
                 <button onClick={() => {
                   setError(undefined)
-                  setBank(undefined)}
-                }>
+                  handleCloseModal()
+                }}>
                   <Image
                     className="ms-[6px]"
                     src={CancelIcon.src}
@@ -158,15 +133,16 @@ export default function BankPopup() {
                 </button>
                 { 
                   '_id' in bank &&
-                    <Image
-                      className="ms-[6px]"
-                      src={trashCanIcon.src}
-                      alt="Trash can icon"
-                      width={20}
-                      height={20}
-                    />
+                    <button onClick={handleDelete}>
+                      <Image
+                        className="ms-[6px]"
+                        src={trashCanIcon.src}
+                        alt="Trash can icon"
+                        width={20}
+                        height={20}
+                      />
+                    </button>
                 }
-                <button></button>
               </div>
             </div>
           </div>
