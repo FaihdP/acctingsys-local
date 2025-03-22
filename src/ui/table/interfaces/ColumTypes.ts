@@ -1,6 +1,6 @@
 import { ComponentType } from "react"
 import { Column, ColumType } from "./Table"
-import { RelationshipComponentProps } from "./RelationshipComponent"
+import { SelectComponentProps } from "./SelectComponent"
 
 export interface DateColumn extends Column {
   type: ColumType.DATE
@@ -14,7 +14,7 @@ export interface ListColumn extends Column {
 
 export interface SelectColumn extends Column {
   type: ColumType.SELECT
-  relationship: Map<string, ComponentType<RelationshipComponentProps>>
+  relationship: Map<string, ComponentType<SelectComponentProps>>
 }
 
 export interface ObjectColumn extends Column {

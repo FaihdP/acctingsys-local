@@ -3,7 +3,7 @@ import { ChangeEvent, ComponentType, MouseEvent, ReactNode } from "react";
 import ContentEditable, { ContentEditableEvent } from "react-contenteditable";
 import TableSelectPopup from "../components/TableSelectPopup";
 import { formatDate, formatToDatetimeLocal, getDateTime } from "@lib/util/time";
-import { RelationshipComponent as IRelationshipComponent } from "../interfaces/RelationshipComponent";
+import { SelectComponent as ISelectComponent } from "../interfaces/SelectComponent";
 
 interface GetEditableCellProps {
   columnType: ColumType
@@ -237,7 +237,7 @@ export default function getEditableCell({
     case ColumType.SELECT: {
       if (!relationship || !Array.isArray(relationship)) return <td></td>
       
-      const RelationshipComponent: IRelationshipComponent = 
+      const SelectComponent: ISelectComponent = 
         relationship.filter((tag) => tag.key === content)[0]?.component
 
       Element = 
@@ -254,8 +254,8 @@ export default function getEditableCell({
             onClick={() => onSelected()}
           >
             {
-              RelationshipComponent &&
-                <RelationshipComponent
+              SelectComponent &&
+                <SelectComponent
                   isEditable={true}
                   onClickSpan={(e) => { if (selected) e.stopPropagation() }}
                   onClickRemove={(e) => { 

@@ -1,6 +1,6 @@
 import formatCurrency from "@lib/util/currency"
 import { ColumType } from "@ui/table/interfaces/Table"
-import { RelationshipComponent as IRelationshipComponent } from "../interfaces/RelationshipComponent"
+import { SelectComponent as ISelectComponent } from "../interfaces/SelectComponent"
 
 interface GetCellProps {
   columnType: ColumType
@@ -83,10 +83,10 @@ export default function getCell({ columnType, content, relationship, columnField
     case ColumType.SELECT: {
       if (!relationship && !Array.isArray(relationship)) break
       
-      const RelationshipComponent: IRelationshipComponent = 
+      const SelectComponent: ISelectComponent = 
         relationship.filter((tag: any) => tag.key === content)[0]?.component
 
-      if (!RelationshipComponent) {
+      if (!SelectComponent) {
         return (
           <TableData>
             <div className="
@@ -110,7 +110,7 @@ export default function getCell({ columnType, content, relationship, columnField
 
       Element = 
         <TableData>
-          <RelationshipComponent onClickRemove={() => {}} onClickSpan={() => {}} isEditable={false} />
+          <SelectComponent onClickRemove={() => {}} onClickSpan={() => {}} isEditable={false} />
         </TableData>
 
       break
