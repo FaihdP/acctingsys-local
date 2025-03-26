@@ -56,7 +56,6 @@ export default function TableCell({
   }, [column, filter, row, columnTypeHasList])
 
   const handleChange = useCallback((newData: any) => {
-    console.log(newData)
     row[column.tag] = newData
     setContent(newData)
 

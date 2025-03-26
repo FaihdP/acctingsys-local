@@ -36,8 +36,13 @@ export default function TableRow({ row }: TableRowProps) {
     setErrors(errors)
     if (errors.size > 0) return
     if (row.value.isNewRow && actions?.onAdd) {
+      const originalObject: any = { ...row.value }
+      delete originalObject.isEditable
+      delete originalObject.isNewRow
+      delete originalObject.isSelected
+      
       // TODO: Add this action result in a notification
-      await actions.onAdd([row.value]) 
+      await actions.onAdd([originalObject]) 
       row.value.isNewRow = false
     } else if (actions?.onEdit) {
       await actions.onEdit(row.key, row.value)

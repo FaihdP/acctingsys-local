@@ -1,7 +1,9 @@
 import getUsers from "@lib/services/user/getUsers"
 import { formatDate, getDateTime } from "@lib/util/time"
 import { ColumType, TableConfigHeaderProps } from "@ui/table/interfaces/Table"
-import CashPaymentTag from "../components/CashPaymentTag"
+import withPaymentType from "../components/withPaymentType"
+import PaymetTypeTagTable from "../components/PaymentTypeTagTable"
+import { PAYMENT_TYPE } from "@lib/db/schemas/payment/Payment"
 
 const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
   { 
@@ -35,12 +37,11 @@ const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     label: "Tipo de pago",
     tag: "type",
     relationship: new Map([
-      ["CASH", CashPaymentTag],
-      //["Fisico", ]
+      [PAYMENT_TYPE.CASH, withPaymentType(PaymetTypeTagTable, PAYMENT_TYPE.CASH)],
+      [PAYMENT_TYPE.DIGITAL, withPaymentType(PaymetTypeTagTable, PAYMENT_TYPE.DIGITAL)]
     ]),
     minWidth: 80,
     required: true,
-    defaultValue: "Fisico"
   },
   { 
     label: "Banco",
@@ -53,7 +54,6 @@ const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     type: ColumType.OBJECT,
     relationship: getUsers,
     fields: ["name", "lastname"],
-    defaultValue: { name: "Faihd", lastname: "Pineda" }
   },
 ]
 

@@ -4,7 +4,7 @@ import Bank from "../bank/Bank"
 
 export enum PAYMENT_TYPE {
   CASH = "CASH",
-  CREDIT = "CREDIT"
+  DIGITAL = "DIGITAL"
 }
 
 export default interface Payment {

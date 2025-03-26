@@ -11,13 +11,15 @@ import { MappedObject } from "@ui/table/interfaces/Row"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import mapData from "@ui/table/util/mapData"
 import Image from "next/image"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useContext, useEffect, useRef, useState } from "react"
 import bankIcon from "@public/dashboard/payment/bank_icon.svg"
 import BankPopup from "@ui/payments/components/BankPopup"
+import { SessionContext } from "@ui/session/hooks/SessionProvider"
+import handleSavePayment from "@lib/controllers/payment/handleSavePayment"
+import handleDeletePayment from "@lib/controllers/payment/handleDeletePayment"
+import handleUpdatePayment from "@lib/controllers/payment/handleUpdatePayment"
 
-const DEFAULT_PAYMENTS_FILTER: Partial<Payment> = {
-  isDeleted: false
-}
+const DEFAULT_PAYMENTS_FILTER: Partial<Payment> = { isDeleted: false }
 
 export default function Payments() {
   const [payments, setPayments] = useState<Map<string, MappedObject> | null>(null)
@@ -26,7 +28,8 @@ export default function Payments() {
   const debouncedFilter = useDebounce(filter, DEBOUNCE_TIME)
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
-  const [isVisibleBankPopup, setIsVisibleBankPopup] = useState<boolean>(true)
+  const [isVisibleBankPopup, setIsVisibleBankPopup] = useState<boolean>(false)
+  const { user } = useContext(SessionContext)
 
   const fetchPayments = useCallback(async () => {
     let result;
@@ -41,9 +44,20 @@ export default function Payments() {
 
   useEffect(() => { fetchPayments() }, [fetchPayments])
 
+  const userColumn = PAYMENTS_TABLE_COLUMNS.find((paymentsColumn) => paymentsColumn.tag === 'user');
+  if (userColumn) {
+    userColumn.defaultValue = {
+      name: user.name,
+      lastname: user.lastname,
+      userId: user.id
+    }
+  }
+
   const tablePaymentsConfig: TableConfigProps = {
     actions: {
-      onEdit: async (id, data) => {}
+      onAdd: async (data) => handleSavePayment(data),
+      onEdit: async (id, data) => handleUpdatePayment(id, data),
+      onDelete: async (_, data) => handleDeletePayment(data._id.$oid)
     },
     header: {
       picker: true, 
@@ -54,9 +68,7 @@ export default function Payments() {
     }
   }
 
-  const handleIsVisibleBankPopup = () => {
-    setIsVisibleBankPopup(!isVisibleBankPopup)
-  }
+  const handleIsVisibleBankPopup = () => setIsVisibleBankPopup(!isVisibleBankPopup)
   
   return (
     <>
