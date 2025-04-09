@@ -1,1 +1,1 @@
-pub mod get_credentials;
+pub mod get_api_credentials;

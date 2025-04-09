@@ -15,6 +15,8 @@ export default async function updatePaymentByInvoice(invoiceId: string, payment:
     type: payment.type,
     bank: payment.bank,
     invoiceId,
+    user: payment.user,
+    userId: payment.userId,
     __v: 0,
   }
 
