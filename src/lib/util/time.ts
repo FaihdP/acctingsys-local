@@ -20,7 +20,7 @@ export function getDateTime(datetime?: string): string {
   return new Intl.DateTimeFormat("es-ES", options).format(date).replace(",", "");
 }
 
-function getDateObjectFromString(datetime: string): Date {
+export function getDateObjectFromString(datetime: string): Date {
   const [date, time] = datetime.split(" ")
   const [day, month, year] = date.split('/')
   const [hours, minutes, seconds] = time.split(':')
@@ -59,4 +59,8 @@ export function formatToDatetimeLocal(datetime: string): string {
   }
 
   return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}`
+}
+
+export function getFormatDateTime() {
+  return formatDate(getDateTime())
 }

@@ -18,10 +18,12 @@ export default function TableHeader() {
     <thead 
       className="
         shadow-[0_1px_3px_-1px_rgba(0,0,0,0.5)] 
-        sticky 
+        sticky
+        top-0
         bg-white 
         text-left
-      ">
+      "
+    >
       <tr className="h-[35px]">
         { 
           picker && 

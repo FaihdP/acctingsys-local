@@ -15,7 +15,7 @@ export default function Table() {
       className="
         flex
         flex-col
-        h-[90%]
+        flex-grow
         shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
         rounded-lg
         bg-[#F4F4F4]

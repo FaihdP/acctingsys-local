@@ -5,6 +5,8 @@ export default interface MigrationExpense {
   expenseId: string
   migrated: boolean
   error?: string
+  title: string
+  description?: string
 }
 
 export interface MigrationExpenseDocument extends MigrationExpense, MongoDocument {}

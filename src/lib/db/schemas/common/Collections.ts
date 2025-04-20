@@ -6,7 +6,12 @@ enum COLLECTIONS {
   PERSONS = "persons",
   PAYMENTS = "payments",
   INVOICE_LOG = "invoicesLogs",
-  BANKS = "banks"
+  BANKS = "banks",
+  EXPENSES = "expenses",
+  MIGRATIONS = "migrations",
+  MIGRATION_INVOICES = "migrationInvoices",
+  MIGRATION_PAYMENTS = "migrationPayments",
+  MIGRATION_EXPENSES = "migrationExpenses",
 }
 
 export default COLLECTIONS

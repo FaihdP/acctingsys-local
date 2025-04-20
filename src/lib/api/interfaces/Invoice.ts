@@ -1,8 +1,8 @@
 export default interface Invoice {
-  invoiceID: string,
-  datetime: string 
+  InvoiceID: string,
+  date: Date 
   value: number
   type: "SALE" | "BUY"
   status: "Pagada" | "En deuda"
-  person: string
+  person?: string
 }

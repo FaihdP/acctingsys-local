@@ -36,7 +36,9 @@ export default function Sales() {
   const fetchInvoices = useCallback(async () => {
     let result;
     result = await getInvoices(
-      debouncedFilter ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_SALES_FILTER) : DEFAULT_INVOICE_SALES_FILTER, 
+      debouncedFilter 
+        ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_SALES_FILTER) 
+        : DEFAULT_INVOICE_SALES_FILTER, 
       pageSelected
     )
 

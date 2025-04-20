@@ -17,7 +17,7 @@ export default function RootLayout({
       <body 
         className={`
           ${inter.className}
-          h-screen 
+          
           overflow-x-hidden
         `}
       >

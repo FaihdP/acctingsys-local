@@ -1,7 +1,7 @@
-export default function Migration() {
-  return (
-    <div>
-      
-    </div>
-  )
+'use client'
+
+import Migration from "@ui/migration/containers/Migration";
+
+export default function MigrationPage() {
+  return <Migration />
 }

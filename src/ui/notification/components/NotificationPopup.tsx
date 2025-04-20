@@ -133,7 +133,7 @@ export default function NotificationPopup({ handleIsOpen }: { handleIsOpen: () =
 
   return (
     <>
-      <Backdrop onClick={handleIsOpen} />
+      {/* <Backdrop onClick={handleIsOpen} /> */}
       <div 
         style={{ fontSize: "12px" }}
         className="
@@ -145,6 +145,9 @@ export default function NotificationPopup({ handleIsOpen }: { handleIsOpen: () =
           rounded-lg
         "
       >
+        <div className="absolute top-0 right-0">
+          <button onClick={handleIsOpen} className="cursor-pointer text-[#7A7A7A] text-[18px] me-4 mt-1">⨉</button>
+        </div>
         <div className="text-center text-[#7A7A7A] font-bold text-[14px] my-[8px] w-full">Notificaciones</div>
         {  
           Array

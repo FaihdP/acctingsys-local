@@ -3,16 +3,12 @@
 import { createContext, ReactNode, useState } from "react"
 import INotificationContext from "../interfaces/NotificationContext"
 import Notification from "../interfaces/Notification"
-import { listen } from "@tauri-apps/api/event"
 
 export const NotificationContext = createContext({} as INotificationContext)
 
 export default function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Map<string, Notification>>(new Map())
-
-  listen("migration", (event) => {
-    console.log(event)
-  })
+  let notificationsCount = 0
   
   const handleDeleteNotification = (rowId: string) => {
     setNotifications((prevData) => {
@@ -23,15 +19,31 @@ export default function NotificationProvider({ children }: { children: ReactNode
   }
 
   const handleAddNotification = (notification: Notification) => {
+    const notificationID = "notification_" + (notificationsCount++).toString()
     setNotifications((prevData) => {
       const newMap = new Map(prevData)
-      newMap.set("notification_" + notifications.size + 1, notification)
+      newMap.set(notificationID, notification)
+      return newMap
+    })
+    return notificationID
+  }
+
+  const handleUpdateNotification = (notificationId: string, notification: Notification) => {
+    setNotifications((prevData) => {
+      const newMap = new Map(prevData)
+      newMap.set(notificationId, notification)
       return newMap
     })
   }
 
   return (
-    <NotificationContext.Provider value={{ notifications, setNotifications, handleAddNotification, handleDeleteNotification }}>
+    <NotificationContext.Provider value={{ 
+        notifications, 
+        setNotifications, 
+        handleAddNotification, 
+        handleUpdateNotification, 
+        handleDeleteNotification 
+      }}>
       { children }
     </NotificationContext.Provider>
   )

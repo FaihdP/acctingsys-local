@@ -39,14 +39,14 @@ async fn migration_recurring_task() {
     interval.tick().await;
     println!("Ejecutando tarea en {:?}", Instant::now());
     if let Some(app_handle) = APP_HANDLE.get() {
-      app_handle.emit_all("migration", bson!({ "message": "Hola from rust" })).unwrap();
+      app_handle.emit_all("start_migration", bson!({ "message": "Hola from rust" })).unwrap();
     }    
   }
 }
 
 fn main() {
   dotenv().ok();
-  tauri::async_runtime::spawn(migration_recurring_task());
+  //tauri::async_runtime::spawn(migration_recurring_task());
   tauri::Builder::default()
     .manage(get_client_db())
     .invoke_handler(

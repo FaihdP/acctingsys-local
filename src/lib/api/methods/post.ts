@@ -18,8 +18,12 @@ export default async function post(url: string, data: any, options = { headers: 
 
   try {
     const response = await fetch(`${API_URL}${url}`, request)
+    if (!response.ok) {
+      const error = await response.json()
+      throw new Error(error.message || `POST ${API_URL}${url}`)
+    }
     return await response.json()
   } catch (error) {
-    throw handleError(error)
+    throw new Error("Error with POST request. " + handleError(error))
   }
 } 

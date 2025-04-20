@@ -1,6 +1,6 @@
 export default interface Payment {
-  paymentID: String
-  date: string
+  PaymentID: String
+  date: Date
   value: number
   type: "DIGITAL" | "CASH"
   bank?: string

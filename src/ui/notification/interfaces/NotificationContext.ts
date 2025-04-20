@@ -5,5 +5,6 @@ export default interface NotificationContext {
   notifications: Map<string, Notification>,
   setNotifications: Dispatch<SetStateAction<Map<string, Notification>>>
   handleDeleteNotification: (rowId: string) => void
-  handleAddNotification: (notification: Notification) => void
+  handleAddNotification: (notification: Notification) => string
+  handleUpdateNotification: (notificationId: string, notification: Notification) => void
 }

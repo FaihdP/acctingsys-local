@@ -23,7 +23,7 @@ export interface FindResults<T> {
  */
 export default async function find<T>(
   collection: string, 
-  filter: Partial<T>, 
+  filter: Partial<T> | any, 
   page: Page = { 
     number: 1, 
     size: 10 

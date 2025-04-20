@@ -2,7 +2,8 @@ enum NotificationType {
   OK,
   WARNING,
   ERROR,
-  INFO
+  INFO,
+  INPROCCESS
 }
 
 export default NotificationType

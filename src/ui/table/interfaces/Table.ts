@@ -67,9 +67,7 @@ export type TableConfigProps = TableConfigPropsBase & (
         onEdit?: (rowKey: string, data: any) => Promise<any>
       }
     }
-  // TODO: validate if it is necessary to have both (modifiers and actions)
-  | 
-    {
+  | {
       modifiers?: {
         onAddRow?: () => Promise<any>,
         onDeleteRow?: (id: string[]) => Promise<any>,
