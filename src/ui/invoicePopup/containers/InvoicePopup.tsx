@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from "react"
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode"
 import { InvoiceDocument, INVOICE_TYPE } from "@lib/db/schemas/invoice/Invoice"
 import InvoicePopupProvider from "../hooks/InvoicePopupProvider"
-import InvoicePopupWithoutContext from "./InvoicePopupWithoutContext"
+import InvoicePopupView from "./InvoicePopupView"
 
 interface InvoicePopupProps {
   invoicePopupMode: INVOICE_POPUP_MODE
@@ -26,7 +26,7 @@ export default function InvoicePopup({
         onChangePopupMode
       }}
     >
-      <InvoicePopupWithoutContext/>
+      <InvoicePopupView/>
     </InvoicePopupProvider>
   )
 }

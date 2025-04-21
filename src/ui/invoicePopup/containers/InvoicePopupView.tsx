@@ -12,7 +12,7 @@ import InvoiceDeletePaymentsPopup from "../components/InvoiceDeletePaymentsPopup
 import InvoiceSavePaymentPopup from "../components/InvoiceSavePaymentPopup";
 import InvoiceRestaurePaymentsPopup from "../components/InvoiceRestaurePaymentsPopup";
 
-export default function InvoicePopupWithoutContext() {
+export default function InvoicePopupView() {
   const {
     warnings,
     onChangePopupMode,
@@ -74,6 +74,7 @@ export default function InvoicePopupWithoutContext() {
             flex-col
             items-center
             py-5
+            pb-[25px]
             px-[30px]
             relative
           "
@@ -116,7 +117,7 @@ export default function InvoicePopupWithoutContext() {
             </button>
           </div>
           <InvoiceForm />
-          <div className="mt-10 text-[#7A7A7A] h-full w-full">
+          <div className="mt-10 text-[#7A7A7A] flex flex-col flex-grow w-full">
             <InvoiceProductsTable />
           </div>
         </div>

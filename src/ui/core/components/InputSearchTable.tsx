@@ -40,7 +40,7 @@ export default function InputSearchTable({
         }}
       /> 
       <span className="mt-2 md:mt-0 md:ms-[24px] text-sm md:text-base truncate">
-        { data ? data.size : <Spin size={9} className="!me-1" /> } elemento{ !data || data.size > 1 ? "s" : "" } • Ordenado por Fecha de venta • Filtrado por "Ejemplo"
+        { data ? data.size : <Spin size={9} className="!me-1" /> } elemento{ !data || data.size > 1 ? "s" : "" } • Ordenado por Fecha de venta • Filtrado por {"\""}Ejemplo{"\""}
       </span>
     </div>
   )
