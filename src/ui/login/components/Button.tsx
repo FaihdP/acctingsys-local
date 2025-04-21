@@ -31,7 +31,7 @@ export default function Button({ loading }: { loading?: boolean }) {
         { loading
             ? 
               <span className="flex justify-center">
-                <Spin />
+                <Spin className="me-3" />
                 Cargando...
               </span>
             : 

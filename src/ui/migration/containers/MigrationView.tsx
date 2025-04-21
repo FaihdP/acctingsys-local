@@ -5,7 +5,7 @@ import DynamicTable from "@ui/table/containers/DynamicTable";
 import { TableConfigProps } from "@ui/table/interfaces/Table";
 import MIGRATION_TABLE_COLUNMS from "../constants/MigrationTableColumns";
 import MigrationIcon from "@public/dashboard/migration/MigrationIcon";
-import { StartMigrationContext } from "@ui/startMigration/hooks/StartMigrationProvider";
+import Spin from "@ui/core/components/Spin";
 
 
 export default function MigrationView() {
@@ -15,17 +15,13 @@ export default function MigrationView() {
     migrations,
     pageSelected,
     pagesNumber,
-    setPageSelected
+    setPageSelected,
+    handleStartMigration,
+    documentsPendingCount
   } = useContext(MigrationProviderContext)
-  const { startMigration } = useContext(StartMigrationContext)
   
   const handleChangeMigrationFilter = (e: ChangeEvent<HTMLInputElement>) => {
     setMigrationSearch(e.target.value)
-  }
-
-  const handleStartMigration = async () => {
-    await startMigration()
-    setPageSelected(1)
   }
 
   const migrationTableConfig: TableConfigProps = {
@@ -96,12 +92,27 @@ export default function MigrationView() {
               py-[50px]
               text-center
             ">
-              <span className="text-[32px]">30</span>
-              <span className="inline-block">Facturas</span>
-              <span className="mt-[25px] text-[32px]">30</span>
-              <span className="inline-block">Pagos</span>
-              <span className="mt-[25px] text-[32px]">30</span>
-              <span className="inline-block">Gastos</span>
+              {
+                documentsPendingCount ? (
+                  <>
+                    <span className="text-[32px]">{documentsPendingCount?.invoices}</span>
+                    <span className="inline-block">Facturas</span>
+                    <span className="mt-[25px] text-[32px]">{documentsPendingCount?.payments}</span>
+                    <span className="inline-block">Pagos</span>
+                    <span className="mt-[25px] text-[32px]">{documentsPendingCount?.expenses}</span>
+                    <span className="inline-block">Gastos</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[32px]"><Spin />  </span>
+                    <span className="inline-block">Facturas</span>
+                    <span className="mt-[25px] text-[32px]"><Spin /></span>
+                    <span className="inline-block">Pagos</span>
+                    <span className="mt-[25px] text-[32px]"><Spin /></span>
+                    <span className="inline-block">Gastos</span>
+                  </>
+                )
+              }
             </div>
           </div>
         </div>

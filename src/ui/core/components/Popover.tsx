@@ -55,7 +55,7 @@ export const renderOptions = (
   if (!options || !Array.isArray(options)) {
     return (
       <span className="flex justify-center items-center my-1">
-        <Spin size={14} />
+        <Spin size={14} className="me-3" />
       </span>
     );
   }

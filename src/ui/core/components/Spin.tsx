@@ -4,7 +4,6 @@ export default function Spin({ size, className }: { size?: number, className?: s
   return (
     <svg 
       className={`
-        me-3 
         animate-spin
         inline-block
         ${className}

@@ -33,7 +33,7 @@ fn get_client_db() -> Client {
 }
 
 async fn migration_recurring_task() {
-  let mut interval = interval(Duration::from_secs(10)); // 10 segundos
+  let mut interval = interval(Duration::from_secs(60)); // 10 segundos
 
   loop {
     interval.tick().await;
@@ -46,7 +46,7 @@ async fn migration_recurring_task() {
 
 fn main() {
   dotenv().ok();
-  //tauri::async_runtime::spawn(migration_recurring_task());
+  // tauri::async_runtime::spawn(migration_recurring_task());
   tauri::Builder::default()
     .manage(get_client_db())
     .invoke_handler(

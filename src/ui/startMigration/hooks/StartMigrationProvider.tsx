@@ -15,6 +15,7 @@ import getExpensesToMigrate from "@lib/services/expense/getExpensesToMigrate";
 import getInvoices from "@lib/services/invoice/getInvoices";
 import getInvoicesToMigrate from "@lib/services/invoice/getInvoicesToMigrate";
 import updateInvoice from "@lib/services/invoice/updateInvoice";
+import getDocumentsToMigrate from "@lib/services/migration/getDocumentsToMigrate";
 import getMigrations from "@lib/services/migration/getMigrations";
 import saveMigration from "@lib/services/migration/saveMigration";
 import updateMigration from "@lib/services/migration/updateMigration";
@@ -73,13 +74,6 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
         await savePendingMigration()
         // Validate connection during 10 minuts
       }
-    }
-
-    const getDocumentsToMigrate = async () => {
-      const invoices = await getInvoicesToMigrate()
-      const payments = await getPaymentsToMigrate()
-      const expenses = await getExpensesToMigrate()
-      return { invoices, payments, expenses }
     }
 
     const getOrCreateMigration = async (existsPendingMigration: any, documentsToMigrate: any) => {
@@ -309,19 +303,19 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     const notificationId = handleAddNotification({
       type: NotificationType.INPROCCESS,
       title: "Incio de migración", 
-      text: "Se ha comnezado el proceso de migración.",
+      text: "Ha comenzado el proceso de migración.",
     })
 
     const documentsToMigrate = await getDocumentsToMigrate()
     const { invoices, payments, expenses } = documentsToMigrate
 
-    console.log("invoices", invoices)
-    console.log("payments", payments)
-    console.log("expenses", expenses)
+    // console.log("invoices", invoices)
+    // console.log("payments", payments)
+    // console.log("expenses", expenses)
 
     const migrationId: string = await getOrCreateMigration(existsPendingMigration, documentsToMigrate)
     
-    console.log("migrationId", migrationId)
+    // console.log("migrationId", migrationId)
 
     if (invoices.length === 0 && payments.length === 0 && expenses.length === 0) {
       return handleAndNotifyIfNoDocumentsToMigrate(notificationId)
@@ -335,7 +329,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       return await handleErrorAndUpdateNotification(notificationId, new Error(String(error)))
     }
 
-    console.log("documentsResponse", documentsResponse)
+    // console.log("documentsResponse", documentsResponse)
 
     const documentsResponseToSave = await handleProcessDocumentsResponse(documentsToMigrate, documentsResponse)
     const { 
@@ -350,9 +344,9 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       expensesResponseWithError
     ].some((exists) => exists > 0)
 
-    console.log(migrationInvoices)
-    console.log(migrationPayments)
-    console.log(migrationExpenses)
+    // console.log(migrationInvoices)
+    // console.log(migrationPayments)
+    // console.log(migrationExpenses)
 
     // Update documents
     try {

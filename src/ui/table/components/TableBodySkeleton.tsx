@@ -8,7 +8,7 @@ export default function TableBodySkeleton() {
     <tbody>
       <tr>
         <td colSpan={getColumnsNumber()} className="h-[300px] text-center text-xl">
-          <Spin size={30}/> Cargando ...
+          <Spin size={30} className="me-3"/> Cargando ...
         </td>
       </tr>
     </tbody>

@@ -174,7 +174,7 @@ export default function BankPopup() {
               </span>
               )
             : <span className="flex justify-center items-center my-1">
-                <Spin size={14} />
+                <Spin size={14} className="me-3" />
               </span> 
         }
       </div>
