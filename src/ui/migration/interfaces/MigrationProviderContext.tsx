@@ -1,6 +1,7 @@
 import { MappedObject } from "@ui/table/interfaces/Row";
-import { Dispatch, MutableRefObject, SetStateAction } from "react";
+import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from "react";
 import { DocumentsPendingCount } from "../hooks/MigrationProvider";
+import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus";
 
 export default interface MigrationProviderContext {
   documentsPendingCount: DocumentsPendingCount | null
@@ -12,5 +13,10 @@ export default interface MigrationProviderContext {
   pageSelected: number,
   setPageSelected: Dispatch<SetStateAction<number>>,
   pagesNumber: MutableRefObject<number>,
-  handleStartMigration: () => Promise<void>
+  handleStartMigration: () => Promise<void>,
+  handleChangeMigrationFilter: (e: ChangeEvent<HTMLInputElement>) => void,
+  migrationPopupStatus: MIGRATION_POPUP_STATUS,
+  setMigrationPopupStatus: Dispatch<SetStateAction<MIGRATION_POPUP_STATUS>>,
+  migration: MappedObject | null,
+  setMigration: Dispatch<SetStateAction<MappedObject | null>>
 }

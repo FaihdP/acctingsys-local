@@ -1,6 +1,6 @@
 import { Dispatch, MutableRefObject, SetStateAction } from "react"
 import ColumTypes from "./ColumTypes"
-import { MappedObject } from "./Row"
+import { MappedObject, Row } from "./Row"
 
 export enum ColumType {
   TEXT,
@@ -15,7 +15,7 @@ export enum ColumType {
 export interface Option {
   icon: any
   alt: string
-  onClick: (id: string) => void
+  onClick: (row: Row) => void
 }
 
 export interface Column {

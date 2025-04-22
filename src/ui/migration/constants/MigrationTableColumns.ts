@@ -1,10 +1,15 @@
 import { MIGRATION_STATUS } from "@lib/db/schemas/migration/Migration";
-import { formatDate, getDateTime, getFormatDateTime } from "@lib/util/time";
+import { getFormatDateTime } from "@lib/util/time";
 import { SelectComponentProps } from "@ui/table/interfaces/SelectComponent";
 import { ColumType, TableConfigHeaderProps } from "@ui/table/interfaces/Table";
 import { ComponentType } from "react";
 import withMigrationStatus from "../components/withMigrationStatus";
 import MigrationStatusTagTable from "../components/MigrationStatusTagTable";
+
+const migrationStatusMap = new Map<string, ComponentType<SelectComponentProps>>()
+Object.entries(MIGRATION_STATUS).forEach(([key, value]) => {
+  migrationStatusMap.set(key, withMigrationStatus(MigrationStatusTagTable, value))
+})
 
 const MIGRATION_TABLE_COLUNMS: TableConfigHeaderProps["columns"] = [
   { 
@@ -19,13 +24,7 @@ const MIGRATION_TABLE_COLUNMS: TableConfigHeaderProps["columns"] = [
     type: ColumType.SELECT,
     label: "Estado",
     tag: "status",
-    relationship: new Map<string, ComponentType<SelectComponentProps>>([
-      [MIGRATION_STATUS.COMPLETED, withMigrationStatus(MigrationStatusTagTable, MIGRATION_STATUS.COMPLETED)],
-      [MIGRATION_STATUS.FAILED, withMigrationStatus(MigrationStatusTagTable, MIGRATION_STATUS.FAILED)],
-      [MIGRATION_STATUS.PENDING, withMigrationStatus(MigrationStatusTagTable, MIGRATION_STATUS.PENDING)],
-      [MIGRATION_STATUS.PROCESSING, withMigrationStatus(MigrationStatusTagTable, MIGRATION_STATUS.PROCESSING)],
-      [MIGRATION_STATUS.UNCOMPLETED, withMigrationStatus(MigrationStatusTagTable, MIGRATION_STATUS.UNCOMPLETED)],
-    ]),
+    relationship: migrationStatusMap,
     required: true
   },
   {

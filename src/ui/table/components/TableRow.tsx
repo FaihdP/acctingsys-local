@@ -162,13 +162,12 @@ export default function TableRow({ row }: TableRowProps) {
             { 
               header.options.others && !row.value.isEditable &&
                 header.options.others.map((option, index) => 
-                  <a key={index} onClick={() => option.onClick(row.value._id.$oid)}>
-                    <Image 
-                      src={option.icon}
-                      alt={option.alt}
-                      width={sizeIconOptionsTable}  
-                      height={sizeIconOptionsTable}
-                    />
+                  <a 
+                    key={index} 
+                    onClick={() => option.onClick(row)}
+                    className="ms-1 cursor-pointer"
+                  >
+                    { option.icon }
                   </a>
                 )
             }

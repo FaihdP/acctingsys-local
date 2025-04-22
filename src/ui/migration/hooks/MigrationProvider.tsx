@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { ChangeEvent, createContext, useContext, useEffect, useRef, useState } from "react";
 import IMigrationProviderContext from "../interfaces/MigrationProviderContext";
 import MigrationProviderProps from "../interfaces/MigrationProviderProps";
 import { MappedObject } from "@ui/table/interfaces/Row";
@@ -7,9 +7,9 @@ import mapData from "@ui/table/util/mapData";
 import useForceRender from "@ui/core/hooks/useForceRender";
 import { StartMigrationContext } from "@ui/startMigration/hooks/StartMigrationProvider";
 import getPendingDocumentsCount from "@lib/services/migration/getPendingDocumentsCount";
+import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus";
 
 export const MigrationProviderContext = createContext({} as IMigrationProviderContext)
-
 
 export interface DocumentsPendingCount {
   invoices: number
@@ -20,11 +20,13 @@ export interface DocumentsPendingCount {
 export function MigrationProvider({ children }: MigrationProviderProps) {
   const [documentsPendingCount, setDocumentsPendingCount] = useState<DocumentsPendingCount | null>(null)
   const [migrations, setMigrations] = useState<Map<string, MappedObject> | null>(null)
+  const [migration, setMigration] = useState<MappedObject | null>(null)
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
   const [migrationSearch, setMigrationSearch] = useState<string>()
   const { render, forceRender } = useForceRender()
   const { startMigration } = useContext(StartMigrationContext)
+  const [migrationPopupStatus, setMigrationPopupStatus] = useState<MIGRATION_POPUP_STATUS>(MIGRATION_POPUP_STATUS.VISIBLE)
 
   useEffect(() => {
     const fetchDocumentsPendingCount = async () => setDocumentsPendingCount(await getPendingDocumentsCount())
@@ -45,8 +47,9 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
     forceRender()
   }
 
-  console.log("documentsPendingCount", documentsPendingCount) 
-
+  const handleChangeMigrationFilter = (e: ChangeEvent<HTMLInputElement>) => {
+    setMigrationSearch(e.target.value)
+  }
 
   return (
     <MigrationProviderContext.Provider 
@@ -56,7 +59,10 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
         migrationSearch, setMigrationSearch,
         pageSelected, setPageSelected,
         pagesNumber,
-        handleStartMigration
+        handleStartMigration,
+        handleChangeMigrationFilter,
+        migrationPopupStatus, setMigrationPopupStatus,
+        migration, setMigration
       }}
     >
       { children }

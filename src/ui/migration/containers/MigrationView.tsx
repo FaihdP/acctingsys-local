@@ -6,39 +6,50 @@ import { TableConfigProps } from "@ui/table/interfaces/Table";
 import MIGRATION_TABLE_COLUNMS from "../constants/MigrationTableColumns";
 import MigrationIcon from "@public/dashboard/migration/MigrationIcon";
 import Spin from "@ui/core/components/Spin";
-
+import ViewIcon from "@public/dashboard/migration/ViewIcon";
+import { Row } from "@ui/table/interfaces/Row";
+import MigrationPopup from "../components/MigrationPopup";
+import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus";
 
 export default function MigrationView() {
   const { 
     migrationSearch,
-    setMigrationSearch, 
     migrations,
     pageSelected,
     pagesNumber,
     setPageSelected,
     handleStartMigration,
-    documentsPendingCount
+    handleChangeMigrationFilter,
+    documentsPendingCount,
+    migrationPopupStatus,
+    setMigrationPopupStatus,
+    migration,
+    setMigration
   } = useContext(MigrationProviderContext)
   
-  const handleChangeMigrationFilter = (e: ChangeEvent<HTMLInputElement>) => {
-    setMigrationSearch(e.target.value)
-  }
-
   const migrationTableConfig: TableConfigProps = {
     header: {
       columns: MIGRATION_TABLE_COLUNMS,
       picker: true,
       options: {
-        onEdit: true
+        onEdit: false,
+        others: [
+          {
+            icon: <ViewIcon width={15} height={15} />,
+            alt: "View detailed migration",
+            onClick: (row: Row) => {
+              setMigrationPopupStatus(MIGRATION_POPUP_STATUS.VISIBLE)
+              setMigration(row.value)
+            }
+          }
+        ]
       }
-    },
-    actions: {
-      onEdit: async () => {}
     }
   }
 
   return (
     <>
+      { (migrationPopupStatus === MIGRATION_POPUP_STATUS.VISIBLE && migration) && <MigrationPopup /> }
       <div className="flex flex-row justify-between">
         <InputSearchTable 
           data={migrations} 
