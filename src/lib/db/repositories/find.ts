@@ -11,6 +11,7 @@ type ToNumbers<T> = {
 
 export interface FindResults<T> {
   pages_number: number,
+  total_records: number,
   data: T
 }
 

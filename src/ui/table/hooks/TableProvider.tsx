@@ -28,22 +28,21 @@ export default function TableProvider(
   const [ data, tableDispatch ] = useReducer(tableReducer, { map: initialData.data})
   const dataBackup = useRef<Map<string, MappedObject>>(new Map())
 
-  const handleAddRow = () => { 
-    if (modifiers?.onAddRow) return modifiers.onAddRow()
+  const handleAddRow = async () => { 
+    if (modifiers?.onAddRow) return await Promise.resolve(modifiers.onAddRow())
     if (actions?.onAdd) {
       tableDispatch({ type: TableActions.ADD_ROW, payload: { onAdd: actions.onAdd } })
     }
   }
 
-  const handleDeleteRow = () => {
+  const handleDeleteRow = async () => {
     if (data.map && modifiers?.onDeleteRow) {
-        const selectedRows = 
-          Array
-            .from(data.map, ([key, value]) => { return {key, value} })
-            .filter(row => row.value.isSelected)
-            .map(row => row.value["_id"] ? row.value["_id"]["$oid"] : row.key)
+        const selectedRows = Array
+          .from(data.map, ([key, value]) => { return {key, value} })
+          .filter(row => row.value.isSelected)
+          .map(row => row.value["_id"] ? row.value["_id"]["$oid"] : row.key)
 
-        return modifiers.onDeleteRow(selectedRows)
+        return await Promise.resolve(modifiers.onDeleteRow(selectedRows))
     }
     if (actions?.onDelete) {
       tableDispatch({ type: TableActions.DELETE_ROW, payload: { onDelete: actions.onDelete } })

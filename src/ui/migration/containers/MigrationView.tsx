@@ -4,12 +4,26 @@ import { MigrationProviderContext } from "../hooks/MigrationProvider";
 import DynamicTable from "@ui/table/containers/DynamicTable";
 import { TableConfigProps } from "@ui/table/interfaces/Table";
 import MIGRATION_TABLE_COLUNMS from "../constants/MigrationTableColumns";
-import MigrationIcon from "@public/dashboard/migration/MigrationIcon";
 import Spin from "@ui/core/components/Spin";
 import ViewIcon from "@public/dashboard/migration/ViewIcon";
 import { Row } from "@ui/table/interfaces/Row";
 import MigrationPopup from "../components/MigrationPopup";
 import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus";
+import MigrationIcon from "@public/dashboard/nav/MigrationIcon";
+
+function RetryMigration() {
+  return (
+    <>
+      <MigrationIcon 
+        width={20}
+        height={20}
+      />
+      <span className="ms-2">
+        Reintentar
+      </span>
+    </>
+  )
+}
 
 export default function MigrationView() {
   const { 
@@ -28,6 +42,12 @@ export default function MigrationView() {
   } = useContext(MigrationProviderContext)
   
   const migrationTableConfig: TableConfigProps = {
+    modifiers: {
+      onDeleteRow: async (ids: string[]) => {
+        console.log("onDeleteRow", ids)
+      },
+      onDeleteRowComponent: <RetryMigration />
+    },
     header: {
       columns: MIGRATION_TABLE_COLUNMS,
       picker: true,
@@ -50,7 +70,7 @@ export default function MigrationView() {
   return (
     <>
       { (migrationPopupStatus === MIGRATION_POPUP_STATUS.VISIBLE && migration) && <MigrationPopup /> }
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-col md:flex-row justify-between">
         <InputSearchTable 
           data={migrations} 
           filter={migrationSearch || ""} 
@@ -66,6 +86,7 @@ export default function MigrationView() {
             border
             rounded-lg 
             text-sm
+            mb-4 md:mb-0
             px-3
             relative
           "
@@ -76,8 +97,8 @@ export default function MigrationView() {
           <span className="ps-8 inline-block">Iniciar migración</span>
         </button>
       </div>
-      <div className="flex flex-col md:flex-row flex-grow">
-        <div className="w-[100%] md:w-[25%] me-[50px]">
+      <div className="flex flex-col lg:flex-row flex-grow">
+        <div className="w-[100%] lg:w-[25%] me-[50px] mb-4 lg:mb-0">
           <div className="
             shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
             rounded-lg
@@ -127,7 +148,7 @@ export default function MigrationView() {
             </div>
           </div>
         </div>
-        <div className="w-[100%] md:w-[75%] mt-5 md:mt-0 flex-grow flex flex-col">
+        <div className="w-[100%] lg:w-[75%] mt-5 md:mt-0 flex-grow flex flex-col">
           <DynamicTable 
             config={migrationTableConfig}
             initialData={migrations}

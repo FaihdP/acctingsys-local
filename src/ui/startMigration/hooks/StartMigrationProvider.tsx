@@ -10,11 +10,6 @@ import { MIGRATION_STATUS } from "@lib/db/schemas/migration/Migration";
 import MigrationExpense from "@lib/db/schemas/migration/MigrationExpense";
 import MigrationInvoice from "@lib/db/schemas/migration/MigrationInvoice";
 import MigrationPayment from "@lib/db/schemas/migration/MigrationPayment";
-import getExpenses from "@lib/services/expense/getExpenses";
-import getExpensesToMigrate from "@lib/services/expense/getExpensesToMigrate";
-import getInvoices from "@lib/services/invoice/getInvoices";
-import getInvoicesToMigrate from "@lib/services/invoice/getInvoicesToMigrate";
-import updateInvoice from "@lib/services/invoice/updateInvoice";
 import getDocumentsToMigrate from "@lib/services/migration/getDocumentsToMigrate";
 import getMigrations from "@lib/services/migration/getMigrations";
 import saveMigration from "@lib/services/migration/saveMigration";
@@ -22,21 +17,22 @@ import updateMigration from "@lib/services/migration/updateMigration";
 import saveMigrationExpense from "@lib/services/migrationExpense/saveMigrationExpense";
 import saveMigrationInvoice from "@lib/services/migrationInvoice/saveMigrationInvoice";
 import saveMigrationPayment from "@lib/services/migrationPayment/saveMigrationPayment";
-import getPayments from "@lib/services/payment/getPayments";
-import getPaymentsToMigrate from "@lib/services/payment/getPaymentsToMigrate";
-import updatePayment from "@lib/services/payment/updatePayment";
 import handleError from "@lib/util/error/handleError";
 import { formatDate, getDateTime } from "@lib/util/time";
+import MigrationIcon from "@public/dashboard/nav/MigrationIcon";
 import { NotificationContext } from "@ui/notification/hooks/NotificationProvider";
 import NotificationType from "@ui/notification/interfaces/NotificationType";
-import { format } from "path";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
-export const StartMigrationContext = createContext({} as { startMigration: () => Promise<void> })
+export const StartMigrationContext = createContext({} as { 
+  startMigration: () => Promise<void>, 
+  reloadComponent: boolean, 
+})
 
 export default function StartMigrationProvider({ children }: { children: ReactNode }) {
   const { setNotifications, handleAddNotification, handleUpdateNotification } = useContext(NotificationContext)
   const [tauriEvent, setTauriEvent] = useState<any>()
+  const [reloadComponent, setReloadComponent] = useState(false)
 
   // This is a workaround to avoid the error: "Cannot read properties of undefined (reading window '__TAURI__')"
   const setupTauriEvent = async () => setTauriEvent(await import("@tauri-apps/api/event"))
@@ -109,9 +105,9 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     const saveDocumentsAPI = async (documents: any) => {
       const { invoices, payments, expenses } = documents
-      const paymentsResponse = await savePayments([payments[0]])
-      const invoicesResponse = await saveInvoices([invoices[0]])
-      const expensesResponse = await saveExpenses([expenses[0]])
+      const paymentsResponse = await savePayments(payments)
+      const invoicesResponse = await saveInvoices(invoices)
+      const expensesResponse = await saveExpenses(expenses)
       return { invoicesResponse, paymentsResponse, expensesResponse }
     }
 
@@ -193,6 +189,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     }
 
     const handleProcessDocumentsResponse = async (documentsToMigrate: any, documentsResponse: any) => {
+      if (!documentsResponse) return
       const { invoices, payments, expenses } = documentsToMigrate
       const { invoicesResponse, paymentsResponse, expensesResponse } = documentsResponse
 
@@ -213,7 +210,8 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     const handleUpdateMigrationNotification = (
       notificationId: string, 
       documentsResponseToSave: any,
-      existsSomeDocumentWithError: boolean
+      existsSomeDocumentWithError: boolean,
+      newMigrationStatus: MIGRATION_STATUS
     ) => {
       const { 
         migrationInvoices, invoicesResponseWithError, 
@@ -221,11 +219,16 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
         migrationExpenses, expensesResponseWithError
       } = documentsResponseToSave
 
+      let notificationType = NotificationType.OK
+      if (newMigrationStatus === MIGRATION_STATUS.UNCOMPLETED) {
+        notificationType = NotificationType.INPROCCESS
+      }
+
       // TODO: Improve this to display differents notifications types according to the number of documents with error
       handleUpdateNotification(
         notificationId, 
         {
-          type: NotificationType.OK,
+          type: notificationType,
           title: "Migración completada",	
           text: "El proceso de migración se ha completado exitosamente.",
           showMore: 
@@ -268,6 +271,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       }
 
       await updateMigration(migrationId, { $set: { status: newMigrationStatus } })
+      return newMigrationStatus
     }
 
     const handleErrorAndUpdateNotification = async (notificationId: string, error: any) => {
@@ -298,7 +302,10 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     if (!(await isOnline())) return await handleOfflineMigration(existsPendingMigration)
     
-    if (existsInProcessMigration && !existsPendingMigration) return savePendingMigration()
+    if (existsInProcessMigration) {
+      if (!existsPendingMigration) savePendingMigration()
+      return
+    }
 
     const notificationId = handleAddNotification({
       type: NotificationType.INPROCCESS,
@@ -309,13 +316,13 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     const documentsToMigrate = await getDocumentsToMigrate()
     const { invoices, payments, expenses } = documentsToMigrate
 
-    // console.log("invoices", invoices)
-    // console.log("payments", payments)
-    // console.log("expenses", expenses)
+    console.log("invoices", invoices)
+    console.log("payments", payments)
+    console.log("expenses", expenses)
 
     const migrationId: string = await getOrCreateMigration(existsPendingMigration, documentsToMigrate)
     
-    // console.log("migrationId", migrationId)
+    console.log("migrationId", migrationId)
 
     if (invoices.length === 0 && payments.length === 0 && expenses.length === 0) {
       return handleAndNotifyIfNoDocumentsToMigrate(notificationId)
@@ -323,43 +330,46 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     let documentsResponse;
     try {
-      documentsResponse = await saveDocumentsAPI(documentsToMigrate)
+      //documentsResponse = await saveDocumentsAPI(documentsToMigrate)
     } catch (error) {
       console.log(error)
       return await handleErrorAndUpdateNotification(notificationId, new Error(String(error)))
     }
 
-    // console.log("documentsResponse", documentsResponse)
+    console.log("documentsResponse", documentsResponse)
 
-    const documentsResponseToSave = await handleProcessDocumentsResponse(documentsToMigrate, documentsResponse)
-    const { 
-      migrationInvoices, invoicesResponseWithError, 
-      migrationPayments, paymentsResponseWithError, 
-      migrationExpenses, expensesResponseWithError
-    } = documentsResponseToSave
-
-    const existsSomeDocumentWithError = [
-      invoicesResponseWithError,
-      paymentsResponseWithError,
-      expensesResponseWithError
-    ].some((exists) => exists > 0)
-
-    // console.log(migrationInvoices)
-    // console.log(migrationPayments)
-    // console.log(migrationExpenses)
-
-    // Update documents
     try {
+        
+      const documentsResponseToSave = await handleProcessDocumentsResponse(documentsToMigrate, documentsResponse)
+      if (!documentsResponseToSave) throw new Error("No se pudo procesar los documentos")
+      const { 
+        migrationInvoices, invoicesResponseWithError, 
+        migrationPayments, paymentsResponseWithError, 
+        migrationExpenses, expensesResponseWithError
+      } = documentsResponseToSave
+
+      const existsSomeDocumentWithError = [
+        invoicesResponseWithError,
+        paymentsResponseWithError,
+        expensesResponseWithError
+      ].some((exists) => exists > 0)
+
+      console.log(migrationInvoices)
+      console.log(migrationPayments)
+      console.log(migrationExpenses)
+
+      // Update documents
       await saveMigrationInvoice(migrationInvoices)
       await saveMigrationPayment(migrationPayments) 
       await saveMigrationExpense(migrationExpenses)
 
-      await updateMigrationStatus(documentsResponseToSave, existsSomeDocumentWithError)
+      const newMigrationStatus = await updateMigrationStatus(documentsResponseToSave, existsSomeDocumentWithError)
       
       handleUpdateMigrationNotification(
         notificationId, 
         documentsResponseToSave, 
-        existsSomeDocumentWithError
+        existsSomeDocumentWithError,
+        newMigrationStatus
       )
 
     } catch (error) {
@@ -368,12 +378,31 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
   }, [handleAddNotification, handleUpdateNotification, setNotifications])
 
   useEffect(() => {
-    if (tauriEvent) tauriEvent.listen("start_migration", async () => await startMigration())
+    let unlisten: (() => void) | undefined;
+    
+    if (tauriEvent) {
+      const startMigrationExecute = async () => {
+        unlisten = await tauriEvent.listen("start_migration", async () => {
+          try {
+            console.log("executeMigration")
+            await startMigration()
+          } catch (error) {
+            console.log(error)
+          } finally {
+            setReloadComponent((prev) => !prev)
+          }
+        })
+      }
+      startMigrationExecute()
+    }
+    
+    return () => unlisten?.();
   }, [startMigration, tauriEvent])
 
   return (
     <StartMigrationContext.Provider value={{
-      startMigration
+      startMigration,
+      reloadComponent
     }}>
       { children }
     </StartMigrationContext.Provider>

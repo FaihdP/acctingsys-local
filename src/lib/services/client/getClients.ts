@@ -18,5 +18,5 @@ export default async function getClients(
     { name: 1, lastname: 1 }
   )
 
-  return result.data ? result : { data: [], pages_number: 0 }
+  return result.data ? result : { data: [], pages_number: 0, total_records: 0 }
 }

@@ -1,4 +1,4 @@
-import { Dispatch, MutableRefObject, SetStateAction } from "react"
+import { Dispatch, MutableRefObject, ReactNode, SetStateAction } from "react"
 import ColumTypes from "./ColumTypes"
 import { MappedObject, Row } from "./Row"
 
@@ -42,6 +42,22 @@ export interface TableConfigPropsBase {
   header: TableConfigHeaderProps
 }
 
+
+interface TableConfigPropsModifiers {
+  onAddRow?: () => Promise<any> | any,
+  onAddRowComponent?: ReactNode,
+  onDeleteRow?: (ids: string[]) => Promise<any>,
+  onDeleteRowComponent?: ReactNode,
+  onEditRow?: (data: any) => Promise<any>,
+  onEditRowComponent?: ReactNode
+}
+
+interface TableConfigPropsActions {
+  onAdd?: (data: any) => Promise<any>,
+  onDelete?: (id: string, data: any) => Promise<any>,
+  onEdit?: (id: string, data: any) => Promise<any>
+}
+
 export type TableConfigProps = TableConfigPropsBase & (
   /**
    * ### Modifiers
@@ -49,11 +65,7 @@ export type TableConfigProps = TableConfigPropsBase & (
    */
   | { 
       actions?: never
-      modifiers?: {
-        onAddRow?: () => Promise<any>,
-        onDeleteRow?: (id: string[]) => Promise<any>,
-        onEditRow?: (data: any) => Promise<any>
-      },
+      modifiers?: TableConfigPropsModifiers,
     }
   /**
    * ### Actions
@@ -61,23 +73,11 @@ export type TableConfigProps = TableConfigPropsBase & (
    */
   | {
       modifiers?: never,
-      actions?: {
-        onAdd?: (data: any) => Promise<any>,
-        onDelete?: (rowKey: string, data: any) => Promise<any>,
-        onEdit?: (rowKey: string, data: any) => Promise<any>
-      }
+      actions?: TableConfigPropsActions
     }
   | {
-      modifiers?: {
-        onAddRow?: () => Promise<any>,
-        onDeleteRow?: (id: string[]) => Promise<any>,
-        onEditRow?: (data: any) => Promise<any>
-      },
-      actions?: {
-        onAdd?: (data: any) => Promise<any>,
-        onDelete?: (id: string, data: any) => Promise<any>,
-        onEdit?: (id: string, data: any) => Promise<any>
-      }
+      modifiers?: TableConfigPropsModifiers,
+      actions?: TableConfigPropsActions
     }
 )
 

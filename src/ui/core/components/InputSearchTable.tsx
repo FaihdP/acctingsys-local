@@ -13,7 +13,7 @@ export default function InputSearchTable({
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }) {
   return (
-    <div className="flex flex-col md:flex-row mb-4 md:mb-[40px]">
+    <div className="flex flex-col lg:flex-row mb-4 md:mb-[40px]">
       <Input 
         type="text" 
         name="search" 
@@ -39,7 +39,7 @@ export default function InputSearchTable({
           width: 24
         }}
       /> 
-      <span className="mt-2 md:mt-0 md:ms-[24px] text-sm md:text-base truncate">
+      <span className="mt-2 md:mt-0 ms-0 lg:ms-[24px] text-sm md:text-base truncate inline-block break-words whitespace-normal">
         { data ? data.size : <Spin size={9} className="!me-1" /> } elemento{ !data || data.size > 1 ? "s" : "" } • Ordenado por Fecha de venta • Filtrado por {"\""}Ejemplo{"\""}
       </span>
     </div>

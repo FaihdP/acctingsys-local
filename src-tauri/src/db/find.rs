@@ -17,6 +17,7 @@ pub struct Page {
 #[derive(Serialize, Deserialize)]
 pub struct FindResults {
   pages_number: u32,
+  total_records: u64,
   data: Vec<Document>
 }
 
@@ -35,16 +36,18 @@ pub async fn find(
   let find_options = FindOptions::builder()
     // Pagination
     .skip(u64::from((page.number - 1) * u32::from(page.size)))
-    .limit(i64::from(page.number * u32::from(page.size)))
+    .limit(i64::from(page.size))
     .projection(fields)
     // Sort
     .sort(sort)
     .build();
 
-  let pages_number = (target_collection
+  let total_records = target_collection
     .count_documents(filter.clone(), count_options)
     .await
-    .unwrap() as f32 / page.size as f32).ceil() as u32;
+    .unwrap();
+
+  let pages_number = (total_records as f32 / page.size as f32).ceil() as u32;
 
   let mut cursor = target_collection
     .find(filter.clone(), find_options)
@@ -58,6 +61,7 @@ pub async fn find(
 
   let find_results: Bson = bson!({
     "pages_number": pages_number,
+    "total_records": total_records as i64,
     "data": results
   });
 

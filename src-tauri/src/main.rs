@@ -33,20 +33,29 @@ fn get_client_db() -> Client {
 }
 
 async fn migration_recurring_task() {
-  let mut interval = interval(Duration::from_secs(60)); // 10 segundos
+  let mut interval = interval(Duration::from_secs(10)); // 10 segundos
+  let mut count = 0;
+  let max_executions = 2;
 
   loop {
     interval.tick().await;
-    println!("Ejecutando tarea en {:?}", Instant::now());
+    count += 1;
+    println!("Ejecutando tarea en {:?} ({}/{})", Instant::now(), count, max_executions);
+    
     if let Some(app_handle) = APP_HANDLE.get() {
       app_handle.emit_all("start_migration", bson!({ "message": "Hola from rust" })).unwrap();
-    }    
+    }
+    
+    if count >= max_executions {
+      println!("Completadas las {} ejecuciones programadas", max_executions);
+      break;
+    }
   }
 }
 
 fn main() {
   dotenv().ok();
-  // tauri::async_runtime::spawn(migration_recurring_task());
+  tauri::async_runtime::spawn(migration_recurring_task());
   tauri::Builder::default()
     .manage(get_client_db())
     .invoke_handler(

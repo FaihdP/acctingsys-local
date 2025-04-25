@@ -25,7 +25,7 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
   const pagesNumber = useRef<number>(1)
   const [migrationSearch, setMigrationSearch] = useState<string>()
   const { render, forceRender } = useForceRender()
-  const { startMigration } = useContext(StartMigrationContext)
+  const { startMigration, reloadComponent } = useContext(StartMigrationContext)
   const [migrationPopupStatus, setMigrationPopupStatus] = useState<MIGRATION_POPUP_STATUS>(MIGRATION_POPUP_STATUS.VISIBLE)
 
   useEffect(() => {
@@ -40,11 +40,16 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
       pagesNumber.current = response.pages_number
     }
     fetchMigrations()
-  }, [setMigrations, pageSelected, render])
+  }, [setMigrations, pageSelected, render, reloadComponent])
 
   const handleStartMigration = async () => {
-    //await startMigration()
-    forceRender()
+    try {
+      await startMigration()
+    } catch (error) {
+      console.log(error)
+    } finally {
+      forceRender()
+    }
   }
 
   const handleChangeMigrationFilter = (e: ChangeEvent<HTMLInputElement>) => {

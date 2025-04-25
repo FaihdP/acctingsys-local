@@ -13,7 +13,7 @@ export default async function getExpenses(
       filters, 
       pageNumber ? { size: 25, number: pageNumber } : undefined
     )
-    return result.data ? result : { data: [], pages_number: 0 }
+    return result.data ? result : { data: [], pages_number: 0, total_records: 0 }
   } catch (error) {
     throw handleError(error)
   }

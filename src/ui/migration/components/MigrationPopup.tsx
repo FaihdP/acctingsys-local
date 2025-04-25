@@ -1,12 +1,15 @@
-import { useContext, useState } from "react"
+import { useContext, useState, useMemo } from "react"
 import { MigrationProviderContext } from "../hooks/MigrationProvider"
-import Migration, { MigrationDocument } from "@lib/db/schemas/migration/Migration"
 import getMigrationStatusText from "../util/getMigrationStatusText"
 import getMigrationStatusStyles from "../util/getMigrationStatusStyles"
 import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus"
-import MigrationPopupPaymentTab from "./MigrationPopupPaymentTab"
-import MigrationPopupExpenseTab from "./MigrationPopupExpenseTab"
-import MigrationPopupInvoiceTab from "./MigrationPopupInvoiceTab"
+import MigrationPopupTab from "./MigrationPopupTab"
+import MigrationInvoicesTableColumns from "../constants/MigrationInvoicesTableColumns"
+import getMigrationInvoicesById from "@lib/services/migration/getMigrationInvoicesById"
+import getMigrationPaymentsById from "@lib/services/migration/getMigrationPaymentById"
+import MigrationPaymentsTableColumns from "../constants/MigrationPayementsTableColumns"
+import getMigrationExpensesById from "@lib/services/migration/getMigrationExpensesById"
+import MigrationExpensesTableColumns from "../constants/MigrationExpensesTableColumns"
 
 enum MIGRATION_POPUP_TAB {
   INVOICE,
@@ -17,6 +20,27 @@ enum MIGRATION_POPUP_TAB {
 export default function MigrationPopup() {
   const { migration, setMigrationPopupStatus } = useContext(MigrationProviderContext)
   const [selectedTab, setSelectedTab] = useState<MIGRATION_POPUP_TAB>(MIGRATION_POPUP_TAB.INVOICE)
+  
+  const tabConfigs = useMemo(() => [
+    {
+      type: MIGRATION_POPUP_TAB.INVOICE,
+      getData: getMigrationInvoicesById,
+      columns: MigrationInvoicesTableColumns,
+      label: "Facturas"
+    },
+    {
+      type: MIGRATION_POPUP_TAB.PAYMENT,
+      getData: getMigrationPaymentsById,
+      columns: MigrationPaymentsTableColumns,
+      label: "Pagos"
+    },
+    {
+      type: MIGRATION_POPUP_TAB.EXPENSE,
+      getData: getMigrationExpensesById,
+      columns: MigrationExpensesTableColumns,
+      label: "Gastos"
+    }
+  ], [])
 
   return (
     <div
@@ -98,47 +122,41 @@ export default function MigrationPopup() {
             text-[12px]            
             text-[#5C5C5C]
           ">
-            <div 
-              className={`
-                h-full flex items-center justify-center  rounded-ss-lg cursor-pointer 
-                ${selectedTab === MIGRATION_POPUP_TAB.INVOICE ? "bg-white" : "border border-gray bg-[#F4F4F4]"}
-              `} 
-              onClick={() => setSelectedTab(MIGRATION_POPUP_TAB.INVOICE)}
-            >
-              Facturas
-            </div>
-            <div 
-              className={`
-                h-full flex items-center justify-center  cursor-pointer 
-                ${selectedTab === MIGRATION_POPUP_TAB.PAYMENT ? "bg-white" : "border border-gray bg-[#F4F4F4]"}
-              `} 
-              onClick={() => setSelectedTab(MIGRATION_POPUP_TAB.PAYMENT)}
-            >
-              Pagos
-            </div>
-            <div 
-              className={`
-                h-full flex items-center justify-center  cursor-pointer rounded-se-lg
-                ${selectedTab === MIGRATION_POPUP_TAB.EXPENSE ? "bg-white" : "border border-gray bg-[#F4F4F4]"}
-              `} 
-              onClick={() => setSelectedTab(MIGRATION_POPUP_TAB.EXPENSE)}
-            >
-              Gastos
-            </div>
+            {tabConfigs.map((config, index) => (
+              <div 
+                key={config.type}
+                className={`
+                  h-full flex items-center justify-center cursor-pointer
+                  ${index === 0 ? "rounded-tl-lg" : ""}
+                  ${index === tabConfigs.length - 1 ? "rounded-tr-lg" : ""}
+                  ${selectedTab === config.type ? "bg-white" : "border border-gray bg-[#F4F4F4]"}
+                `} 
+                onClick={() => setSelectedTab(config.type)}
+              >
+                {config.label}
+              </div>
+            ))}
           </div>
 
           <div className="
             flex flex-grow
             bg-white z-10 
             p-[30px]
+            rounded-b-lg
           ">
-            {selectedTab === MIGRATION_POPUP_TAB.INVOICE && <MigrationPopupInvoiceTab />}
-            {selectedTab === MIGRATION_POPUP_TAB.PAYMENT && <MigrationPopupPaymentTab />}
-            {selectedTab === MIGRATION_POPUP_TAB.EXPENSE && <MigrationPopupExpenseTab />}
+            {tabConfigs.filter(config => config.type === selectedTab).map(config => (
+              <div 
+                key={config.type} 
+                className="w-full flex"
+              >
+                <MigrationPopupTab
+                  getData={config.getData}
+                  columns={config.columns}
+                />
+              </div>
+            ))}
           </div>
         </div>
-
-
       </div>
     </div>
   )

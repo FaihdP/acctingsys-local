@@ -5,12 +5,9 @@ import handleError from "@lib/util/error/handleError"
 
 export default async function getMigrationInvoicesById(migrationId: string): Promise<FindResults<MigrationInvoice[]>> {
   try {
-    console.log(migrationId)
-    const invoices = await find<MigrationInvoice>(COLLECTIONS.MIGRATION_INVOICES, { _id: { $oid: migrationId } })
-    console.log(invoices)
+    const invoices = await find<MigrationInvoice>(COLLECTIONS.MIGRATION_INVOICES, { migrationId: migrationId })
     return invoices
   } catch (error) {
     throw handleError(error)
   }
-
 }

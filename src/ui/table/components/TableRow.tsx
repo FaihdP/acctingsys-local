@@ -58,7 +58,7 @@ export default function TableRow({ row }: TableRowProps) {
         text-[#5C5C5C]
         border-gray-100
         border-b
-        min-h-[30px] 
+        h-[30px]
         shadow-[0_1px_3px_-1px_rgba(0,0,0,0.1)]
         hover:bg-[rgb(251,251,251,1)]
       "
@@ -81,8 +81,8 @@ export default function TableRow({ row }: TableRowProps) {
         header.columns.map(
           (column, indexColumn: number) => {
             let value = row.value[column.tag] || ""
-            if (row.value.isNewRow && column.defaultValue) {
-              if (column.defaultValue instanceof Function) value = column.defaultValue()
+            if (column.defaultValue && (row.value.isNewRow || (!value))) {
+              if (column.defaultValue instanceof Function) value = column.defaultValue(row.value)
               else value = column.defaultValue
             }
             return (

@@ -19,5 +19,5 @@ export default async function getProducts(
     { name: 1, value: 1 }
   )
 
-  return result.data ? result : { data: [], pages_number: 0 }
+  return result.data ? result : { data: [], pages_number: 0, total_records: 0 }
 }
