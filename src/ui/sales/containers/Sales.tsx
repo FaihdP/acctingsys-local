@@ -31,10 +31,11 @@ export default function Sales() {
   const debouncedFilter = useDebounce(filter, DEBOUNCE_TIME)
 
   const [pageSelected, setPageSelected] = useState<number>(1)
+  const totalRecords = useRef<number>(0)
   const pagesNumber = useRef<number>(1)
 
   const fetchInvoices = useCallback(async () => {
-    let result;
+    let result
     result = await getInvoices(
       debouncedFilter 
         ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_SALES_FILTER) 
@@ -43,6 +44,7 @@ export default function Sales() {
     )
 
     pagesNumber.current = result.pages_number
+    totalRecords.current = result.total_records
     setSalesInvoices(mapData(result.data)) 
   }, [pageSelected, setSalesInvoices, debouncedFilter])
 
@@ -95,6 +97,7 @@ export default function Sales() {
           />
       }
       <InputSearchTable 
+        totalRecords={totalRecords.current}
         data={salesInvoices}
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}

@@ -11,7 +11,7 @@ export default async function getMigrations(filter: Partial<MigrationDocument>, 
       page
     )
   
-    return result.data ? result : { data: [], pages_number: 0, total_records: 0 }
+    return result
   } catch (error) {
     throw handleError(error)
   }

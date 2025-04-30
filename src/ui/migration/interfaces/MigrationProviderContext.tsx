@@ -2,6 +2,7 @@ import { MappedObject } from "@ui/table/interfaces/Row";
 import { ChangeEvent, Dispatch, MutableRefObject, SetStateAction } from "react";
 import { DocumentsPendingCount } from "../hooks/MigrationProvider";
 import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus";
+import { TableConfigProps } from "@ui/table/interfaces/Table";
 
 export default interface MigrationProviderContext {
   documentsPendingCount: DocumentsPendingCount | null
@@ -18,5 +19,6 @@ export default interface MigrationProviderContext {
   migrationPopupStatus: MIGRATION_POPUP_STATUS,
   setMigrationPopupStatus: Dispatch<SetStateAction<MIGRATION_POPUP_STATUS>>,
   migration: MappedObject | null,
-  setMigration: Dispatch<SetStateAction<MappedObject | null>>
+  setMigration: Dispatch<SetStateAction<MappedObject | null>>,
+  migrationTableConfig: TableConfigProps
 }

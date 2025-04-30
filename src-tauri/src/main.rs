@@ -2,25 +2,25 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 extern crate app;
+mod services;
+mod db;
+mod api;
 
-use app::db;
-use bson::bson;
+use services::execute_migration_task;
+use services::end_migration;
 use db::find;
 use db::save;
 use db::update;
 use db::delete;
-use app::api::get_api_credentials;
+use api::get_api_credentials;
+
 use dotenv::dotenv;
 use mongodb::{options::ClientOptions, Client};
 use tauri::AppHandle;
-use tauri::Manager;
-use tokio::time::interval;
 use std::env;
 use std::sync::OnceLock;
-use std::time::Duration;
-use std::time::Instant;
 
-static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
+pub static APP_HANDLE: OnceLock<AppHandle> = OnceLock::new();
 
 fn get_client_db() -> Client {
   let db_url = env::var("MONGODB_URL")
@@ -30,47 +30,25 @@ fn get_client_db() -> Client {
     .expect("ERROR: Invalid database url");
 
   return Client::with_options(options).unwrap();
-}
-
-async fn migration_recurring_task() {
-  let mut interval = interval(Duration::from_secs(10)); // 10 segundos
-  let mut count = 0;
-  let max_executions = 2;
-
-  loop {
-    interval.tick().await;
-    count += 1;
-    println!("Ejecutando tarea en {:?} ({}/{})", Instant::now(), count, max_executions);
-    
-    if let Some(app_handle) = APP_HANDLE.get() {
-      app_handle.emit_all("start_migration", bson!({ "message": "Hola from rust" })).unwrap();
-    }
-    
-    if count >= max_executions {
-      println!("Completadas las {} ejecuciones programadas", max_executions);
-      break;
-    }
-  }
-}
+}   
 
 fn main() {
   dotenv().ok();
-  tauri::async_runtime::spawn(migration_recurring_task());
+  let client = get_client_db();
+  
   tauri::Builder::default()
-    .manage(get_client_db())
+    .manage(client.clone())
     .invoke_handler(
-      tauri::generate_handler![
-        find::find, 
-        save::save, 
-        update::update, 
-        delete::delete,
-        get_api_credentials::get_api_credentials,
-      ]
+      tauri::generate_handler![find, save, update, delete, get_api_credentials, end_migration]
     )
     .build(tauri::generate_context!())
     .expect("Error while running Tauri application")
-    .run(|_app_handle, event| match event {
-      tauri::RunEvent::Ready => APP_HANDLE.set(_app_handle.clone()).expect("Failed to set global app handle"),
+    .run(|app_handle, event| match event {
+      tauri::RunEvent::Ready => {
+        APP_HANDLE.set(app_handle.clone()).expect("Failed to set global app handle");
+        // Comenzar la tarea de migración después de iniciar la aplicación
+        tauri::async_runtime::spawn(execute_migration_task(app_handle.clone()));
+      },
       _ => {}
     })
 }

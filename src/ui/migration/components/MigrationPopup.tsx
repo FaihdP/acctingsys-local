@@ -1,5 +1,5 @@
 import { useContext, useState, useMemo } from "react"
-import { MigrationProviderContext } from "../hooks/MigrationProvider"
+import { MigrationProviderContext, RetryMigration } from "../hooks/MigrationProvider"
 import getMigrationStatusText from "../util/getMigrationStatusText"
 import getMigrationStatusStyles from "../util/getMigrationStatusStyles"
 import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus"
@@ -10,6 +10,9 @@ import getMigrationPaymentsById from "@lib/services/migration/getMigrationPaymen
 import MigrationPaymentsTableColumns from "../constants/MigrationPayementsTableColumns"
 import getMigrationExpensesById from "@lib/services/migration/getMigrationExpensesById"
 import MigrationExpensesTableColumns from "../constants/MigrationExpensesTableColumns"
+import updateMigrationInvoice from "@lib/services/migrationInvoice/updateMigrationInvoice"
+import updateMigrationExpense from "@lib/services/migrationExpense/updateMigrationExpense"
+import updateMigrationPayment from "@lib/services/migrationPayment/updateMigrationPayment"
 
 enum MIGRATION_POPUP_TAB {
   INVOICE,
@@ -25,20 +28,51 @@ export default function MigrationPopup() {
     {
       type: MIGRATION_POPUP_TAB.INVOICE,
       getData: getMigrationInvoicesById,
-      columns: MigrationInvoicesTableColumns,
-      label: "Facturas"
+      label: "Facturas",
+      tableConfig: {
+        header: { picker: true, columns: MigrationInvoicesTableColumns },
+        modifiers: {
+          // onDeleteRowComponent: <RetryMigration />,
+          // onDeleteRow: async (ids: string[]) => {
+          //   for (const id of ids) {
+          //     await updateMigrationInvoice(id, { $set: { migrated: false } })
+          //   }
+          // }
+        }
+      }
     },
     {
       type: MIGRATION_POPUP_TAB.PAYMENT,
       getData: getMigrationPaymentsById,
-      columns: MigrationPaymentsTableColumns,
-      label: "Pagos"
+      label: "Pagos",
+      tableConfig: {
+        header: { picker: true, columns: MigrationPaymentsTableColumns },
+        modifiers: {
+          // onDeleteRowComponent: <RetryMigration />,
+          // onDeleteRow: async (ids: string[]) => {
+          //   console.log(ids)
+          //   for (const id of ids) {
+          //     await updateMigrationPayment(id, { $set: { migrated: false } })
+          //   }
+          // }
+        }
+      }
     },
     {
       type: MIGRATION_POPUP_TAB.EXPENSE,
       getData: getMigrationExpensesById,
-      columns: MigrationExpensesTableColumns,
-      label: "Gastos"
+      label: "Gastos",
+      tableConfig: {
+        header: { picker: true, columns: MigrationExpensesTableColumns },
+        modifiers: {
+          // onDeleteRowComponent: <RetryMigration />,
+          // onDeleteRow: async (ids: string[]) => {
+          //   for (const id of ids) {
+          //     await updateMigrationExpense(id, { $set: { migrated: false } })
+          //   }
+          // }
+        }
+      }
     }
   ], [])
 
@@ -151,7 +185,7 @@ export default function MigrationPopup() {
               >
                 <MigrationPopupTab
                   getData={config.getData}
-                  columns={config.columns}
+                  tableConfig={config.tableConfig}
                 />
               </div>
             ))}

@@ -47,7 +47,7 @@ export default function LoginForm() {
       setStatusLogin(loginStatus)
       if (loginStatus === LOGIN_STATUS.OK) {
         setToken(user)
-        router.push("/dashboard")
+        router.push("/dashboard/sales")
       }
     } catch (err) {
       setStatusLogin(LOGIN_STATUS.ERROR)

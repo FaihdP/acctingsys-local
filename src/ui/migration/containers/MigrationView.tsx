@@ -1,29 +1,11 @@
 import InputSearchTable from "@ui/core/components/InputSearchTable";
-import { ChangeEvent, useContext, useState } from "react";
+import { useContext } from "react";
 import { MigrationProviderContext } from "../hooks/MigrationProvider";
 import DynamicTable from "@ui/table/containers/DynamicTable";
-import { TableConfigProps } from "@ui/table/interfaces/Table";
-import MIGRATION_TABLE_COLUNMS from "../constants/MigrationTableColumns";
 import Spin from "@ui/core/components/Spin";
-import ViewIcon from "@public/dashboard/migration/ViewIcon";
-import { Row } from "@ui/table/interfaces/Row";
 import MigrationPopup from "../components/MigrationPopup";
 import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus";
 import MigrationIcon from "@public/dashboard/nav/MigrationIcon";
-
-function RetryMigration() {
-  return (
-    <>
-      <MigrationIcon 
-        width={20}
-        height={20}
-      />
-      <span className="ms-2">
-        Reintentar
-      </span>
-    </>
-  )
-}
 
 export default function MigrationView() {
   const { 
@@ -36,37 +18,10 @@ export default function MigrationView() {
     handleChangeMigrationFilter,
     documentsPendingCount,
     migrationPopupStatus,
-    setMigrationPopupStatus,
     migration,
-    setMigration
+    migrationTableConfig
   } = useContext(MigrationProviderContext)
   
-  const migrationTableConfig: TableConfigProps = {
-    modifiers: {
-      onDeleteRow: async (ids: string[]) => {
-        console.log("onDeleteRow", ids)
-      },
-      onDeleteRowComponent: <RetryMigration />
-    },
-    header: {
-      columns: MIGRATION_TABLE_COLUNMS,
-      picker: true,
-      options: {
-        onEdit: false,
-        others: [
-          {
-            icon: <ViewIcon width={15} height={15} />,
-            alt: "View detailed migration",
-            onClick: (row: Row) => {
-              setMigrationPopupStatus(MIGRATION_POPUP_STATUS.VISIBLE)
-              setMigration(row.value)
-            }
-          }
-        ]
-      }
-    }
-  }
-
   return (
     <>
       { (migrationPopupStatus === MIGRATION_POPUP_STATUS.VISIBLE && migration) && <MigrationPopup /> }

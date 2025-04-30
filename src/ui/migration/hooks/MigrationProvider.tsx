@@ -1,13 +1,18 @@
 import { ChangeEvent, createContext, useContext, useEffect, useRef, useState } from "react";
 import IMigrationProviderContext from "../interfaces/MigrationProviderContext";
 import MigrationProviderProps from "../interfaces/MigrationProviderProps";
-import { MappedObject } from "@ui/table/interfaces/Row";
+import { MappedObject, Row } from "@ui/table/interfaces/Row";
 import getMigrations from "@lib/services/migration/getMigrations";
 import mapData from "@ui/table/util/mapData";
 import useForceRender from "@ui/core/hooks/useForceRender";
 import { StartMigrationContext } from "@ui/startMigration/hooks/StartMigrationProvider";
 import getPendingDocumentsCount from "@lib/services/migration/getPendingDocumentsCount";
 import MIGRATION_POPUP_STATUS from "../constants/MigrationPopupStatus";
+import { TableConfigProps } from "@ui/table/interfaces/Table";
+import MIGRATION_TABLE_COLUNMS from "../constants/MigrationTableColumns";
+import MigrationIcon from "@public/dashboard/nav/MigrationIcon";
+import ViewIcon from "@public/dashboard/migration/ViewIcon";
+import { MigrationDocument } from "@lib/db/schemas/migration/Migration";
 
 export const MigrationProviderContext = createContext({} as IMigrationProviderContext)
 
@@ -15,6 +20,20 @@ export interface DocumentsPendingCount {
   invoices: number
   payments: number
   expenses: number
+}
+
+export function RetryMigration() {
+  return (
+    <>
+      <MigrationIcon 
+        width={20}
+        height={20}
+      />
+      <span className="ms-2">
+        Reintentar
+      </span>
+    </>
+  )
 }
 
 export function MigrationProvider({ children }: MigrationProviderProps) {
@@ -27,6 +46,32 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
   const { render, forceRender } = useForceRender()
   const { startMigration, reloadComponent } = useContext(StartMigrationContext)
   const [migrationPopupStatus, setMigrationPopupStatus] = useState<MIGRATION_POPUP_STATUS>(MIGRATION_POPUP_STATUS.VISIBLE)
+
+  const migrationTableConfig: TableConfigProps = {
+    modifiers: {
+      // onDeleteRow: async (ids: string[]) => {
+      //   console.log("onDeleteRow", ids)
+      // },
+      // onDeleteRowComponent: <RetryMigration />
+    },
+    header: {
+      columns: MIGRATION_TABLE_COLUNMS,
+      picker: true,
+      options: {
+        onEdit: false,
+        others: [
+          {
+            icon: <ViewIcon width={15} height={15} />,
+            alt: "View detailed migration",
+            onClick: (row: Row) => {
+              setMigrationPopupStatus(MIGRATION_POPUP_STATUS.VISIBLE)
+              setMigration(row.value)
+            }
+          }
+        ]
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchDocumentsPendingCount = async () => setDocumentsPendingCount(await getPendingDocumentsCount())
@@ -67,7 +112,8 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
         handleStartMigration,
         handleChangeMigrationFilter,
         migrationPopupStatus, setMigrationPopupStatus,
-        migration, setMigration
+        migration, setMigration,
+        migrationTableConfig
       }}
     >
       { children }

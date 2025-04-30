@@ -12,6 +12,7 @@ import MigrationInvoice from "@lib/db/schemas/migration/MigrationInvoice";
 import MigrationPayment from "@lib/db/schemas/migration/MigrationPayment";
 import getDocumentsToMigrate from "@lib/services/migration/getDocumentsToMigrate";
 import getMigrations from "@lib/services/migration/getMigrations";
+import notifyEndMigration from "@lib/services/migration/notifyEndMigration";
 import saveMigration from "@lib/services/migration/saveMigration";
 import updateMigration from "@lib/services/migration/updateMigration";
 import saveMigrationExpense from "@lib/services/migrationExpense/saveMigrationExpense";
@@ -48,7 +49,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     }
   }
 
-  const startMigration = useCallback(async () => {  
+  const startMigration = useCallback(async (retryMigrationId?: string) => {  
     const savePendingMigration = async () => {
       await saveMigration({
         date: formatDate(getDateTime()),
@@ -74,20 +75,22 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     const getOrCreateMigration = async (existsPendingMigration: any, documentsToMigrate: any) => {
       const now = formatDate(getDateTime())
-      if (existsPendingMigration) {
-        const migrationId = existsPendingMigration._id?.$oid
-        await updateMigration(migrationId, { $set: { status: MIGRATION_STATUS.PROCESSING, startDate: now} })
-        return migrationId
-      }
-
-      const newMigration = await saveMigration({
+      const migration = {
         date: now,
         startDate: now,
         invoices: documentsToMigrate.invoices.length,
         payments: documentsToMigrate.payments.length,
         expenses: documentsToMigrate.expenses.length,
         status: MIGRATION_STATUS.PROCESSING,
-      })
+      }
+      
+      if (existsPendingMigration) {
+        const migrationId = existsPendingMigration._id?.$oid
+        await updateMigration(migrationId, { $set: migration })
+        return migrationId
+      }
+
+      const newMigration = await saveMigration(migration)
       return newMigration.insertedIds[0].$oid
     }
 
@@ -320,7 +323,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     console.log("payments", payments)
     console.log("expenses", expenses)
 
-    const migrationId: string = await getOrCreateMigration(existsPendingMigration, documentsToMigrate)
+    const migrationId: string = retryMigrationId || await getOrCreateMigration(existsPendingMigration, documentsToMigrate)
     
     console.log("migrationId", migrationId)
 
@@ -341,7 +344,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     try {
         
       const documentsResponseToSave = await handleProcessDocumentsResponse(documentsToMigrate, documentsResponse)
-      if (!documentsResponseToSave) throw new Error("No se pudo procesar los documentos")
+      if (!documentsResponseToSave) throw new Error("Can't process documents response")
       const { 
         migrationInvoices, invoicesResponseWithError, 
         migrationPayments, paymentsResponseWithError, 
@@ -374,6 +377,8 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     } catch (error) {
       await handleErrorAndUpdateNotification(notificationId, error)
+    } finally {
+      await notifyEndMigration()
     }
   }, [handleAddNotification, handleUpdateNotification, setNotifications])
 

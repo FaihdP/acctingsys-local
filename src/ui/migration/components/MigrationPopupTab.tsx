@@ -1,21 +1,22 @@
 import { memo, useContext, useEffect, useRef, useState } from "react"
-import { MigrationProviderContext } from "../hooks/MigrationProvider"
+import { MigrationProviderContext, RetryMigration } from "../hooks/MigrationProvider"
 import DynamicTable from "@ui/table/containers/DynamicTable"
 import { TableConfigHeaderProps, TableConfigProps } from "@ui/table/interfaces/Table"
 import mapData from "@ui/table/util/mapData"
 import { MappedObject } from "@ui/table/interfaces/Row"
+import updateMigrationInvoice from "@lib/services/migrationInvoice/updateMigrationInvoice"
 
 const dataCache = new Map<string, Map<string, MappedObject>>();
 
 const MigrationPopupTab = memo(function MigrationPopupTab({
   getData,
-  columns
+  tableConfig
 }: {
   getData: (migrationId: string) => Promise<any>
-  columns: TableConfigHeaderProps["columns"]
+  tableConfig: TableConfigProps
 }) {
   const { migration } = useContext(MigrationProviderContext)
-  const [migrationInvoices, setMigrationInvoices] = useState<Map<string, MappedObject> | null>(null)
+  const [documents, setDocuments] = useState<Map<string, MappedObject> | null>(null)
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef(1)
   const initialLoadAttempted = useRef(false)
@@ -27,7 +28,7 @@ const MigrationPopupTab = memo(function MigrationPopupTab({
       initialLoadAttempted.current = true;
       
       if (dataCache.has(cacheKey)) {
-        setMigrationInvoices(dataCache.get(cacheKey)!);
+        setDocuments(dataCache.get(cacheKey)!);
       }
     }
   }, []);
@@ -35,7 +36,7 @@ const MigrationPopupTab = memo(function MigrationPopupTab({
   useEffect(() => {
     const fetchMigrationInvoices = async () => {
       if (dataCache.has(cacheKey)) {
-        setMigrationInvoices(dataCache.get(cacheKey)!);
+        setDocuments(dataCache.get(cacheKey)!);
         return;
       }
 
@@ -44,27 +45,20 @@ const MigrationPopupTab = memo(function MigrationPopupTab({
         const mappedData = mapData(migrationData.data);
         
         dataCache.set(cacheKey, mappedData);
-        setMigrationInvoices(mappedData);
+        setDocuments(mappedData);
       } catch (error) {
-        console.error("Error cargando datos:", error);
+        console.error("Error loading data:", error);
       }
     }
     
     fetchMigrationInvoices();
   }, [cacheKey]);
 
-  const migrationInvoicesTableConfig: TableConfigProps = {
-    header: {
-      picker: true,
-      columns
-    }
-  }
-
   return (
-    <div className="flex flex-grow w-full">
+    <div className="flex flex-grow">
       <DynamicTable 
-        config={migrationInvoicesTableConfig}
-        initialData={migrationInvoices}
+        config={tableConfig}
+        initialData={documents}
         pageSelected={pageSelected}
         setPageSelected={setPageSelected}
         pagesNumber={pagesNumber}

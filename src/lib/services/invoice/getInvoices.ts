@@ -17,5 +17,5 @@ export default async function getInvoices(
     element.status = getInvoiceStatus(element)
   });
 
-  return result.data ? result : { data: [], pages_number: 0 }
+  return result
 }
