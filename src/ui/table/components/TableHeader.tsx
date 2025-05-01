@@ -27,7 +27,7 @@ export default function TableHeader() {
       <tr className="h-[35px]">
         { 
           picker && 
-            <th className="text-center min-w-[30px]">
+            <th className="text-center w-20">
               <label className="table-picker">
                 <input 
                   type="checkbox" 

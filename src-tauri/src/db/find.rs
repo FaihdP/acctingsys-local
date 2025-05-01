@@ -43,7 +43,7 @@ pub async fn find(
     .build();
 
   let total_records = target_collection
-    .count_documents(filter.clone(), count_options)
+    .count_documents(None, count_options)
     .await
     .unwrap();
 

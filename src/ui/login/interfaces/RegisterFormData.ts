@@ -1,4 +1,4 @@
-export interface RegisterFormdata {
+export interface RegisterFormData {
   identification: string
   user: string
   names?: string

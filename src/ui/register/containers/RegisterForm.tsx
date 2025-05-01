@@ -1,9 +1,9 @@
 import Input from "@ui/core/components/Input";
-import { RegisterFormdata } from "@ui/login/interfaces/RegisterFormData";
+import { RegisterFormData } from "@ui/login/interfaces/RegisterFormData";
 import { ChangeEvent, useState } from "react";
 
 export default function RegisterForm() {
-  const [formData, setFormData] = useState<RegisterFormdata>({ 
+  const [formData, setFormData] = useState<RegisterFormData>({ 
     identification: "",
     user: "",
     names: "",

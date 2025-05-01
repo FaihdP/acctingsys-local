@@ -26,10 +26,10 @@ interface PaginationControlsProps {
 }
 
 const AddButton = ({ onClick, customComponent }: AddButtonProps) => (
-  <a onClick={onClick} className="flex items-center cursor-pointer me-[5px]">
+  <a onClick={onClick} className="flex items-center cursor-pointer">
     {customComponent || ( 
       <>
-        <div className="inline-block ">
+        <div className="inline-block me-[5px]">
           <Image
           src={addCircleIcon.src}
           alt="add_circle_icon"
@@ -47,7 +47,7 @@ const DeleteButton = ({ onClick, customComponent }: DeleteButtonProps) => (
   <a onClick={onClick} className="flex items-center cursor-pointer">
     {customComponent || (
       <>
-        <div className="inline-block">
+        <div className="inline-block me-[5px]">
           <Image
             src={deleteIcon.src}
             alt="delete_icon"

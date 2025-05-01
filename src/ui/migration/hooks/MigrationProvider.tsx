@@ -12,7 +12,6 @@ import { TableConfigProps } from "@ui/table/interfaces/Table";
 import MIGRATION_TABLE_COLUNMS from "../constants/MigrationTableColumns";
 import MigrationIcon from "@public/dashboard/nav/MigrationIcon";
 import ViewIcon from "@public/dashboard/migration/ViewIcon";
-import { MigrationDocument } from "@lib/db/schemas/migration/Migration";
 
 export const MigrationProviderContext = createContext({} as IMigrationProviderContext)
 

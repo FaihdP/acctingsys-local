@@ -34,15 +34,15 @@ export default function Buys() {
   const pagesNumber = useRef<number>(1)
 
   const fetchInvoices = useCallback(async () => {
-      let result;
-      result = await getInvoices(
-        debouncedFilter ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_BUYS_FILTER) : DEFAULT_INVOICE_BUYS_FILTER, 
-        pageSelected
-      )
-  
-      pagesNumber.current = result.pages_number
-      setBuysInvoices(mapData(result.data)) 
-    }, [pageSelected, debouncedFilter])
+    let result;
+    result = await getInvoices(
+      debouncedFilter ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_BUYS_FILTER) : DEFAULT_INVOICE_BUYS_FILTER, 
+      pageSelected
+    )
+
+    pagesNumber.current = result.pages_number
+    setBuysInvoices(mapData(result.data)) 
+  }, [pageSelected, debouncedFilter])
   
 
     useEffect(() => { 
