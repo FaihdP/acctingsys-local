@@ -1,4 +1,5 @@
 import getProducts from "@lib/services/product/getProducts"
+import getProductsList from "@lib/services/product/getProductsList"
 import { ColumType, TableConfigHeaderProps } from "@ui/table/interfaces/Table"
 
 const InvoiceProductsTableColumns: TableConfigHeaderProps["columns"] = [
@@ -7,7 +8,7 @@ const InvoiceProductsTableColumns: TableConfigHeaderProps["columns"] = [
     type: ColumType.OBJECT,
     tag: "product",
     fields: ["name"],
-    relationship: getProducts,
+    relationship: getProductsList,
     relatedFields: new Map([
       [
         "value", 

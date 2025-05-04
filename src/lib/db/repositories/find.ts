@@ -5,7 +5,7 @@ export interface Page {
   size: number
 }
 
-type ToNumbers<T> = {
+export type ToNumbers<T> = {
   [K in keyof T]: number
 }
 

@@ -1,23 +1,21 @@
 "use client"
 
-import find, { FindResults } from "@lib/db/repositories/find";
+import find, { FindResults, ToNumbers } from "@lib/db/repositories/find";
 import COLLECTIONS from "@lib/db/schemas/common/Collections";
 import { ProductDocument } from "@lib/db/schemas/product/Product";
 
 export default async function getProducts(
-  filters: any
+  filters: any,
+  pageNumber?: number,
+  fields?: Partial<ToNumbers<ProductDocument>>
 ): Promise<FindResults<ProductDocument[]>> {
-  //await new Promise(r => setTimeout(r, 10000))
   const result = await find<ProductDocument>(
     COLLECTIONS.PRODUCTS, 
-    {
-      ...filters,
-      isDeleted: false,
-    }, 
+    filters, 
+    pageNumber ? { size: 25, number: pageNumber } : undefined,
     undefined,
-    undefined,
-    { name: 1, value: 1 }
+    fields
   )
 
-  return result.data ? result : { data: [], pages_number: 0, total_records: 0 }
+  return result
 }

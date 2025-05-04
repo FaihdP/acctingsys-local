@@ -12,11 +12,18 @@ import InventoryIcon from "@public/dashboard/nav/InventoryIcon"
 import MigrationIcon from "@public/dashboard/nav/MigrationIcon"
 import ExpensesIcon from "@public/dashboard/nav/ExpensesIcon"
 import Notification from "@ui/notification/containers/Notification"
+import logoutIcon from "@public/login/login.svg"
+import Image from "next/image"
 
 export default function Nav() {
   const router = useRouter()
   const pathname = usePathname()
 
+  const handleLogout = () => {
+    localStorage.removeItem("token")
+    router.push("/")
+  }
+  
   const options = [
     { icon: <SalesIcon />, text: "Ventas", href: "sales" },
     { icon: <BuysIcon />, text: "Compras", href: "buys" },
@@ -63,8 +70,26 @@ export default function Nav() {
           )
         }
       </div>
-      <div>
+      <div className="flex flex-row">
         <Notification />
+        <button 
+          onClick={handleLogout}
+          className={`
+            relative
+            px-[20px] 
+            h-[70px] 
+            flex items-center
+          `}
+          style={{ background: COLORS.GREEN }}
+        >  
+          <Image 
+            src={logoutIcon.src} 
+            alt="login_icon" 
+            width={32} 
+            height={32}
+            className="cursor-pointer"
+          />
+        </button>
       </div>
     </nav>
   )

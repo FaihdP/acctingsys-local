@@ -85,11 +85,11 @@ export const renderOptions = (
           onClick={() => handleChange()}
         >
           <Content 
-            // styles={
-            //   columnType === ColumType.SELECT 
-            //     ? { background: value.colors.background, color: value.colors.fontColor }
-            //     : { background: '', color: '' }
-            // }
+            styles={
+              value.backgroundColor && value.fontColor
+                ? { background: "#" + value.backgroundColor, color: "#" + value.fontColor }
+                : { background: '', color: '' }
+            }
             content={renderOptionContent(value, columnFields, columnType)}
             isColumnTypeList={isColumnTypeList}
           />

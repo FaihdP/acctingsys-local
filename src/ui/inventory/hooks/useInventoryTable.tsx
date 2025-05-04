@@ -1,48 +1,49 @@
 import { useContext, useEffect, useRef, useState } from "react"
 
-import getExpenses from "@lib/services/expense/getExpenses"
 import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import { useCallback } from "react"
 import { MappedObject } from "@ui/table/interfaces/Row"
 import useDebounce from "@ui/core/hooks/useDebounce"
 import DEBOUNCE_TIME from "@ui/core/constants/DebounceTime"
-import EXPENSES_TABLE_COLUMNS from "../constants/ExpensesTableColumns"
 import mapData from "@ui/table/util/mapData"
 import Expense from "@lib/db/schemas/expense/Exepense"
-import IUseExpensesTable from "../interfaces/UseExpensesTable"
 import { SessionContext } from "@ui/session/hooks/SessionProvider"
-import handleSaveExpense from "@lib/controllers/expense/handleSaveExpense"
 import handleDeleteExpense from "@lib/controllers/expense/handleDeleteExpense"
 import handleUpdateExpense from "@lib/controllers/expense/handleUpdateExpense"
-const DEFAULT_EXPENSES_FILTER: Partial<Expense> = { isDeleted: false }
+import INVENTORY_DEFAULT_COLUMNS from "../constants/InventoryTableColumns"
+import IUseInventoryTable from "../interfaces/UseInventoryTable"
+import getProducts from "@lib/services/product/getProducts"
+import handleSaveProduct from "@lib/controllers/product/handleSaveProduct"
 
-export default function useExpensesTable(): IUseExpensesTable {
+const DEFAULT_PRODUCTS_FILTER: Partial<Expense> = { isDeleted: false }
+
+export default function useInventoryTable(): IUseInventoryTable {
   const { user } = useContext(SessionContext)
-  const [expenses, setExpenses] = useState<Map<string, MappedObject> | null>(null)
+  const [products, setProducts] = useState<Map<string, MappedObject> | null>(null)
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
   const totalRecords = useRef<number>(0)
   
-  const [expensesFilter, setExpensesFilter] = useState<string>("")
-  const debouncedExpensesFilter = useDebounce(expensesFilter, DEBOUNCE_TIME)
+  const [productsFilter, setProductsFilter] = useState<string>("")
+  const debouncedProductsFilter = useDebounce(productsFilter, DEBOUNCE_TIME)
   
-  const fetchExpenses = useCallback(async () => {
+  const fetchProducts = useCallback(async () => {
     let result;
-    result = await getExpenses(
-      debouncedExpensesFilter 
-        ? getInvoiceMongoFilter(debouncedExpensesFilter, DEFAULT_EXPENSES_FILTER) 
-        : DEFAULT_EXPENSES_FILTER, 
+    result = await getProducts(
+      debouncedProductsFilter
+        ? getInvoiceMongoFilter(debouncedProductsFilter, DEFAULT_PRODUCTS_FILTER) 
+        : DEFAULT_PRODUCTS_FILTER, 
       pageSelected
     )
     pagesNumber.current = result.pages_number
     totalRecords.current = result.total_records
-    setExpenses(mapData(result.data)) 
-  }, [pageSelected, debouncedExpensesFilter])
+    setProducts(mapData(result.data)) 
+  }, [pageSelected, debouncedProductsFilter])
   
-  useEffect(() => { fetchExpenses() }, [fetchExpenses])
+  useEffect(() => { fetchProducts() }, [fetchProducts])
 
-  const userColumn = EXPENSES_TABLE_COLUMNS.find((expenseColumn) => expenseColumn.tag === 'user')
+  const userColumn = INVENTORY_DEFAULT_COLUMNS.find((expenseColumn) => expenseColumn.tag === 'user')
   if (userColumn) {
     userColumn.defaultValue = {
       name: user.name,
@@ -51,26 +52,26 @@ export default function useExpensesTable(): IUseExpensesTable {
     }
   }
 
-  const expensesTableConfig: TableConfigProps = {
+  const inventoryTableConfig: TableConfigProps = {
     actions: {
-      onAdd: async (data: any) => await handleSaveExpense(data),
+      onAdd: async (data: any) => await handleSaveProduct(data),
       onEdit: async (_: string, data: any) => await handleUpdateExpense(data),
       onDelete: async (_, data: any) => await handleDeleteExpense(data._id.$oid)
     },
     header: {
-      columns: EXPENSES_TABLE_COLUMNS,
+      columns: INVENTORY_DEFAULT_COLUMNS,
       picker: true,
       options: { onEdit: true }
     }
   }
 
   return {
-    expenses, setExpenses,
+    products, setProducts,
     pageSelected, setPageSelected,
     pagesNumber,
-    expensesFilter, setExpensesFilter,
-    debouncedExpensesFilter,
-    expensesTableConfig,
+    productsFilter, setProductsFilter,
+    debouncedProductsFilter,
+    inventoryTableConfig,
     totalRecords
   }
 }

@@ -12,6 +12,7 @@ enum COLLECTIONS {
   MIGRATION_INVOICES = "migrationInvoices",
   MIGRATION_PAYMENTS = "migrationPayments",
   MIGRATION_EXPENSES = "migrationExpenses",
+  CARTEGORIES = "categories",
 }
 
 export default COLLECTIONS

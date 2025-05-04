@@ -1,7 +1,9 @@
-export default function Inventory() {
+'use client'
+
+import Inventory from "@ui/inventory/containers/Inventory";
+
+export default function InventoryPage() {
   return (
-    <div>
-      
-    </div>
+    <Inventory />
   )
 }

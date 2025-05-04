@@ -1,12 +1,14 @@
 'use client'
 
 import Logo from "@ui/core/components/Logo"
+import COLORS from "@ui/core/util/colors"
 import RegisterForm from "@ui/register/containers/RegisterForm"
 
 export default function Register() {
   return (
     <>
       <main
+        style={{ background: COLORS.LIGTH_GREEN }}
         className="
           flex
           flex-col
