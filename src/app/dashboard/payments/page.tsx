@@ -96,7 +96,7 @@ export default function Payments() {
             <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-3 select-none">
               <Image
                 src={bankIcon.src}
-                alt={bankIcon.alt}
+                alt={"bank icon"}
                 width={bankIcon.width}
                 height={bankIcon.height}
               />

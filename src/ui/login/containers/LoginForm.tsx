@@ -3,7 +3,7 @@
 import { ChangeEvent, FormEvent, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation";
 import { LoginFormData } from "@ui/login/interfaces/LoginFormData";
-import { validateCredentials } from "@lib/services/auth/login";
+import { validateCredentials } from "@lib/services/auth/validateCredentials";
 import Input from "@ui/core/components/Input";
 import COLORS from "@ui/core/util/colors";
 import Button from "@ui/login/components/Button";

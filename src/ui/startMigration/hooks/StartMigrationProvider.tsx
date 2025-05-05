@@ -333,7 +333,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     let documentsResponse;
     try {
-      //documentsResponse = await saveDocumentsAPI(documentsToMigrate)
+      documentsResponse = await saveDocumentsAPI(documentsToMigrate)
     } catch (error) {
       console.log(error)
       return await handleErrorAndUpdateNotification(notificationId, new Error(String(error)))

@@ -2,13 +2,13 @@ import MongoDocument from "@schemas/common/MongoDocument"
 
 export enum UserType {
   // TODO: modify user types
-  ADMIN,
-  USER
+  ADMIN = "ADMIN",
+  USER = "USER",
 }
 
 export enum UserStatus {
-  ACTIVE,
-  INACTIVE
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
 }
 
 export default interface User {
