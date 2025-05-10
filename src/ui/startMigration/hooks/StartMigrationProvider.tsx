@@ -39,6 +39,8 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
   const setupTauriEvent = async () => setTauriEvent(await import("@tauri-apps/api/event"))
   useEffect(() => { setupTauriEvent() }, [])
 
+  const handleReloadComponent = () => setReloadComponent((prev) => !prev)
+
   const isOnline = async () => {
     try {
       await fetch("https://www.google.com", { method: "HEAD", mode: "no-cors" })
@@ -91,6 +93,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       }
 
       const newMigration = await saveMigration(migration)
+      handleReloadComponent()
       return newMigration.insertedIds[0].$oid
     }
 
@@ -108,6 +111,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     const saveDocumentsAPI = async (documents: any) => {
       const { invoices, payments, expenses } = documents
+      console.log(invoices)
       const paymentsResponse = await savePayments(payments)
       const invoicesResponse = await saveInvoices(invoices)
       const expensesResponse = await saveExpenses(expenses)
@@ -224,7 +228,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
       let notificationType = NotificationType.OK
       if (newMigrationStatus === MIGRATION_STATUS.UNCOMPLETED) {
-        notificationType = NotificationType.INPROCCESS
+        notificationType = NotificationType.WARNING
       }
 
       // TODO: Improve this to display differents notifications types according to the number of documents with error
@@ -279,6 +283,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
 
     const handleErrorAndUpdateNotification = async (notificationId: string, error: any) => {
       await updateMigration(migrationId, { $set: { status: MIGRATION_STATUS.FAILED } })
+      handleReloadComponent()
       handleUpdateNotification(
         notificationId, 
         {
@@ -379,6 +384,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       await handleErrorAndUpdateNotification(notificationId, error)
     } finally {
       await notifyEndMigration()
+      handleReloadComponent()
     }
   }, [handleAddNotification, handleUpdateNotification, setNotifications])
 
@@ -389,7 +395,6 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       const startMigrationExecute = async () => {
         unlisten = await tauriEvent.listen("start_migration", async () => {
           try {
-            console.log("executeMigration")
             await startMigration()
           } catch (error) {
             console.log(error)

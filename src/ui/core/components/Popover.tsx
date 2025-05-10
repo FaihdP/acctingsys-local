@@ -84,15 +84,16 @@ export const renderOptions = (
           className="hover:bg-[rgba(0,0,0,0.05)] flex items-center h-[26px] ps-1 cursor-pointer"
           onClick={() => handleChange()}
         >
-          <Content 
-            styles={
-              value.backgroundColor && value.fontColor
-                ? { background: "#" + value.backgroundColor, color: "#" + value.fontColor }
-                : { background: '', color: '' }
-            }
-            content={renderOptionContent(value, columnFields, columnType)}
-            isColumnTypeList={isColumnTypeList}
-          />
+          {value.component 
+            ? <value.component />
+            : <Content 
+              styles={{
+                background: value.backgroundColor ? `#${value.backgroundColor}` : '',
+                color: value.fontColor ? `#${value.fontColor}` : ''
+              }}
+              content={renderOptionContent(value, columnFields, columnType)}
+              isColumnTypeList={isColumnTypeList}
+          />}
         </div>
       )
     } else {

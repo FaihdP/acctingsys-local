@@ -19,7 +19,7 @@ export default function MigrationView() {
     documentsPendingCount,
     migrationPopupStatus,
     migration,
-    migrationTableConfig
+    migrationTableConfig,
   } = useContext(MigrationProviderContext)
   
   return (

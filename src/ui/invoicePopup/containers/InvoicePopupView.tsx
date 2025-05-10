@@ -50,7 +50,7 @@ export default function InvoicePopupView() {
       }
       <div
         className="
-          absolute 
+          fixed 
           w-[100vw] 
           h-[100vh] 
           top-0 
@@ -67,7 +67,8 @@ export default function InvoicePopupView() {
           onClick={(e) => e.stopPropagation()}
           className="
             w-[1024px]
-            h-[780px]
+            h-[100%]
+            md:h-[80%]
             rounded-lg
             bg-white
             flex

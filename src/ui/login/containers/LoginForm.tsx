@@ -41,7 +41,7 @@ export default function LoginForm() {
     e.preventDefault()
     
     try {
-      const user = await getUserByUsername(formData.username) 
+      const user = await getUserByUsername(formData.username.trim().toLowerCase()) 
       setStatusLogin(LOGIN_STATUS.LOADING)
       const loginStatus = await validateForm(user)
       setStatusLogin(loginStatus)

@@ -12,7 +12,7 @@ export default async function saveUser(formData: RegisterFormData): Promise<User
     const { user, identification, names, lastnames } = formData
     const salt = generateSalt()
     const newUser = {
-      username: user,
+      username: user.trim().toLowerCase(),
       identification,
       name: names,
       lastname: lastnames || "",

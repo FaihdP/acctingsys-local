@@ -42,7 +42,6 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
   const [migrationSearch, setMigrationSearch] = useState<string>()
-  const { render, forceRender } = useForceRender()
   const { startMigration, reloadComponent } = useContext(StartMigrationContext)
   const [migrationPopupStatus, setMigrationPopupStatus] = useState<MIGRATION_POPUP_STATUS>(MIGRATION_POPUP_STATUS.VISIBLE)
 
@@ -75,7 +74,7 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
   useEffect(() => {
     const fetchDocumentsPendingCount = async () => setDocumentsPendingCount(await getPendingDocumentsCount())
     fetchDocumentsPendingCount()
-  }, [setDocumentsPendingCount])
+  }, [setDocumentsPendingCount, reloadComponent])
 
   useEffect(() => {
     const fetchMigrations = async () => {
@@ -84,15 +83,13 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
       pagesNumber.current = response.pages_number
     }
     fetchMigrations()
-  }, [setMigrations, pageSelected, render, reloadComponent])
+  }, [setMigrations, pageSelected, reloadComponent])
 
   const handleStartMigration = async () => {
     try {
       await startMigration()
     } catch (error) {
       console.log(error)
-    } finally {
-      forceRender()
     }
   }
 
@@ -112,7 +109,7 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
         handleChangeMigrationFilter,
         migrationPopupStatus, setMigrationPopupStatus,
         migration, setMigration,
-        migrationTableConfig
+        migrationTableConfig,
       }}
     >
       { children }

@@ -46,7 +46,5 @@ export default function getInvoiceMongoFilter(text: string, defaultFilter: any) 
     ],
     $and: [defaultFilter]
   }
-
-  console.log(query)
   return query
 }
