@@ -270,7 +270,7 @@ export default function InvoiceForm() {
                 options={
                   Array.from(
                     Object.entries(INVOICE_STATUS_COLORS), 
-                    ([key, value]) => { return { key, colors: value } }
+                    ([key, value]) => { return { key, ...value } }
                   )
                 }
                 columnType={ColumType.SELECT}

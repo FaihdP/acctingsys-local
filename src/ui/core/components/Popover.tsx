@@ -77,6 +77,7 @@ export const renderOptions = (
       return onChange(value)
     }
 
+    console.log(value)
     if (!isColumnTypeList) {
       return (
         <div 
@@ -88,8 +89,8 @@ export const renderOptions = (
             ? <value.component />
             : <Content 
               styles={{
-                background: value.backgroundColor ? `#${value.backgroundColor}` : '',
-                color: value.fontColor ? `#${value.fontColor}` : ''
+                background: value.background ? value.background : '',
+                color: value.fontColor ? value.fontColor : ''
               }}
               content={renderOptionContent(value, columnFields, columnType)}
               isColumnTypeList={isColumnTypeList}

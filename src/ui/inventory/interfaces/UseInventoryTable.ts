@@ -13,4 +13,6 @@ export default interface UseInventoryTable {
   debouncedProductsFilter: string
   inventoryTableConfig: TableConfigProps
   totalRecords: MutableRefObject<number>
+  isVisibleDeleteProductPopup: boolean
+  setIsVisibleDeleteProductPopup: Dispatch<SetStateAction<boolean>>
 }

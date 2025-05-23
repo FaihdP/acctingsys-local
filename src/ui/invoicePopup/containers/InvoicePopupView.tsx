@@ -50,7 +50,7 @@ export default function InvoicePopupView() {
       }
       <div
         className="
-          fixed 
+          absolute 
           w-[100vw] 
           h-[100vh] 
           top-0 

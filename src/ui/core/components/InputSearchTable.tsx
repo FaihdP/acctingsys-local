@@ -42,7 +42,7 @@ export default function InputSearchTable({
         }}
       /> 
       <span className="mt-2 md:mt-0 ms-0 lg:ms-[24px] text-sm md:text-base truncate inline-block break-words whitespace-normal">
-        { data ? data.size : <Spin size={9} className="!me-1" /> } elemento{ !data || data.size > 1 ? "s" : "" } de { totalRecords } • Ordenado por Fecha de venta • Filtrado por {"\""}Ejemplo{"\""}
+        { data ? data.size : <Spin size={9} className="!me-1" /> } elemento{ !data || data.size > 1 ? "s" : "" } de { totalRecords } • Ordenado por Fecha de venta { filter ? <>• Filtrado por {"\""}{filter}{"\""}</> : "" } 
       </span>
     </div>
   )

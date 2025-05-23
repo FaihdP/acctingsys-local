@@ -24,6 +24,7 @@ export default function useInventoryTable(): IUseInventoryTable {
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
   const totalRecords = useRef<number>(0)
+  const [isVisibleDeleteProductPopup, setIsVisibleDeleteProductPopup] = useState(false)
   
   const [productsFilter, setProductsFilter] = useState<string>("")
   const debouncedProductsFilter = useDebounce(productsFilter, DEBOUNCE_TIME)
@@ -58,6 +59,13 @@ export default function useInventoryTable(): IUseInventoryTable {
       onEdit: async (_: string, data: any) => await handleUpdateExpense(data),
       onDelete: async (_, data: any) => await handleDeleteExpense(data._id.$oid)
     },
+    modifiers: {
+      onDeleteRow: async (ids: string[]) => {
+        if (ids.length > 0) {
+          setIsVisibleDeleteProductPopup(true)
+        }
+      },
+    },
     header: {
       columns: INVENTORY_DEFAULT_COLUMNS,
       picker: true,
@@ -72,6 +80,8 @@ export default function useInventoryTable(): IUseInventoryTable {
     productsFilter, setProductsFilter,
     debouncedProductsFilter,
     inventoryTableConfig,
-    totalRecords
+    totalRecords,
+    isVisibleDeleteProductPopup,
+    setIsVisibleDeleteProductPopup
   }
 }

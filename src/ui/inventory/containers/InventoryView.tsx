@@ -1,6 +1,7 @@
 import InputSearchTable from "@ui/core/components/InputSearchTable";
 import DynamicTable from "@ui/table/containers/DynamicTable";
 import useInventoryTable from "../hooks/useInventoryTable";
+import DeleteProductPopup from "../components/DeleteProductPopup";
 
 export default function InventoryView() {
   const { 
@@ -11,10 +12,18 @@ export default function InventoryView() {
       setPageSelected, 
       pagesNumber,
       inventoryTableConfig,
-      totalRecords
+      totalRecords,
+      isVisibleDeleteProductPopup,
+      setIsVisibleDeleteProductPopup
     } = useInventoryTable()
 
   return (<>
+    <DeleteProductPopup 
+      isVisible={isVisibleDeleteProductPopup}
+      onChangeIsVisible={setIsVisibleDeleteProductPopup}
+      documentsToDelete={["xd"]}
+      handleDeleteDocument={async (documentsToDelete: string[], userId: string) => {}}
+    /> 
     <InputSearchTable
       data={products}
       filter={productsFilter}
