@@ -89,8 +89,8 @@ export const renderOptions = (
             ? <value.component />
             : <Content 
               styles={{
-                background: value.background ? value.background : '',
-                color: value.fontColor ? value.fontColor : ''
+                backgroundColor: value.backgroundColor ? "#" + value.backgroundColor : '',
+                color: value.fontColor ? "#" + value.fontColor : ''
               }}
               content={renderOptionContent(value, columnFields, columnType)}
               isColumnTypeList={isColumnTypeList}

@@ -1,6 +1,5 @@
 import { useContext } from "react"
 import { InvoicePopupContext } from "../hooks/InvoicePopupProvider"
-import INVOICE_STATUS_COLORS from "../../core/constants/InvoiceStatusColors"
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus"
 import { INVOICE_WARNINGS } from "../hooks/useInvoiceWarnings"
 import InvoiceStatusTag from "@ui/core/components/InvoiceStatusTag"

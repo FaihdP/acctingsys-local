@@ -17,8 +17,8 @@ export default function InvoiceStatusTag({
       className="inline-block mx-1 rounded-lg px-[6px]"
       onClick={onClick}
       style={{
-        background: invoiceColors?.background,
-        color: invoiceColors?.fontColor
+        backgroundColor: "#" + invoiceColors?.backgroundColor,
+        color: "#" + invoiceColors?.fontColor
       }}
     >
       { invoiceStatus }

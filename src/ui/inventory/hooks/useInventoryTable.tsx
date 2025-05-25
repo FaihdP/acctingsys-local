@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react"
-
 import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import { useCallback } from "react"
@@ -9,12 +8,11 @@ import DEBOUNCE_TIME from "@ui/core/constants/DebounceTime"
 import mapData from "@ui/table/util/mapData"
 import Expense from "@lib/db/schemas/expense/Exepense"
 import { SessionContext } from "@ui/session/hooks/SessionProvider"
-import handleDeleteExpense from "@lib/controllers/expense/handleDeleteExpense"
-import handleUpdateExpense from "@lib/controllers/expense/handleUpdateExpense"
 import INVENTORY_DEFAULT_COLUMNS from "../constants/InventoryTableColumns"
 import IUseInventoryTable from "../interfaces/UseInventoryTable"
 import getProducts from "@lib/services/product/getProducts"
 import handleSaveProduct from "@lib/controllers/product/handleSaveProduct"
+import handleUpdateProduct from "@lib/controllers/product/handleUpdateProduct"
 
 const DEFAULT_PRODUCTS_FILTER: Partial<Expense> = { isDeleted: false }
 
@@ -25,6 +23,7 @@ export default function useInventoryTable(): IUseInventoryTable {
   const pagesNumber = useRef<number>(1)
   const totalRecords = useRef<number>(0)
   const [isVisibleDeleteProductPopup, setIsVisibleDeleteProductPopup] = useState(false)
+  const [documentsToDelete, setDocumentsToDelete] = useState<string[]>([])
   
   const [productsFilter, setProductsFilter] = useState<string>("")
   const debouncedProductsFilter = useDebounce(productsFilter, DEBOUNCE_TIME)
@@ -40,7 +39,7 @@ export default function useInventoryTable(): IUseInventoryTable {
     pagesNumber.current = result.pages_number
     totalRecords.current = result.total_records
     setProducts(mapData(result.data)) 
-  }, [pageSelected, debouncedProductsFilter])
+  }, [pageSelected, debouncedProductsFilter, isVisibleDeleteProductPopup])
   
   useEffect(() => { fetchProducts() }, [fetchProducts])
 
@@ -56,12 +55,12 @@ export default function useInventoryTable(): IUseInventoryTable {
   const inventoryTableConfig: TableConfigProps = {
     actions: {
       onAdd: async (data: any) => await handleSaveProduct(data),
-      onEdit: async (_: string, data: any) => await handleUpdateExpense(data),
-      onDelete: async (_, data: any) => await handleDeleteExpense(data._id.$oid)
+      onEdit: async (_: string, data: any) => await handleUpdateProduct(data),
     },
     modifiers: {
       onDeleteRow: async (ids: string[]) => {
         if (ids.length > 0) {
+          setDocumentsToDelete(ids)
           setIsVisibleDeleteProductPopup(true)
         }
       },
@@ -81,7 +80,7 @@ export default function useInventoryTable(): IUseInventoryTable {
     debouncedProductsFilter,
     inventoryTableConfig,
     totalRecords,
-    isVisibleDeleteProductPopup,
-    setIsVisibleDeleteProductPopup
+    isVisibleDeleteProductPopup, setIsVisibleDeleteProductPopup,
+    documentsToDelete, setDocumentsToDelete
   }
 }

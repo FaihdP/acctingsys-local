@@ -15,4 +15,6 @@ export default interface UseInventoryTable {
   totalRecords: MutableRefObject<number>
   isVisibleDeleteProductPopup: boolean
   setIsVisibleDeleteProductPopup: Dispatch<SetStateAction<boolean>>
+  documentsToDelete: string[]
+  setDocumentsToDelete: Dispatch<SetStateAction<string[]>>
 }
