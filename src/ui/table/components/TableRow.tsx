@@ -32,7 +32,7 @@ export default function TableRow({ row }: TableRowProps) {
   const [errors, setErrors] = useState<Map<string, string>>(new Map())
 
   const handleSave = async (row: Row) => {  
-    const errors = validateRow(row, header.columns)
+    const errors = await validateRow(row, header.columns)
     setErrors(errors)
     if (errors.size > 0) return
     if (row.value.isNewRow && actions?.onAdd) {

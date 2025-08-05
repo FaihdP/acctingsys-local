@@ -6,7 +6,7 @@ export default function getExpenseDifferences(newExpense: ExpenseDocument, oldEx
   result.$set = {}
 
   if (newExpense.value !== oldExpense.value) {
-    result.$set.value = newExpense.value
+    result.$set.value = parseInt(newExpense.value.toString())
   }
 
   if (newExpense.date !== oldExpense.date) {

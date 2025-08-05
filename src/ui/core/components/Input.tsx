@@ -15,6 +15,7 @@ interface inputProps {
     width: number;
     height: number;
   };
+  disabled?: boolean;
 }
 
 export default function Input({
@@ -26,6 +27,7 @@ export default function Input({
   value,
   styles,
   image,
+  disabled
 }: inputProps) {
   return (
     <>
@@ -59,6 +61,7 @@ export default function Input({
               text-sm
             ` + className
             }
+            disabled={disabled}
           />
         </div>
       </label>

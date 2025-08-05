@@ -1,5 +1,5 @@
 export default interface Debt {
-  maxValue: number
+  maxValue?: number
   // Time to pay debt in days
-  time: number
+  time?: number
 }

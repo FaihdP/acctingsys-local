@@ -14,6 +14,8 @@ import getInvoiceStatus from "@lib/services/invoice/util/getInvoiceStatus"
 import Popover from "@ui/core/components/Popover"
 import { INVOICE_WARNINGS } from "../hooks/useInvoiceWarnings"
 import InvoiceStatusTag from "@ui/core/components/InvoiceStatusTag"
+import InvoiceZeroPopup from "./popups/InvoiceZeroPopup"
+import InvoiceProductQuantityErrorPopup from "./popups/InvoiceProductQuantityErrorPopup"
 
 const columnsFields = ["name", "lastname"]
 
@@ -39,7 +41,12 @@ export default function InvoiceForm() {
 
   const isVisibleInvoiceZeroPopup = () => {
     const warning = warnings.get(INVOICE_WARNINGS.TOTAL_INVOICE_IS_ZERO)
-    return warning && warning.isVisible
+    return warning ? warning.isVisible : false
+  }
+
+  const isVisibleInvoiceProductQuantityErrorPopup = () => {
+    const warning = warnings.get(INVOICE_WARNINGS.UPDATE_PRODUCT_QUANTITY)
+    return warning ? warning.isVisible : false
   }
 
   return (
@@ -93,42 +100,15 @@ export default function InvoiceForm() {
                 `}
               />
             </label>
-            <div className={`
-              absolute
-              text-sm 
-              xl:w-96
-              w-56
-              left-[86%]
-              top-[12%]
-              text-[#7A7A7A] 
-              bg-white 
-              rounded-lg 
-              shadow-[0_0_3px_0px_rgba(0,0,0,0.5)]
-              transition-opacity ${ isVisibleInvoiceZeroPopup() ? "opacity-1" : "opacity-0" }
-            `}>
-              <div className="p-3">
-                <div className="flex flex-row ">
-                  <div>
-                    Las facturas con estado <InvoiceStatusTag invoiceStatus={INVOICE_STATUS.DEBT} />
-                    o <InvoiceStatusTag invoiceStatus={INVOICE_STATUS.PAID} />
-                    deben tener un valor mayor a 0
-                  </div>  
-                  <div>
-                    <button 
-                      onClick={() => handleIsVisibleInvoicePopup(INVOICE_WARNINGS.TOTAL_INVOICE_IS_ZERO)} 
-                      className="
-                        ms-[10px]
-                        cursor-pointer 
-                        inline 
-                        text-inherit
-                      "
-                    >
-                      ⨉
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <InvoiceZeroPopup 
+              isVisibleInvoiceZeroPopup={isVisibleInvoiceZeroPopup()}
+              handleIsVisibleInvoicePopup={handleIsVisibleInvoicePopup}
+            />
+            <InvoiceProductQuantityErrorPopup 
+              isVisibleInvoiceProductQuantityErrorPopup={isVisibleInvoiceProductQuantityErrorPopup()}
+              handleIsVisibleInvoicePopup={handleIsVisibleInvoicePopup}
+              message={warnings.get(INVOICE_WARNINGS.UPDATE_PRODUCT_QUANTITY)?.message || ""}
+            />
           </div>
         </div>
       </div>
@@ -241,8 +221,8 @@ export default function InvoiceForm() {
                 py-[2px]
               `}
               style={{ 
-                background: color ? color.background : "", 
-                color: color ? color.fontColor : "" 
+                backgroundColor: color ? "#" + color.backgroundColor : "", 
+                color: color ? "#" + color.fontColor : "" 
               }}
             >
               { invoiceStatus }

@@ -65,7 +65,7 @@ async fn get_execution_time(db_client: &Client) -> (u32, u32, u32) {
   let coll = db.collection::<Document>("configs");
   let default_time = get_default_execution_time();
   
-  if let Ok(Some(doc)) = coll.find_one(doc! { "tag": "migration_execution_time" }, None).await {
+  if let Ok(Some(doc)) = coll.find_one(doc! { "tag": "migration_execution_hour" }, None).await {
     match doc.get("value") {
       Some(bson::Bson::String(time_str)) => {
         if !(time_str.len() >= 8) { return default_time; }

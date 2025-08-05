@@ -5,7 +5,7 @@ import { formatDate, getDateTime } from "@lib/util/time";
 
 export default async function saveInvoiceLog(
   invoiceLogAction: INVOICE_LOG_ACTION, 
-  message: string,
+  message: string | undefined,
   invoiceId: string,
   userId: string,
 ) {

@@ -13,6 +13,8 @@ enum COLLECTIONS {
   MIGRATION_PAYMENTS = "migrationPayments",
   MIGRATION_EXPENSES = "migrationExpenses",
   CARTEGORIES = "categories",
+  CONFIGS = "configs",
+  PERSON_PHONES = "personPhones"
 }
 
 export default COLLECTIONS

@@ -6,7 +6,6 @@ import handleError from "@lib/util/error/handleError";
 
 export default async function handleSavePayment(data: Payment[]) {
   try {
-    console.log(data)
     const newData = getPaymentToSave(data)
     console.log(newData)
     return await save<Payment>(COLLECTIONS.PAYMENTS, newData)

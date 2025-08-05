@@ -1,0 +1,8 @@
+enum PERSON_POPUP_MODE {
+  NONE,
+  CREATE,
+  EDIT,
+  DELETE
+}
+
+export default PERSON_POPUP_MODE

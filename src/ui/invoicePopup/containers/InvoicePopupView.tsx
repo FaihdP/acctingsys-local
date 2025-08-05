@@ -5,12 +5,12 @@ import addCircleIcon from "@public/dashboard/add_circle.svg"
 import InvoiceProductsTable from "../components/InvoiceProductsTable";
 import INVOICE_POPUP_MODE from "../constants/InvoicePopupMode";
 import { InvoicePopupContext } from "../hooks/InvoicePopupProvider";
-import InvoiceForm from "../components/InvoiceForm";
+import InvoiceForm from "@ui/invoicePopup/components/InvoiceForm";
 import { INVOICE_WARNINGS } from "../hooks/useInvoiceWarnings";
-import InvoiceMigratedCantChangeToCreatedPopup from "../components/InvoiceMigratedCantChangeToCreatedPopup";
-import InvoiceDeletePaymentsPopup from "../components/InvoiceDeletePaymentsPopup";
-import InvoiceSavePaymentPopup from "../components/InvoiceSavePaymentPopup";
-import InvoiceRestaurePaymentsPopup from "../components/InvoiceRestaurePaymentsPopup";
+import InvoiceMigratedCantChangeToCreatedPopup from "@ui/invoicePopup/components/popups/InvoiceMigratedCantChangeToCreatedPopup";
+import InvoiceDeletePaymentsPopup from "@ui/invoicePopup/components/popups/InvoiceDeletePaymentsPopup";
+import InvoiceSavePaymentPopup from "@ui/invoicePopup/components/popups/InvoiceSavePaymentPopup";
+import InvoiceRestaurePaymentsPopup from "@ui/invoicePopup/components/popups/InvoiceRestaurePaymentsPopup";
 
 export default function InvoicePopupView() {
   const {

@@ -42,8 +42,10 @@ pub async fn find(
     .sort(sort)
     .build();
 
+  let total_records_filter = mongodb::bson::doc! { "isDeleted": false };
+
   let total_records = target_collection
-    .count_documents(None, count_options)
+    .count_documents(total_records_filter.clone(), count_options)
     .await
     .unwrap();
 

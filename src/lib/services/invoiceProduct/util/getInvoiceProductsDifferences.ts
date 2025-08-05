@@ -6,7 +6,7 @@ export type InvoiceProductId = { invoiceProductId: string }
 
 export type InvoiceProductUpdateOptions = MongoUpdateOptions<InvoiceProducts>
 
-export type InvoiceProductUpdateOptionsWithId = InvoiceProductUpdateOptions & InvoiceProductId
+export type InvoiceProductUpdateOptionsWithId = InvoiceProductUpdateOptions & { oldInvoiceProduct: InvoiceProductDocument }
 
 export type invoiceProductsDifferences = {
   toSave: InvoiceProducts[]
@@ -87,7 +87,7 @@ export default function getInvoiceProductsDifferences(
 
     const updateInvoiceProduct = getInvoiceProductDifferences(oldInvoiceProduct, newInvoiceProduct)
     if (updateInvoiceProduct.$set || updateInvoiceProduct.$unset) {
-      result.toUpdate.push({ invoiceProductId: oldInvoiceProduct._id.$oid, ...updateInvoiceProduct })
+      result.toUpdate.push({ oldInvoiceProduct: oldInvoiceProduct, ...updateInvoiceProduct })
     }
   }
 

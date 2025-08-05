@@ -11,9 +11,11 @@ function validateCell(value: any, column: Column): string | null {
       break
     case ColumType.CURRENCY:
       if (!/^\d+$/.test(value)) return "Debe ser un número"
+      if (value <= 0) return "Debe ser mayor que 0"
       break
     case ColumType.NUMBER:
       if (!/^\d+$/.test(value)) return "Debe ser un número"
+      if (value <= 0) return "Debe ser mayor que 0"
       break
     case ColumType.DATE:
       // Without validation
@@ -31,14 +33,19 @@ function validateCell(value: any, column: Column): string | null {
   return null
 }
 
-export default function validateRow(row: Row, columns: Column[]): Map<string, string> {
+export default async function validateRow(row: Row, columns: Column[]): Promise<Map<string, string>> {
   const errors = new Map()
 
-  columns.map(
-    (column) => {
-      const error = validateCell(row.value[column.tag], column)
-      if (error) errors.set(column.tag, error)
-    }
+  await Promise.all(
+    columns.map(
+      async (column) => {
+        let errorMessage;
+        if (column.validator) errorMessage = await column.validator(row)
+        console.log(errorMessage)
+        if (!errorMessage) errorMessage = validateCell(row.value[column.tag], column)
+        if (errorMessage) errors.set(column.tag, errorMessage)
+      }
+    )
   )
 
   return errors

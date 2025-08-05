@@ -1,7 +1,7 @@
+'use client'
+
+import ProviderView from "@ui/providers/containers/ProviderView";
+
 export default function Providers() {
-  return (
-    <div>
-      
-    </div>
-  )
+  return <ProviderView />
 }

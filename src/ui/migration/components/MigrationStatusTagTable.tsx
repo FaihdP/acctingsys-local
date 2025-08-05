@@ -1,9 +1,8 @@
 import { MIGRATION_STATUS } from "@lib/db/schemas/migration/Migration"
 import { MouseEvent } from "react"
-import { MIGRATION_STATUS_TEXTS } from "../constants/MigrationStatusTags"
-import { MIGRATION_STATUS_STYLES } from "../constants/MigrationStatusTags"
 import getMigrationStatusStyles from "../util/getMigrationStatusStyles"
 import getMigrationStatusText from "../util/getMigrationStatusText"
+import Spin from "@ui/core/components/Spin"
 
 export default function MigrationStatusTagTable({ 
   onClickSpan, 
@@ -23,6 +22,7 @@ export default function MigrationStatusTagTable({
       onClick={onClickSpan}
     >
       { getMigrationStatusText(migrationStatus) }
+      { migrationStatus === MIGRATION_STATUS.PROCESSING && <Spin size={10} className="ms-2   mb-1" /> }
       {
         isEditable &&
           <button 

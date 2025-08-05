@@ -62,6 +62,14 @@ export default function getEditableCell({
     ps-1
   `  
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault()
+    const text = e.clipboardData.getData('text/plain')
+
+    // Insertar el texto manualmente
+    document.execCommand('insertText', false, text)
+  }
+
   switch (columnType) {
     case ColumType.TEXT: {
       Element = 
@@ -70,6 +78,7 @@ export default function getEditableCell({
             html={content.toString()} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
+            onPaste={handlePaste}
           />
           
         </TableData>
@@ -82,8 +91,8 @@ export default function getEditableCell({
             html={content.toString()} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname}
+            onPaste={handlePaste}
           />
-          
         </TableData>
       break
     }
@@ -94,6 +103,7 @@ export default function getEditableCell({
             html={content.toString()} 
             onChange={(e: ContentEditableEvent) => onChange(e.currentTarget.innerHTML)} 
             className={classname} 
+            onPaste={handlePaste}
           />
         </TableData>
       break
@@ -192,12 +202,17 @@ export default function getEditableCell({
             onClick={() => onSelected()}
           >
             { 
-              (content !== null && typeof content === "object") && 
+              (content !== null) && 
                 <span 
                   className="bg-slate-200 rounded-lg px-[6px] py-[1px] me-1"
                   onClick={e => { if (selected) e.stopPropagation() }}
                 >
-                  { columnFields ? columnFields.map((columnField) => content[columnField]).join(" ") : "" } 
+                  { typeof content === "string" ? content : "" }
+                  { 
+                    (columnFields && typeof content === "object") 
+                      ? columnFields.map((columnField) => content[columnField]).join(" ") 
+                      : "" 
+                  } 
                   <button 
                     onClick={(e) => { 
                       e.stopPropagation()

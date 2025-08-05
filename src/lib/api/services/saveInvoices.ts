@@ -8,9 +8,9 @@ export interface InvoiceResponse {
   message?: string
 }
 
-export default async function saveInvoices(invoices: Invoice[]): Promise<InvoiceResponse[]> {
+export default async function saveInvoices(branchId: string, invoices: Invoice[]): Promise<InvoiceResponse[]> {
   try {
-    return await post("/invoices/create", invoices)
+    return await post("/invoices/create", { branchId, documents: invoices })
   } catch (error) {
     throw error as Error
   }

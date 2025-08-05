@@ -32,6 +32,7 @@ export default function Buys() {
 
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
+  const totalInvoices = useRef<number>(0)
 
   const fetchInvoices = useCallback(async () => {
     let result;
@@ -39,7 +40,7 @@ export default function Buys() {
       debouncedFilter ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_BUYS_FILTER) : DEFAULT_INVOICE_BUYS_FILTER, 
       pageSelected
     )
-
+    totalInvoices.current = result.total_records
     pagesNumber.current = result.pages_number
     setBuysInvoices(mapData(result.data)) 
   }, [pageSelected, debouncedFilter])
@@ -97,6 +98,7 @@ export default function Buys() {
         data={buysInvoices}
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
+        totalRecords={totalInvoices.current}
       />
       <DynamicTable 
         config={tableConfig}

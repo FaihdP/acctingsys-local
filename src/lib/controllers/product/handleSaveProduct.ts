@@ -5,7 +5,7 @@ import handleError from "@lib/util/error/handleError";
 
 export default async function handleSaveProduct(products: Product[]): Promise<any> {
   try {
-    await saveProducts(getProductsToSave(products))
+    await saveProducts(getProductsToSave(products, false))
   } catch (error) {
     throw handleError(error)
   }

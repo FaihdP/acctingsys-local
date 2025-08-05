@@ -1,7 +1,7 @@
 import { useContext } from "react"
-import { InvoicePopupContext } from "../hooks/InvoicePopupProvider"
+import { InvoicePopupContext } from "@ui/invoicePopup/hooks/InvoicePopupProvider"
 import INVOICE_STATUS from "@lib/services/invoice/interfaces/InvoiceStatus"
-import { INVOICE_WARNINGS } from "../hooks/useInvoiceWarnings"
+import { INVOICE_WARNINGS } from "@ui/invoicePopup/hooks/useInvoiceWarnings"
 import InvoiceStatusTag from "@ui/core/components/InvoiceStatusTag"
 
 export default function InvoiceMigratedCantChangeToCreatedPopup() {

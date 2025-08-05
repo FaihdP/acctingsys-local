@@ -2,7 +2,8 @@ import { useState } from "react";
 
 export interface Warning {
   isVisible: boolean,
-  isBlocking: boolean
+  isBlocking: boolean,
+  message?: string
 } 
 
 export enum INVOICE_WARNINGS {
@@ -10,7 +11,8 @@ export enum INVOICE_WARNINGS {
   DELETE_PAYMENTS,
   SAVE_PAYMENT_QUESTION,
   RESTAURE_PAYMENTS,
-  INVOICE_MIGRATED_CANT_CHANGE_TO_CREATED
+  INVOICE_MIGRATED_CANT_CHANGE_TO_CREATED,
+  UPDATE_PRODUCT_QUANTITY
 }
 
 export default function useInvoiceWarnings() {

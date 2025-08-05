@@ -1,0 +1,6 @@
+import { PersonType } from "@lib/db/schemas/person/Person";
+import Persons from "@ui/persons/containers/Persons";
+
+export default function ClientView() {
+  return <Persons personType={PersonType.CLIENT} />
+}

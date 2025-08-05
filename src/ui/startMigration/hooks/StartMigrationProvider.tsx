@@ -10,6 +10,8 @@ import { MIGRATION_STATUS } from "@lib/db/schemas/migration/Migration";
 import MigrationExpense from "@lib/db/schemas/migration/MigrationExpense";
 import MigrationInvoice from "@lib/db/schemas/migration/MigrationInvoice";
 import MigrationPayment from "@lib/db/schemas/migration/MigrationPayment";
+import getConfigValue from "@lib/services/config/getConfigValue";
+import { ConfigTags } from "@lib/services/config/util/ConfigTags";
 import getDocumentsToMigrate from "@lib/services/migration/getDocumentsToMigrate";
 import getMigrations from "@lib/services/migration/getMigrations";
 import notifyEndMigration from "@lib/services/migration/notifyEndMigration";
@@ -20,7 +22,6 @@ import saveMigrationInvoice from "@lib/services/migrationInvoice/saveMigrationIn
 import saveMigrationPayment from "@lib/services/migrationPayment/saveMigrationPayment";
 import handleError from "@lib/util/error/handleError";
 import { formatDate, getDateTime } from "@lib/util/time";
-import MigrationIcon from "@public/dashboard/nav/MigrationIcon";
 import { NotificationContext } from "@ui/notification/hooks/NotificationProvider";
 import NotificationType from "@ui/notification/interfaces/NotificationType";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
@@ -60,6 +61,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
         payments: 0,
         expenses: 0,
       })
+      handleReloadComponent()
     }
   
     const handleOfflineMigration = async (existsPendingMigration: any) => {
@@ -89,6 +91,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       if (existsPendingMigration) {
         const migrationId = existsPendingMigration._id?.$oid
         await updateMigration(migrationId, { $set: migration })
+        handleReloadComponent() 
         return migrationId
       }
 
@@ -110,11 +113,16 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     }
 
     const saveDocumentsAPI = async (documents: any) => {
+      const branchId = (await getConfigValue(ConfigTags.MIGRATION_BRANCH)).branchId
       const { invoices, payments, expenses } = documents
-      console.log(invoices)
-      const paymentsResponse = await savePayments(payments)
-      const invoicesResponse = await saveInvoices(invoices)
-      const expensesResponse = await saveExpenses(expenses)
+      let paymentsResponse: any = []
+      let invoicesResponse: any = []
+      let expensesResponse: any = []
+
+      if (payments.length > 0) paymentsResponse = await savePayments(branchId, payments)
+      if (invoices.length > 0) invoicesResponse = await saveInvoices(branchId, invoices)
+      if (expenses.length > 0) expensesResponse = await saveExpenses(branchId, expenses)
+
       return { invoicesResponse, paymentsResponse, expensesResponse }
     }
 
@@ -123,7 +131,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       const migrationInvoices: MigrationInvoice[] = []
 
       for (const invoiceResponse of invoicesResponse) {
-        const invoice = invoicesToMigrate.find((invoice) => invoice.InvoiceID === invoiceResponse.InvoiceID)
+        const invoice = invoicesToMigrate.find((invoice) => invoice.invoiceId === invoiceResponse.InvoiceID)
         const isOk = invoiceResponse.statusCode === 200
 
         if (!isOk) invoicesResponseWithError++
@@ -152,12 +160,12 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
         const payment = paymentsToMigrate.find((payment) => payment.PaymentID === paymentResponse.PaymentID)
         const isOk = paymentResponse.statusCode === 200
 
-        if (!isOk) paymentsResponseWithError++
+        if (isOk) paymentsResponseWithError++
         //else await updatePayment(paymentResponse.PaymentID, { $set: { migrated: true } })
         
         migrationPayments.push({
           migrationId,
-          paymentId: paymentResponse.PaymentID,
+            paymentId: paymentResponse.PaymentID,
           migrated: isOk,
           error: paymentResponse.statusCode !== 200 ? paymentResponse.message : undefined,
           date: formatDate(getDateTime()),
@@ -305,8 +313,8 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     const existsPendingMigration = (await getMigrations({ status: MIGRATION_STATUS.PENDING })).data[0]
     const existsInProcessMigration = (await getMigrations({ status: MIGRATION_STATUS.PROCESSING })).data[0]
 
-    console.log("existsPendingMigration", existsPendingMigration)
-    console.log("existsInProcessMigration", existsInProcessMigration)
+    // console.log("existsPendingMigration", existsPendingMigration)
+    // console.log("existsInProcessMigration", existsInProcessMigration)
 
     if (!(await isOnline())) return await handleOfflineMigration(existsPendingMigration)
     
@@ -324,13 +332,13 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     const documentsToMigrate = await getDocumentsToMigrate()
     const { invoices, payments, expenses } = documentsToMigrate
 
-    console.log("invoices", invoices)
-    console.log("payments", payments)
-    console.log("expenses", expenses)
+    // console.log("invoices", invoices)
+    // console.log("payments", payments)
+    // console.log("expenses", expenses)
 
     const migrationId: string = retryMigrationId || await getOrCreateMigration(existsPendingMigration, documentsToMigrate)
     
-    console.log("migrationId", migrationId)
+    // console.log("migrationId", migrationId)
 
     if (invoices.length === 0 && payments.length === 0 && expenses.length === 0) {
       return handleAndNotifyIfNoDocumentsToMigrate(notificationId)
@@ -344,7 +352,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       return await handleErrorAndUpdateNotification(notificationId, new Error(String(error)))
     }
 
-    console.log("documentsResponse", documentsResponse)
+    // console.log("documentsResponse", documentsResponse)
 
     try {
         
@@ -362,9 +370,9 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
         expensesResponseWithError
       ].some((exists) => exists > 0)
 
-      console.log(migrationInvoices)
-      console.log(migrationPayments)
-      console.log(migrationExpenses)
+      // console.log(migrationInvoices)
+      // console.log(migrationPayments)
+      // console.log(migrationExpenses)
 
       // Update documents
       await saveMigrationInvoice(migrationInvoices)

@@ -1,4 +1,4 @@
-import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
+import { INVOICE_TYPE, InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
 import updateInvoice from "@lib/services/invoice/updateInvoice";
 import updateInvoiceProducts from "@lib/services/invoiceProduct/updateInvoiceProducts";
 import handleError from "@lib/util/error/handleError";
@@ -22,6 +22,10 @@ import { PAYMENT_TYPE } from "@lib/db/schemas/payment/Payment";
 import saveInvoiceLog from "@lib/services/invoiceLog/saveInvoiceLog";
 import { INVOICE_LOG_ACTION } from "@lib/db/schemas/invoice/InvoiceLog";
 import User from "@ui/session/interfaces/User";
+import getConfigValue from "@lib/services/config/getConfigValue";
+import { ConfigTags } from "@lib/services/config/util/ConfigTags";
+import updateProductQuantity from "@lib/services/product/updateProductQuantity";
+import { ERRORS } from "./handleSaveInvoice";
 
 export default async function handleUpdateInvoice(
   newData: {
@@ -43,6 +47,60 @@ export default async function handleUpdateInvoice(
   
     const updateInvoiceObject = getInvoiceDifferences(oldInvoice, invoice)
     const updateInvoiceProductsObjects = getInvoiceProductsDifferences(oldInvoiceProducts, invoiceProducts)
+    console.log(updateInvoiceProductsObjects)
+    
+    if (await getConfigValue(ConfigTags.UPDATE_PRODUCT_QUANTITY)) {
+      const sign = invoice.type === INVOICE_TYPE.SALE ? -1 : 1
+      try {
+        if (updateInvoiceProductsObjects.toSave.length > 0) {
+          await Promise.all(
+            updateInvoiceProductsObjects.toSave.map(async (invoiceProduct) => {
+              if (!invoiceProduct.productId || !invoiceProduct.quantity) return
+              await updateProductQuantity(
+                invoiceProduct.productId, 
+                sign * parseInt(invoiceProduct.quantity.toString())
+              )
+            })
+          )
+        }
+
+        if (updateInvoiceProductsObjects.toDelete.length > 0) {
+          await Promise.all(
+            updateInvoiceProductsObjects.toDelete.map(async (invoiceProduct) => {
+              if (!invoiceProduct.productId || !invoiceProduct.quantity) return
+              await updateProductQuantity(
+                invoiceProduct.productId, 
+                sign * parseInt(invoiceProduct.quantity.toString())
+              )
+            })
+          )
+        }
+
+        if (updateInvoiceProductsObjects.toUpdate.length > 0) {
+          await Promise.all(
+            updateInvoiceProductsObjects.toUpdate.map(async (invoiceProduct) => {
+              if (
+                !invoiceProduct.$set?.productId
+                || !invoiceProduct.$set.quantity
+                //|| !invoiceProduct.$unset?.quantity
+                || !invoiceProduct.oldInvoiceProduct.quantity
+              ) return
+              
+              const quantity = invoiceProduct.$unset?.quantity || invoiceProduct.$set.quantity
+              await updateProductQuantity(
+                invoiceProduct.$set.productId,
+                sign * (parseInt(quantity.toString()) - parseInt(invoiceProduct.oldInvoiceProduct.quantity.toString()))
+              )
+            })
+          )
+        }
+      } catch (e: unknown) {
+        throw {
+          type: ERRORS.PRODUCT_QUANTITY,
+          error: (e as Error).message
+        }
+      }
+    }
 
     if (Object.keys(updateInvoiceObject.$set || updateInvoiceObject.$unset || {}).length > 0) {
       validateInvoice(invoice)

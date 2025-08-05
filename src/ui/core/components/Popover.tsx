@@ -4,8 +4,8 @@ import Backdrop from "./Backdrop";
 import { ChangeEvent } from "react";
 
 const renderOptionContent = (value: any, columnFields: any[] = [], columnType: ColumType) => {
-  if (columnType === ColumType.OBJECT && columnFields) {
-    return columnFields.map((field) => value[field]).join(" ");
+  if (columnType === ColumType.OBJECT) {
+    return columnFields && columnFields.length > 0 ? columnFields.map((field) => value[field]).join(" ") : value
   }
   if (columnType === ColumType.SELECT) {
     return value.key
@@ -77,7 +77,6 @@ export const renderOptions = (
       return onChange(value)
     }
 
-    console.log(value)
     if (!isColumnTypeList) {
       return (
         <div 

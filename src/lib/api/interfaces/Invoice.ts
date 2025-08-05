@@ -1,5 +1,5 @@
 export default interface Invoice {
-  InvoiceID: string,
+  invoiceId: string,
   date: Date 
   value: number
   type: "SALE" | "BUY"

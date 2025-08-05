@@ -8,11 +8,11 @@ export enum PersonType {
 }
 
 export default interface Person {
-  id?: string
+  id: string
   name: string
   lastname: string
   type: PersonType,
-  phone?: Phone[]
+  phone?: Phone[] | string
   debt?: Debt
   isDeleted: boolean
 }

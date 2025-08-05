@@ -9,7 +9,7 @@ export default async function updateInvoiceProducts(invoiceProductsUpdates: Invo
     for (const invoiceProductUpdate of invoiceProductsUpdates) {
       await update<InvoiceProductDocument>(
         COLLECTIONS.INVOICE_PRODUCTS, 
-        { _id: { $oid: invoiceProductUpdate.invoiceProductId } }, 
+        { _id: { $oid: invoiceProductUpdate.oldInvoiceProduct._id.$oid } }, 
         { $set: invoiceProductUpdate.$set, $unset: invoiceProductUpdate.$unset }
       )
     }

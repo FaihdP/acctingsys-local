@@ -69,8 +69,12 @@ export default function getCell({ columnType, content, relationship, columnField
     }
     case ColumType.OBJECT: {
       let text = ""
-      if (content !== null && typeof content === "object" && columnFields) {
-        text = columnFields.map((columnField) => content[columnField]).join(" ")
+      if (content !== null) {
+        if (typeof content === "object" && columnFields) {
+          text = columnFields.map((columnField) => content[columnField]).join(" ")
+        }
+
+        if (typeof content === "string") text = content
       }
       
       Element = 

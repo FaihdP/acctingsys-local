@@ -10,7 +10,7 @@ import mapData from "@ui/table/util/mapData";
 import getInvoiceProductsByInvoiceId from "@lib/services/invoiceProduct/getInvoiceProductsByInvoiceId";
 import getDatabaseFilterObject from "@ui/core/util/getDatabaseFilterObject";
 import getClients from "@lib/services/client/getClients";
-import handleSaveInvoice from "@lib/controllers/invoice/handleSaveInvoice";
+import handleSaveInvoice, { ERRORS } from "@lib/controllers/invoice/handleSaveInvoice";
 import { NotificationContext } from "@ui/notification/hooks/NotificationProvider";
 import NotificationType from "@ui/notification/interfaces/NotificationType";
 import handleError from "@lib/util/error/handleError";
@@ -18,6 +18,7 @@ import handleUpdateInvoice from "@lib/controllers/invoice/handleUpdateInvoice";
 import useInvoiceWarnings, { INVOICE_WARNINGS, Warning } from "./useInvoiceWarnings" ;
 import getInvoiceProductsToUpdate from "@lib/services/invoiceProduct/util/getInoviceProductsToUpdate";
 import getInitialInvoice from "../util/getInitialInvoice";
+import getProviders from "@lib/services/providers/getProviders";
 
 export const InvoicePopupContext = createContext({} as IInvoicePopupContext)
 
@@ -35,7 +36,6 @@ interface InvoicePopupProviderProps {
 
 export default function InvoicePopupProvider({ children, data }: InvoicePopupProviderProps) {
   const { invoicePopupMode, invoiceData, invoiceType, onChangePopupMode } = data
-  
   const { user } = useContext(SessionContext)
   const { handleAddNotification } = useContext(NotificationContext)
 
@@ -58,9 +58,10 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
   const [invoice, setInvoice] = useState<InvoiceDocument>(getInitialInvoiceCallback())
 
   const fetchClients = useCallback(async () => {
-    const result = await getClients(filterClient ? getDatabaseFilterObject(columnsFields, filterClient) : {})
+    const getPersons = data.invoiceType === INVOICE_TYPE.SALE ? getClients : getProviders
+    const result = await getPersons(filterClient ? getDatabaseFilterObject(columnsFields, filterClient) : {})
     setClients(result.data)
-  }, [filterClient])
+  }, [filterClient, data.invoiceType])
 
   const fetchInvoiceProducts = useCallback(async (invoiceId: string) => {
     setInvoiceProducts(mapData((await getInvoiceProductsByInvoiceId(invoiceId))?.data))
@@ -196,7 +197,7 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
         const invoiceWithoutId: InvoiceWithoutId = invoice
         // It's necessary delete the ID because the save service returned a error if the id is void
         delete invoiceWithoutId._id
-        await handleSaveInvoice(invoice as Invoice, invoiceProducts || new Map())
+        await handleSaveInvoice(invoiceWithoutId, invoiceProducts || new Map())
         return "La factura fue guardada exitosamente." 
       },
 
@@ -221,7 +222,19 @@ export default function InvoicePopupProvider({ children, data }: InvoicePopupPro
         text: message,
         type: NotificationType.OK
       })
-    } catch (error) {
+    } catch (error: unknown) {
+      const errorObject = error as { type: ERRORS, error: string }
+      console.log(errorObject)
+      if (errorObject.type === ERRORS.PRODUCT_QUANTITY) {
+        setWarnings(
+          new Map(warnings).set(
+            INVOICE_WARNINGS.UPDATE_PRODUCT_QUANTITY,
+            { isBlocking: true, isVisible: true, message: errorObject.error }
+          )
+        )
+        return undefined
+      }
+
       const message = handleError(error)
       handleAddNotification({ 
         title: "Factura",

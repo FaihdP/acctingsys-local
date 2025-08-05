@@ -1,6 +1,6 @@
 import { useContext } from "react"
-import { InvoicePopupContext } from "../hooks/InvoicePopupProvider"
-import { INVOICE_WARNINGS } from "../hooks/useInvoiceWarnings"
+import { InvoicePopupContext } from "@ui/invoicePopup/hooks/InvoicePopupProvider"
+import { INVOICE_WARNINGS } from "@ui/invoicePopup/hooks/useInvoiceWarnings"
 import Image from "next/image"
 import tableCancelIcon from "@public/core/table_cancel.svg"
 

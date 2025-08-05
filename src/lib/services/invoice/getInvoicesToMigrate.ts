@@ -29,14 +29,19 @@ export default async function getInvoicesToMigrate(): Promise<Invoice[]> {
     )).data
 
     return invoices.map((invoice) => {
-      return {
-        InvoiceID: invoice._id.$oid,
+      const data = {
+        invoiceId: invoice._id.$oid,
         date: getDateObjectFromString(invoice.date),
         value: invoice.value,
         type: invoice.type,
         status: invoice.status,
-        person: invoice.person,
       } as Invoice
+
+      if (invoice.person) {
+        data.person = invoice.person.name + " " + invoice.person.lastname
+      }
+
+      return data
     })
   } catch (error) {
     throw handleError(error)

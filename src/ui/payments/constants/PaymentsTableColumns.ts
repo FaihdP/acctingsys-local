@@ -4,6 +4,9 @@ import { ColumType, TableConfigHeaderProps } from "@ui/table/interfaces/Table"
 import withPaymentType from "../components/withPaymentType"
 import PaymetTypeTagTable from "../components/PaymentTypeTagTable"
 import { PAYMENT_TYPE } from "@lib/db/schemas/payment/Payment"
+import validateInvoiceValue from "@lib/services/payment/util/validateInvoiceValue"
+import getBanks from "@lib/services/bank/getBanks"
+import getInvoiceList from "@lib/services/invoice/getInvoicesList"
 
 const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
   { 
@@ -20,17 +23,20 @@ const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     tag: "value",
     type: ColumType.CURRENCY,
     width: 100,
+    validator: validateInvoiceValue,
     required: true
   },
-  { 
-    label: "Persona",
-    tag: "personId",
-    type: ColumType.TEXT,
-  },
+  // { 
+  //   label: "Persona",
+  //   tag: "personId",
+  //   type: ColumType.TEXT,
+  // },
   { 
     label: "Factura",
     tag: "invoiceId",
-    type: ColumType.TEXT,
+    type: ColumType.OBJECT,
+    relationship: getInvoiceList,
+    fields: [],
   },
   { 
     type: ColumType.SELECT,
@@ -46,7 +52,9 @@ const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
   { 
     label: "Banco",
     tag: "bank",
-    type: ColumType.TEXT,
+    type: ColumType.OBJECT,
+    relationship: getBanks,
+    fields: ["name"],
   },
   { 
     label: "Usuario",

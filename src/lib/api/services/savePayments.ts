@@ -8,9 +8,9 @@ export interface PaymentResponse {
   message?: string
 }
 
-export default async function savePayments(payments: Payment[]): Promise<PaymentResponse[]> {
+export default async function savePayments(branchId: string, payments: Payment[]): Promise<PaymentResponse[]> {
   try {
-    return await post("/payments/create", payments)
+    return await post("/payments/create", { branchId, documents: payments })
   } catch (error) {
     throw error as Error
   }

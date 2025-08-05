@@ -25,6 +25,7 @@ export interface Column {
   width?: number
   minWidth?: number
   required?: boolean
+  validator?: (row: Row) => Promise<string | null>
   defaultValue?: any
   relatedFields?: Map<string, ((newValue: any) => any)>
 }
