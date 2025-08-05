@@ -7,6 +7,7 @@ export default function getDatabaseFilterObject(columnFields: string[], filter: 
     field[columnField] = { $regex: normalizeString(filter), $options: 'i' }
     filterObject.$or.push(field)
   })
+  if (columnFields.length === 0) return filter
 
   return filterObject
 }

@@ -27,7 +27,7 @@ export default async function getExpensesToMigrate() {
 
     return expenses.map((expense) => {
       return {
-        ExpenseID: expense._id.$oid,
+        expenseId: expense._id.$oid,
         date: getDateObjectFromString(expense.date),
         title: expense.title,
         description: expense.description,

@@ -27,7 +27,7 @@ export default async function getPaymentsToMigrate() {
 
     return payments.map((payment) => {
       return {
-        PaymentID: payment._id.$oid,
+        paymentId: payment._id.$oid,
         date: getDateObjectFromString(payment.date),
         type: payment.type,
         bank: payment.bank,

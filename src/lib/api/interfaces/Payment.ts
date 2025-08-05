@@ -1,5 +1,5 @@
 export default interface Payment {
-  PaymentID: String
+  paymentId: String
   date: Date
   value: number
   type: "DIGITAL" | "CASH"

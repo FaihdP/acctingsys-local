@@ -3,11 +3,11 @@ import COLLECTIONS from "@lib/db/schemas/common/Collections";
 import { InvoiceDocument } from "@lib/db/schemas/invoice/Invoice";
 import handleError from "@lib/util/error/handleError";
 
-export default async function getInvoiceList() {
+export default async function getInvoiceList(filter?: string) {
   try {
     const result = (await find<InvoiceDocument>(
       COLLECTIONS.INVOICES, 
-      { isDeleted: false },
+      { isDeleted: false,  ...(filter ? { _id: { $oid: filter } } : {}) },
       { size: 100, number: 1 },
       undefined,
       { _id: 1 }	

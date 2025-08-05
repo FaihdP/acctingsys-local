@@ -18,6 +18,7 @@ export default function InvoicePopupView() {
     onChangePopupMode,
     invoicePopupMode,
     handleSave,
+    invoice
   } = useContext(InvoicePopupContext)
   const action = invoicePopupMode === INVOICE_POPUP_MODE.CREATE ? "Crea" : "Edita"
   
@@ -84,6 +85,9 @@ export default function InvoicePopupView() {
             { action } tu factura
           </span>
           <div className="absolute flex w-full justify-end">
+            <span className="absolute left-[25px] top-[5px] text-md text-[#7A7A7A]">
+              { invoice._id.$oid }
+            </span>
             <button 
               disabled={isBlockingButton()}
               className="

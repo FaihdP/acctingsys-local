@@ -10,9 +10,6 @@ import getMigrationPaymentsById from "@lib/services/migration/getMigrationPaymen
 import MigrationPaymentsTableColumns from "../constants/MigrationPayementsTableColumns"
 import getMigrationExpensesById from "@lib/services/migration/getMigrationExpensesById"
 import MigrationExpensesTableColumns from "../constants/MigrationExpensesTableColumns"
-import updateMigrationInvoice from "@lib/services/migrationInvoice/updateMigrationInvoice"
-import updateMigrationExpense from "@lib/services/migrationExpense/updateMigrationExpense"
-import updateMigrationPayment from "@lib/services/migrationPayment/updateMigrationPayment"
 
 enum MIGRATION_POPUP_TAB {
   INVOICE,
@@ -115,7 +112,7 @@ export default function MigrationPopup() {
         </div>
         <div className="flex flex-row justify-start mt-5 ms-[30px]">
           <span className="text-[16px] text-[#7A7A7A]">Id</span>
-          <span className="text-[16px] ms-[15px] text-[#5C5C5C]">{ migration?._id?.$oid }</span>
+          <span className="text-[16px] ms-[15px] text-[#5C5C5C] ">{ migration?._id?.$oid }</span>
           <span className="text-[16px] text-[#7A7A7A] ms-[40px]">Estado</span>
           <span
             style={getMigrationStatusStyles(migration?.status)}

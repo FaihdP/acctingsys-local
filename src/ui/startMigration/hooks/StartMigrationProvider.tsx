@@ -12,6 +12,8 @@ import MigrationInvoice from "@lib/db/schemas/migration/MigrationInvoice";
 import MigrationPayment from "@lib/db/schemas/migration/MigrationPayment";
 import getConfigValue from "@lib/services/config/getConfigValue";
 import { ConfigTags } from "@lib/services/config/util/ConfigTags";
+import updateExpense from "@lib/services/expense/updateExpense";
+import updateInvoice from "@lib/services/invoice/updateInvoice";
 import getDocumentsToMigrate from "@lib/services/migration/getDocumentsToMigrate";
 import getMigrations from "@lib/services/migration/getMigrations";
 import notifyEndMigration from "@lib/services/migration/notifyEndMigration";
@@ -20,11 +22,14 @@ import updateMigration from "@lib/services/migration/updateMigration";
 import saveMigrationExpense from "@lib/services/migrationExpense/saveMigrationExpense";
 import saveMigrationInvoice from "@lib/services/migrationInvoice/saveMigrationInvoice";
 import saveMigrationPayment from "@lib/services/migrationPayment/saveMigrationPayment";
+import updatePayment from "@lib/services/payment/updatePayment";
 import handleError from "@lib/util/error/handleError";
 import { formatDate, getDateTime } from "@lib/util/time";
 import { NotificationContext } from "@ui/notification/hooks/NotificationProvider";
 import NotificationType from "@ui/notification/interfaces/NotificationType";
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+
+const isTestingMigration = true
 
 export const StartMigrationContext = createContext({} as { 
   startMigration: () => Promise<void>, 
@@ -135,7 +140,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
         const isOk = invoiceResponse.statusCode === 200
 
         if (!isOk) invoicesResponseWithError++
-        //else await updateInvoice(invoiceResponse.InvoiceID, { $set: { migrated: true } })
+        else if (!isTestingMigration) await updateInvoice(invoiceResponse.InvoiceID, { $set: { migrated: true } })
 
         migrationInvoices.push({
           migrationId,
@@ -157,15 +162,16 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       const migrationPayments: MigrationPayment[] = []
       
       for (const paymentResponse of paymentsResponse) {
-        const payment = paymentsToMigrate.find((payment) => payment.PaymentID === paymentResponse.PaymentID)
+        console.log(paymentsToMigrate)
+        const payment = paymentsToMigrate.find((payment) => payment.paymentId === paymentResponse.PaymentID)
         const isOk = paymentResponse.statusCode === 200
 
-        if (isOk) paymentsResponseWithError++
-        //else await updatePayment(paymentResponse.PaymentID, { $set: { migrated: true } })
+        if (!isOk) paymentsResponseWithError++
+        else if (!isTestingMigration) await updatePayment(paymentResponse.PaymentID, { $set: { migrated: true } })
         
         migrationPayments.push({
           migrationId,
-            paymentId: paymentResponse.PaymentID,
+          paymentId: paymentResponse.PaymentID,
           migrated: isOk,
           error: paymentResponse.statusCode !== 200 ? paymentResponse.message : undefined,
           date: formatDate(getDateTime()),
@@ -182,11 +188,11 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
       const migrationExpenses: MigrationExpense[] = []
       
       for (const expenseResponse of expensesResponse) {
-        const expense = expensesToMigrate.find((expense) => expense.ExpenseID === expenseResponse.ExpenseID)
+        const expense = expensesToMigrate.find((expense) => expense.expenseId === expenseResponse.ExpenseID)
         const isOk = expenseResponse.statusCode === 200
 
         if (!isOk) expensesResponseWithError++
-        //else await updateExpense
+        else if (!isTestingMigration) await updateExpense(expenseResponse.ExpenseID, { $set: { migrated: true } })
 
         migrationExpenses.push({
           migrationId,
