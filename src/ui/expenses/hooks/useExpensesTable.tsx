@@ -15,6 +15,7 @@ import { SessionContext } from "@ui/session/hooks/SessionProvider"
 import handleSaveExpense from "@lib/controllers/expense/handleSaveExpense"
 import handleDeleteExpense from "@lib/controllers/expense/handleDeleteExpense"
 import handleUpdateExpense from "@lib/controllers/expense/handleUpdateExpense"
+import getMongoFilter from "@lib/util/getMongoFilter"
 const DEFAULT_EXPENSES_FILTER: Partial<Expense> = { isDeleted: false }
 
 export default function useExpensesTable(): IUseExpensesTable {
@@ -31,7 +32,8 @@ export default function useExpensesTable(): IUseExpensesTable {
     let result;
     result = await getExpenses(
       debouncedExpensesFilter 
-        ? getInvoiceMongoFilter(debouncedExpensesFilter, DEFAULT_EXPENSES_FILTER) 
+        ? getMongoFilter(debouncedExpensesFilter, ["date", "title", "description", "value"], DEFAULT_EXPENSES_FILTER, ["user.name", "user.lastname"]) 
+
         : DEFAULT_EXPENSES_FILTER, 
       pageSelected
     )

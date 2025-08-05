@@ -9,10 +9,8 @@ export default async function handleUpdatePerson(person: PersonDocument) {
   try {
     const getPerson = person.type == PersonType.PROVIDER ? getProviders : getClients
     const oldPerson = (await getPerson({ _id: { $oid: person._id.$oid } })).data[0]
-    console.log(oldPerson)
     if (oldPerson) {
       const personDifferences = getPersonDifferences(person, oldPerson)
-      console.log(personDifferences)
       await updatePerson(oldPerson._id.$oid, personDifferences)
     }
   } catch (error) {

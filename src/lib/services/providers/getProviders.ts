@@ -6,7 +6,6 @@ export default async function getProviders(
   filters: any,
   pageNumber?: number
 ): Promise<FindResults<PersonDocument[]>> {
-  //await new Promise(r => setTimeout(r, 10000))
   const result = await find<PersonDocument>(
     COLLECTIONS.PERSONS, 
     {

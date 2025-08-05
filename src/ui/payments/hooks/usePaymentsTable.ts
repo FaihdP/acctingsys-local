@@ -13,6 +13,7 @@ import { MappedObject } from "@ui/table/interfaces/Row"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import Payment from "@lib/db/schemas/payment/Payment"
 import IUsePaymentsTable from "../interfaces/UsePaymentsTable"
+import getMongoFilter from "@lib/util/getMongoFilter"
 
 const DEFAULT_PAYMENTS_FILTER: Partial<Payment> = { isDeleted: false }
 
@@ -29,13 +30,22 @@ export default function usePaymentsTable(): IUsePaymentsTable {
   const fetchPayments = useCallback(async () => {
     let result;
     result = await getPayments(
-      DEFAULT_PAYMENTS_FILTER, 
+      debouncedFilter 
+        ? 
+          getMongoFilter(
+            debouncedFilter, 
+            ["date", "value", "invoiceId", "type"], 
+            DEFAULT_PAYMENTS_FILTER, 
+            ["user.name", "user.lastname"]
+          )
+        : DEFAULT_PAYMENTS_FILTER,
       pageSelected
     )
 
     pagesNumber.current = result.pages_number
     setPayments(mapData(result.data)) 
-  }, [pageSelected])
+  }, [pageSelected, debouncedFilter])
+
 
   useEffect(() => { fetchPayments() }, [fetchPayments])
 

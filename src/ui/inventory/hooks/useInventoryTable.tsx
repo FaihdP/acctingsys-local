@@ -13,6 +13,7 @@ import IUseInventoryTable from "../interfaces/UseInventoryTable"
 import getProducts from "@lib/services/product/getProducts"
 import handleSaveProduct from "@lib/controllers/product/handleSaveProduct"
 import handleUpdateProduct from "@lib/controllers/product/handleUpdateProduct"
+import getMongoFilter from "@lib/util/getMongoFilter"
 
 const DEFAULT_PRODUCTS_FILTER: Partial<Expense> = { isDeleted: false }
 
@@ -32,7 +33,12 @@ export default function useInventoryTable(): IUseInventoryTable {
     let result;
     result = await getProducts(
       debouncedProductsFilter
-        ? getInvoiceMongoFilter(debouncedProductsFilter, DEFAULT_PRODUCTS_FILTER) 
+        ? getMongoFilter(
+          debouncedProductsFilter, 
+          ["name", "value", "quantity"], 
+          DEFAULT_PRODUCTS_FILTER, 
+          ["category.name", "user.name", "user.lastname"]
+        ) 
         : DEFAULT_PRODUCTS_FILTER, 
       pageSelected
     )

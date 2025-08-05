@@ -12,6 +12,7 @@ import { TableConfigProps } from "@ui/table/interfaces/Table";
 import MIGRATION_TABLE_COLUNMS from "../constants/MigrationTableColumns";
 import MigrationIcon from "@public/dashboard/nav/MigrationIcon";
 import ViewIcon from "@public/dashboard/migration/ViewIcon";
+import getMongoFilter from "@lib/util/getMongoFilter";
 
 export const MigrationProviderContext = createContext({} as IMigrationProviderContext)
 
@@ -78,12 +79,18 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
 
   useEffect(() => {
     const fetchMigrations = async () => {
-      const response = await getMigrations({}, { number: pageSelected, size: 25 })
+      const filter = migrationSearch 
+        ? getMongoFilter(migrationSearch, ["date", "status", "invoices", "payments", "expenses"]) 
+
+        : {}
+      const response = await getMigrations(filter, { number: pageSelected, size: 25 })
+
       setMigrations(mapData(response.data))
       pagesNumber.current = response.pages_number
     }
     fetchMigrations()
-  }, [setMigrations, pageSelected, reloadComponent])
+  }, [setMigrations, pageSelected, reloadComponent, migrationSearch])
+
 
   const handleStartMigration = async () => {
     try {

@@ -11,8 +11,9 @@ import { TableConfigProps } from "@ui/table/interfaces/Table"
 import getClients from "@lib/services/client/getClients"
 import getProviders from "@lib/services/providers/getProviders"
 import PERSON_POPUP_MODE from "../contants/PersonPopupMode"
+import getMongoFilter from "@lib/util/getMongoFilter"
 
-const DEFAULT_PERSONS_FILTER: Partial<Person> = { isDeleted: false, type: PersonType.CLIENT }
+const DEFAULT_PERSONS_FILTER: Partial<Person> = { isDeleted: false }
 
 const getInitialPerson = (personType: PersonType): PersonDocument => {
   return {
@@ -49,7 +50,11 @@ export default function usePersonsTable(personType: PersonType) {
     const getPersons = personType === PersonType.CLIENT ? getClients : getProviders
     result = await getPersons(
       debouncedPersonsFilter 
-        ? getInvoiceMongoFilter(debouncedPersonsFilter, DEFAULT_PERSONS_FILTER) 
+        ? getMongoFilter(
+            debouncedPersonsFilter, 
+            ["id", "name", "lastname", "phone"], 
+            DEFAULT_PERSONS_FILTER
+          ) 
         : DEFAULT_PERSONS_FILTER, 
       pageSelected
     )
