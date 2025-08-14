@@ -20,5 +20,7 @@ export default interface MigrationProviderContext {
   setMigrationPopupStatus: Dispatch<SetStateAction<MIGRATION_POPUP_STATUS>>,
   migration: MappedObject | null,
   setMigration: Dispatch<SetStateAction<MappedObject | null>>,
-  migrationTableConfig: TableConfigProps
+  migrationTableConfig: TableConfigProps,
+  totalRecords: MutableRefObject<number>
+
 }

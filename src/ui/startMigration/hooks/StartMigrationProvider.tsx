@@ -325,7 +325,7 @@ export default function StartMigrationProvider({ children }: { children: ReactNo
     if (!(await isOnline())) return await handleOfflineMigration(existsPendingMigration)
     
     if (existsInProcessMigration) {
-      if (!existsPendingMigration) savePendingMigration()
+      if (!existsPendingMigration) await savePendingMigration()
       return
     }
 

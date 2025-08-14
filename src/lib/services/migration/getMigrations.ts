@@ -10,7 +10,7 @@ export default async function getMigrations(filter: Partial<MigrationDocument>, 
       filter, 
       page
     )
-  
+    console.log(result)
     return result
   } catch (error) {
     throw handleError(error)

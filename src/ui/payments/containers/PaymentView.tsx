@@ -10,14 +10,14 @@ export default function PaymentView() {
   const { 
     payments, 
     filter, 
-    debouncedFilter, 
     pageSelected, 
     pagesNumber, 
     isVisibleBankPopup, 
     handleIsVisibleBankPopup, 
     tablePaymentsConfig,
     setFilter,
-    setPageSelected 
+    setPageSelected,  
+    totalRecords
   } = usePaymentsTable()
 
   return (
@@ -27,6 +27,7 @@ export default function PaymentView() {
           data={payments}
           filter={filter}
           onChange={(e) => setFilter(e.target.value)}
+          totalRecords={totalRecords.current}
         />
         <div>
           <button 

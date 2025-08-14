@@ -10,7 +10,6 @@ import handleError from "@lib/util/error/handleError";
 import { ERRORS } from "./handleSaveInvoice";
 import getInvoiceProductsByInvoiceId from "@lib/services/invoiceProduct/getInvoiceProductsByInvoiceId";
 
-// TODO: add sign operator 
 export default async function handleDeleteInvoice(invoiceIds: string[], userId: string) {
 
   const shouldUpdateProductQuantity = (await getConfigValue(ConfigTags.UPDATE_PRODUCT_QUANTITY))

@@ -42,7 +42,12 @@ pub async fn find(
     .sort(sort)
     .build();
 
-  let total_records_filter = mongodb::bson::doc! { "isDeleted": false };
+  let mut total_records_filter = mongodb::bson::doc! { "isDeleted": false };
+
+  if collection == "migrations" {
+    total_records_filter = mongodb::bson::doc! {};
+  }
+
 
   let total_records = target_collection
     .count_documents(total_records_filter.clone(), count_options)
@@ -60,6 +65,8 @@ pub async fn find(
   while let Some(result) = cursor.try_next().await.unwrap() {
     results.push(result);
   }
+
+  println!("\ncollection {:?}; filter {:?}", collection, filter);
 
   let find_results: Bson = bson!({
     "pages_number": pages_number,

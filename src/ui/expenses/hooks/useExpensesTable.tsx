@@ -1,7 +1,6 @@
 import { useContext, useEffect, useRef, useState } from "react"
 
 import getExpenses from "@lib/services/expense/getExpenses"
-import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import { useCallback } from "react"
 import { MappedObject } from "@ui/table/interfaces/Row"

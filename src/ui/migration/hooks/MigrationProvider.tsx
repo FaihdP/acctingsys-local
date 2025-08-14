@@ -45,6 +45,7 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
   const [migrationSearch, setMigrationSearch] = useState<string>()
   const { startMigration, reloadComponent } = useContext(StartMigrationContext)
   const [migrationPopupStatus, setMigrationPopupStatus] = useState<MIGRATION_POPUP_STATUS>(MIGRATION_POPUP_STATUS.VISIBLE)
+  const totalRecords = useRef<number>(0)
 
   const migrationTableConfig: TableConfigProps = {
     modifiers: {
@@ -81,12 +82,12 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
     const fetchMigrations = async () => {
       const filter = migrationSearch 
         ? getMongoFilter(migrationSearch, ["date", "status", "invoices", "payments", "expenses"]) 
-
         : {}
-      const response = await getMigrations(filter, { number: pageSelected, size: 25 })
-
+      const response = await getMigrations(filter, { number: pageSelected, size: 24 })
       setMigrations(mapData(response.data))
       pagesNumber.current = response.pages_number
+      totalRecords.current = response.total_records
+
     }
     fetchMigrations()
   }, [setMigrations, pageSelected, reloadComponent, migrationSearch])
@@ -94,7 +95,7 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
 
   const handleStartMigration = async () => {
     try {
-      await startMigration()
+      await startMigration
     } catch (error) {
       console.log(error)
     }
@@ -117,6 +118,7 @@ export function MigrationProvider({ children }: MigrationProviderProps) {
         migrationPopupStatus, setMigrationPopupStatus,
         migration, setMigration,
         migrationTableConfig,
+        totalRecords
       }}
     >
       { children }

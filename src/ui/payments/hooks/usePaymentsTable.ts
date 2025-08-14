@@ -24,6 +24,7 @@ export default function usePaymentsTable(): IUsePaymentsTable {
   const debouncedFilter = useDebounce(filter, DEBOUNCE_TIME)
   const [pageSelected, setPageSelected] = useState<number>(1)
   const pagesNumber = useRef<number>(1)
+  const totalRecords = useRef<number>(0)
   const [isVisibleBankPopup, setIsVisibleBankPopup] = useState<boolean>(false)
   const { user } = useContext(SessionContext)
 
@@ -43,6 +44,7 @@ export default function usePaymentsTable(): IUsePaymentsTable {
     )
 
     pagesNumber.current = result.pages_number
+    totalRecords.current = result.total_records
     setPayments(mapData(result.data)) 
   }, [pageSelected, debouncedFilter])
 
@@ -87,6 +89,7 @@ export default function usePaymentsTable(): IUsePaymentsTable {
     pagesNumber,
     isVisibleBankPopup,
     handleIsVisibleBankPopup,
-    tablePaymentsConfig
+    tablePaymentsConfig,
+    totalRecords
   }
 }

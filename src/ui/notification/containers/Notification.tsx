@@ -1,11 +1,13 @@
 import NotificationsIcon from "@public/dashboard/nav/NotificationsIcon";
 import COLORS from "@ui/core/util/colors";
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import NotificationPopup from "../components/NotificationPopup";
 import "../styles/notification.css"
 
-export default function Notification() {
-  const [isOpen, setIsOpen] = useState<boolean>(false)
+export default function Notification({ 
+  isOpen, 
+  setIsOpen 
+}: { isOpen: boolean, setIsOpen: Dispatch<SetStateAction<boolean>> }) {
   const handleIsOpen = () => setIsOpen(!isOpen)
 
   return (

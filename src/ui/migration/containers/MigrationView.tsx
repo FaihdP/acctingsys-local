@@ -20,6 +20,7 @@ export default function MigrationView() {
     migrationPopupStatus,
     migration,
     migrationTableConfig,
+    totalRecords
   } = useContext(MigrationProviderContext)
   
   return (
@@ -30,6 +31,7 @@ export default function MigrationView() {
           data={migrations} 
           filter={migrationSearch || ""} 
           onChange={handleChangeMigrationFilter}
+          totalRecords={totalRecords.current}
         />
         <button 
           onClick={handleStartMigration}

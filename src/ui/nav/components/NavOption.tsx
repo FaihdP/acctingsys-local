@@ -18,6 +18,7 @@ export default function NavOption({ text, icon, selected, onClick, color, margin
     <a
       style={styles}
       onClick={(e) => onClick()}
+      href="#"
       className={`
         px-[30px] 
         h-[70px] 

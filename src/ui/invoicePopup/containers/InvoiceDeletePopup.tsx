@@ -35,7 +35,7 @@ export default function InvoiceDeletePopup({ onChangePopupMode, invoicesToDelete
         text: `La factura no pudo eliminarse.`,
         type: NotificationType.ERROR,
         showMore: <span>
-          { handleError(error) }
+          { error as string }
         </span>
       })
     }

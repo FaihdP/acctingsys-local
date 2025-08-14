@@ -1,4 +1,5 @@
 export default function getMongoFilter(text: string, fields: string[], defaultFilter?: any, fieldsObject?: string[]) {
+  if (!text) return defaultFilter
   const searchText = text.trim().toLowerCase()
   if (!searchText || searchText.trim() === "") return defaultFilter
   const possibleNumber = parseFloat(searchText);

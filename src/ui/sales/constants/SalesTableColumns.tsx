@@ -48,7 +48,7 @@ const SALES_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     label: "Usuario",
     tag: "user",
     type: ColumType.OBJECT,
-    relationship: getUsers,
+    relationship: async () => ({ data: [] }),
     fields: ["name", "lastname"],
     defaultValue: { name: "Faihd", lastname: "Pineda" }
   },
@@ -57,7 +57,7 @@ const SALES_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     tag: "productOverview",
     type: ColumType.LIST,
     width: 400,
-    relationship: getProductInvoicesByInvoiceId
+    relationship: async () => {}
   },
 ]
 

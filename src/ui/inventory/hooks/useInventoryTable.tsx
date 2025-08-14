@@ -1,5 +1,4 @@
 import { useContext, useEffect, useRef, useState } from "react"
-import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
 import { TableConfigProps } from "@ui/table/interfaces/Table"
 import { useCallback } from "react"
 import { MappedObject } from "@ui/table/interfaces/Row"
@@ -45,7 +44,7 @@ export default function useInventoryTable(): IUseInventoryTable {
     pagesNumber.current = result.pages_number
     totalRecords.current = result.total_records
     setProducts(mapData(result.data)) 
-  }, [pageSelected, debouncedProductsFilter, isVisibleDeleteProductPopup])
+  }, [pageSelected, debouncedProductsFilter])
   
   useEffect(() => { fetchProducts() }, [fetchProducts])
 

@@ -2,6 +2,7 @@ import find, { FindResults } from "@lib/db/repositories/find"
 import COLLECTIONS from "@lib/db/schemas/common/Collections"
 import { PaymentDocument } from "@lib/db/schemas/payment/Payment"
 import handleError from "@lib/util/error/handleError"
+import FIND_DOCUMENTS_SIZE from "@ui/core/constants/FIndDocumentsSize"
 
 export default async function getPayments(
   filters: any, 
@@ -12,7 +13,7 @@ export default async function getPayments(
     const result = await find<PaymentDocument>(
       COLLECTIONS.PAYMENTS, 
       filters, 
-      pageNumber ? { size: 25, number: pageNumber } : undefined
+      pageNumber ? { size: FIND_DOCUMENTS_SIZE, number: pageNumber } : undefined
     )
     return result.data ? result : { data: [], pages_number: 0, total_records: 0 }
   } catch (error) {

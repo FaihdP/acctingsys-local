@@ -15,4 +15,6 @@ export default interface IUsePaymentsTable {
   isVisibleBankPopup: boolean
   handleIsVisibleBankPopup: () => void
   tablePaymentsConfig: TableConfigProps
+  totalRecords: MutableRefObject<number>
+
 }

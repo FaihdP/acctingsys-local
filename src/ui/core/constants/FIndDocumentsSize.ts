@@ -1,0 +1,3 @@
+const FIND_DOCUMENTS_SIZE = 24
+
+export default FIND_DOCUMENTS_SIZE

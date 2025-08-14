@@ -15,6 +15,7 @@ import InputSearchTable from "@ui/core/components/InputSearchTable"
 import useDebounce from "@ui/core/hooks/useDebounce"
 import getInvoiceMongoFilter from "@lib/services/invoice/util/getInvoiceMongoFilter"
 import DEBOUNCE_TIME from "@ui/core/constants/DebounceTime"
+import getMongoFilter from "@lib/util/getMongoFilter"
 
 const DEFAULT_INVOICE_SALES_FILTER: Partial<Invoice> = {
   type: INVOICE_TYPE.SALE,
@@ -35,13 +36,16 @@ export default function Sales() {
   const pagesNumber = useRef<number>(1)
 
   const fetchInvoices = useCallback(async () => {
-    let result
-    result = await getInvoices(
-      debouncedFilter 
-        ? getInvoiceMongoFilter(debouncedFilter, DEFAULT_INVOICE_SALES_FILTER) 
-        : DEFAULT_INVOICE_SALES_FILTER, 
-      pageSelected
+    const mongoFilter = getMongoFilter(
+      debouncedFilter, 
+      ["date", "value", "status"], 
+      DEFAULT_INVOICE_SALES_FILTER, 
+      ["person.name", "person.lastname", "_id.$oid"]
     )
+
+    console.log(mongoFilter)
+
+    let result = await getInvoices(mongoFilter, pageSelected)
 
     pagesNumber.current = result.pages_number
     totalRecords.current = result.total_records
@@ -102,6 +106,13 @@ export default function Sales() {
         filter={filter}
         onChange={(e) => setFilter(e.target.value)}
       />
+      <button onClick={async () => {
+        let result = (await getInvoices({ _id: { $oid: "66cc0708b2ab4e96e4db6281" } })).data[0]
+        const date: Date = (result as any).date1
+        console.log(date)
+      }}>
+        Prueba
+      </button>
       <DynamicTable 
         config={tableConfig}
         initialData={salesInvoices} 

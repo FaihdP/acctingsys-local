@@ -41,7 +41,6 @@ export default async function validateRow(row: Row, columns: Column[]): Promise<
       async (column) => {
         let errorMessage;
         if (column.validator) errorMessage = await column.validator(row)
-        console.log(errorMessage)
         if (!errorMessage) errorMessage = validateCell(row.value[column.tag], column)
         if (errorMessage) errors.set(column.tag, errorMessage)
       }

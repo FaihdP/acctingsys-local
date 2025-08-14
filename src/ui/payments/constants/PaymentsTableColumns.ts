@@ -26,11 +26,6 @@ const PAYMENTS_TABLE_COLUMNS: TableConfigHeaderProps["columns"] = [
     validator: validateInvoiceValue,
     required: true
   },
-  // { 
-  //   label: "Persona",
-  //   tag: "personId",
-  //   type: ColumType.TEXT,
-  // },
   { 
     label: "Factura",
     tag: "invoiceId",
